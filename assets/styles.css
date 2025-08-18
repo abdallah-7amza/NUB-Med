@@ -2,7 +2,6 @@
 
 /* --- 1. Global Settings & Variables --- */
 :root {
-    /* Color Palette */
     --primary-color: #9B2226;   /* Rich Maroon */
     --secondary-color: #2B4162;    /* Slate Blue */
     --accent-color: #FFD700;     /* Gold */
@@ -11,12 +10,7 @@
     --border-color: #E9ECEF;     /* Lighter Gray Border */
     --text-color: #212529;       /* Dark, soft text */
     --light-text-color: #FFFFFF;   /* For dark backgrounds */
-
-    /* Typography */
-    --font-heading: 'Lora', serif;
     --font-body: 'Inter', sans-serif;
-
-    /* Shapes & Shadows */
     --border-radius: 12px;
     --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     --card-shadow-hover: 0 7px 14px rgba(0, 0, 0, 0.07);
@@ -29,10 +23,6 @@
 }
 
 /* --- 2. Core Layout --- */
-html {
-    height: 100%;
-}
-
 body {
     display: flex;
     flex-direction: column;
@@ -48,7 +38,7 @@ body {
     max-width: 960px;
     margin: 3rem auto;
     padding: 0 1.5rem;
-    flex-grow: 1; /* Pushes footer down */
+    flex-grow: 1;
 }
 
 .main-header {
@@ -58,12 +48,12 @@ body {
     align-items: center;
     padding: 1.5rem 4%;
     background-color: var(--secondary-color);
-    border-bottom: 6px solid var(--accent-color);
+    color: var(--light-text-color);
 }
 
-.main-header .header-content h1 {
+.main-header h1 {
     margin: 0;
-    color: var(--light-text-color);
+    font-size: 1.5rem;
 }
 
 /* --- 3. Components --- */
@@ -92,7 +82,7 @@ body {
 }
 
 .card:hover {
-    transform: translateY(-5px) scale(1.03);
+    transform: translateY(-5px);
     box-shadow: var(--card-shadow-hover);
     border-color: var(--accent-color);
     cursor: pointer;
@@ -103,7 +93,31 @@ body {
     margin: 0;
 }
 
-/* Lesson Content */
+/* Buttons (FIX for Back Button) */
+.btn {
+    display: inline-block;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 2px solid transparent;
+    text-align: center;
+}
+
+.btn-secondary {
+    background-color: var(--card-bg);
+    color: var(--secondary-color);
+    border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--border-color);
+}
+
+
+/* Lesson & Quiz Content */
 #lesson-content {
     background: var(--card-bg);
     padding: 2.5rem;
@@ -120,8 +134,8 @@ body {
     padding-bottom: 0.5rem;
 }
 
-/* --- 4. Quiz Section (NEW) --- */
-.quiz-section {
+/* Quiz Section */
+#quiz-container {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
     padding: 2rem;
@@ -134,18 +148,15 @@ body {
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
 }
-
 .quiz-question:last-child {
     border-bottom: none;
 }
-
 .quiz-options {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     margin-top: 1rem;
 }
-
 .quiz-options label {
     display: block;
     padding: 0.75rem 1rem;
@@ -154,132 +165,40 @@ body {
     cursor: pointer;
     transition: background-color 0.2s;
 }
-
 .quiz-options label:hover {
-    background-color: #f8f9fa;
+    background-color: #f1f3f5;
+}
+.quiz-options input {
+    margin-right: 10px;
 }
 
-/* --- 5. AI Tutor (NEW & ENHANCED) --- */
+/* AI Tutor */
 #ai-tutor-fab {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    width: 60px;
-    height: 60px;
+    position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px;
     background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-    color: white;
-    border-radius: 50%;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    z-index: 1000;
-    transition: transform 0.2s ease;
+    color: white; border-radius: 50%; border: none; display: flex;
+    align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
 }
-
-#ai-tutor-fab:hover {
-    transform: scale(1.1);
-}
-
-#ai-tutor-fab svg {
-    width: 32px;
-    height: 32px;
-}
+#ai-tutor-fab:hover { transform: scale(1.1); }
 
 #chat-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    display: none; /* Hidden by default */
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
+    display: none; align-items: center; justify-content: center; z-index: 2000;
 }
-
 #chat-window {
-    width: 90%;
-    max-width: 500px;
-    height: 70vh;
-    background-color: var(--bg-color);
-    border-radius: var(--border-radius);
+    width: 90%; max-width: 500px; height: 70vh;
+    background-color: var(--bg-color); border-radius: var(--border-radius);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    display: flex; flex-direction: column; overflow: hidden;
 }
-
 .chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background-color: var(--secondary-color);
-    color: var(--light-text-color);
-    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem; background-color: var(--secondary-color); color: var(--light-text-color);
 }
-
-#close-chat-btn {
-    background: none;
-    border: none;
-    color: var(--light-text-color);
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-#chat-messages {
-    flex-grow: 1;
-    padding: 1rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.chat-message {
-    padding: 0.75rem 1rem;
-    border-radius: 10px;
-    max-width: 80%;
-}
-
-.chat-message.user {
-    background-color: var(--primary-color);
-    color: var(--light-text-color);
-    align-self: flex-end;
-}
-
-.chat-message.tutor {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    align-self: flex-start;
-}
-
-.chat-input-form {
-    display: flex;
-    border-top: 1px solid var(--border-color);
-    flex-shrink: 0;
-}
-
-#chat-input {
-    flex-grow: 1;
-    border: none;
-    padding: 1rem;
-    font-size: 1rem;
-    background-color: var(--card-bg);
-}
-
-#chat-input:focus {
-    outline: none;
-}
-
-#chat-send-btn {
-    background-color: var(--primary-color);
-    border: none;
-    padding: 0 1rem;
-    cursor: pointer;
-    color: var(--light-text-color);
-}
+#close-chat-btn { background: none; border: none; color: var(--light-text-color); font-size: 1.5rem; cursor: pointer; }
+.chat-input-form { display: flex; border-top: 1px solid var(--border-color); }
+#chat-input { flex-grow: 1; border: none; padding: 1rem; font-size: 1rem; }
+#chat-input:focus { outline: none; }
+#chat-send-btn { background-color: var(--primary-color); border: none; padding: 0 1rem; cursor: pointer; color: var(--light-text-color); }
