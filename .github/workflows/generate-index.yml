@@ -1,1 +1,44 @@
+name: Generate Content Index
 
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Run generate-index script
+      - name: Generate content and search index
+        run: npm run generate-index
+
+      # 5. Use the specialized action to commit both files
+      - name: Commit and push changes
+        # This step will only run on pushes to the main branch, not on PRs
+        if: github.ref == 'refs/heads/main'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(content): Auto-generate content and search index"
+          # Add BOTH files here
+          file_pattern: "lessons-index.json search-index.json"
+          commit_user_name: "GitHub Actions Bot"
+          commit_user_email: "actions@github.com"
