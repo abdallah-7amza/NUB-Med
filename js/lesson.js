@@ -12,6 +12,7 @@ class LessonPage {
         this.score = 0;
         this.quizData = null;
         this.currentLessonContent = "";
+        this.quizMode = 'practice'; // 'practice' or 'exam'
 
         this.cacheDOMElements();
         this.init();
@@ -27,6 +28,8 @@ class LessonPage {
         this.scoreProgressBarEl = document.getElementById('score-progress-bar');
         this.restartQuizBtn = document.getElementById('restart-quiz-btn');
         this.backLink = document.getElementById('back-to-lessons');
+        this.practiceModeBtn = document.getElementById('practice-mode-btn');
+        this.examModeBtn = document.getElementById('exam-mode-btn');
     }
 
     async init() {
@@ -38,20 +41,27 @@ class LessonPage {
         this.titleEl.textContent = `${this.capitalize(this.lessonId.replace(/_/g, ' '))}`;
         this.backLink.href = `lessons-list.html?year=${this.year}&specialty=${this.specialty}`;
 
+        this.bindEvents();
+
         await this.loadLesson();
         await this.loadQuiz();
         
-        // Initialize AI Tutor after content is loaded
+        // This will now run correctly
         new AiTutor(this);
-
-        this.restartQuizBtn.addEventListener('click', () => this.startQuiz());
     }
     
+    bindEvents() {
+        this.restartQuizBtn.addEventListener('click', () => this.startQuiz());
+        this.practiceModeBtn.addEventListener('click', () => this.setQuizMode('practice'));
+        this.examModeBtn.addEventListener('click', () => this.setQuizMode('exam'));
+    }
+
     capitalize(str) {
         return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
 
     async loadLesson() {
+        // In a real app, fetch lesson details from the index first
         const markdown = await getLessonContent(this.year, this.specialty, this.lessonId);
         if (markdown) {
             this.currentLessonContent = markdown;
@@ -63,12 +73,20 @@ class LessonPage {
 
     async loadQuiz() {
         this.quizData = await getQuizData(this.year, this.specialty, this.lessonId);
-        if (this.quizData && this.quizData.questions.length > 0) {
+        // CORRECTED LINE: using 'items' instead of 'questions'
+        if (this.quizData && this.quizData.items && this.quizData.items.length > 0) {
             this.quizContainerEl.style.display = 'block';
             this.startQuiz();
         }
     }
     
+    setQuizMode(mode) {
+        this.quizMode = mode;
+        this.practiceModeBtn.classList.toggle('active', mode === 'practice');
+        this.examModeBtn.classList.toggle('active', mode === 'exam');
+        this.startQuiz(); // Restart quiz when mode changes
+    }
+
     startQuiz() {
         this.currentQuestionIndex = 0;
         this.score = 0;
@@ -78,19 +96,22 @@ class LessonPage {
     }
 
     renderQuestion() {
-        if (this.currentQuestionIndex >= this.quizData.questions.length) {
+        if (this.currentQuestionIndex >= this.quizData.items.length) {
             this.showResults();
             return;
         }
 
-        const question = this.quizData.questions[this.currentQuestionIndex];
-        let optionsHtml = question.options.map((option, index) =>
-            `<button class="quiz-option-btn" data-index="${index}">${option}</button>`
+        const question = this.quizData.items[this.currentQuestionIndex];
+        // Shuffle options to prevent position bias
+        const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+
+        let optionsHtml = shuffledOptions.map(option =>
+            `<button class="quiz-option-btn" data-id="${option.id}">${option.text}</button>`
         ).join('');
 
         this.quizContentEl.innerHTML = `
             <div class="quiz-question">
-                <p><strong>Question ${this.currentQuestionIndex + 1}/${this.quizData.questions.length}:</strong></p>
+                <p><strong>Question ${this.currentQuestionIndex + 1}/${this.quizData.items.length}:</strong></p>
                 <p>${question.stem}</p>
                 <div class="quiz-options">${optionsHtml}</div>
                 <div class="explanation" style="display: none;"></div>
@@ -103,46 +124,57 @@ class LessonPage {
     }
 
     checkAnswer(event) {
-        const selectedIndex = parseInt(event.target.dataset.index);
-        const question = this.quizData.questions[this.currentQuestionIndex];
+        const selectedId = event.target.dataset.id;
+        const question = this.quizData.items[this.currentQuestionIndex];
+        const correctIds = new Set(question.correct);
+
         const buttons = this.quizContentEl.querySelectorAll('.quiz-option-btn');
         const explanationEl = this.quizContentEl.querySelector('.explanation');
         
-        buttons.forEach(btn => btn.disabled = true); // Disable all buttons
+        buttons.forEach(btn => btn.disabled = true);
 
-        if (selectedIndex === question.answerIndex) {
+        let isCorrect = correctIds.has(selectedId);
+
+        if (isCorrect) {
             event.target.classList.add('correct');
             this.score++;
         } else {
             event.target.classList.add('incorrect');
-            buttons[question.answerIndex].classList.add('correct');
         }
 
-        if (question.explanation) {
-            explanationEl.innerHTML = `<strong>Explanation:</strong> ${question.explanation}`;
-            explanationEl.style.display = 'block';
+        if (this.quizMode === 'practice' || !isCorrect) {
+            buttons.forEach(btn => {
+                if (correctIds.has(btn.dataset.id)) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            if (question.explanation) {
+                explanationEl.innerHTML = `<strong>Explanation:</strong> ${question.explanation}`;
+                explanationEl.style.display = 'block';
+            }
         }
         
+        const delay = (this.quizMode === 'practice' || !isCorrect) ? 2500 : 800;
         setTimeout(() => {
             this.currentQuestionIndex++;
             this.renderQuestion();
-        }, 2000); // Wait 2 seconds before next question
+        }, delay);
     }
     
     showResults() {
         this.quizContentEl.style.display = 'none';
         this.quizResultsEl.style.display = 'block';
-        const percentage = Math.round((this.score / this.quizData.questions.length) * 100);
-        this.scoreEl.textContent = `${this.score} / ${this.quizData.questions.length} (${percentage}%)`;
+        const percentage = Math.round((this.score / this.quizData.items.length) * 100);
+        this.scoreEl.textContent = `${this.score} / ${this.quizData.items.length} (${percentage}%)`;
         this.scoreProgressBarEl.style.width = `${percentage}%`;
     }
 
-    // Method for AI Tutor to get context
     getCurrentContext() {
-        // Simple context: just the lesson title and content for now.
-        // Can be expanded to include current quiz question.
-        return `Lesson: ${this.titleEl.textContent}\n\nContent:\n${this.currentLessonContent}`;
+        return `Lesson: ${this.titleEl.textContent}\n\nSummary:\n${this.currentLessonContent.substring(0, 1500)}`;
     }
 }
 
-new LessonPage();
+document.addEventListener('DOMContentLoaded', () => {
+    new LessonPage();
+});
