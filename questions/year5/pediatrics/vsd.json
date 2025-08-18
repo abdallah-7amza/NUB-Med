@@ -1,0 +1,36 @@
+{
+  "id": "vsd_quiz_v1",
+  "lesson": "pediatrics/vsd",
+  "items": [
+    {
+      "id": "q1",
+      "stem": "What is the most common congenital heart defect?",
+      "options": [
+        {"id": "A", "text": "Atrial Septal Defect (ASD)"},
+        {"id": "B", "text": "Ventricular Septal Defect (VSD)"},
+        {"id": "C", "text": "Tetralogy of Fallot (TOF)"},
+        {"id": "D", "text": "Patent Ductus Arteriosus (PDA)"}
+      ],
+      "correct": ["B"],
+      "explanation": "Ventricular Septal Defect (VSD) is the most frequently diagnosed congenital heart anomaly in children.",
+      "difficulty": "easy",
+      "tags": ["epidemiology", "vsd"],
+      "multi_select": false
+    },
+    {
+      "id": "q2",
+      "stem": "A 2-month-old infant with a large VSD is likely to present with which of the following signs?",
+      "options": [
+        {"id": "A", "text": "A loud, harsh murmur and no other symptoms"},
+        {"id": "B", "text": "Cyanosis and clubbing"},
+        {"id": "C", "text": "Poor feeding and rapid breathing (tachypnea)"},
+        {"id": "D", "text": "A normal physical examination"}
+      ],
+      "correct": ["C"],
+      "explanation": "Large VSDs cause a significant left-to-right shunt, leading to increased pulmonary blood flow and symptoms of congestive heart failure, such as poor feeding and tachypnea, typically in infancy.",
+      "difficulty": "medium",
+      "tags": ["clinical features", "vsd"],
+      "multi_select": false
+    }
+  ]
+}
