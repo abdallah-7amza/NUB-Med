@@ -1,86 +1,107 @@
-// --- GitHub API Service ---
+// =================================================================
+// The NEW and FINAL version of js/github.js
+// Replace the entire content of your file with this code.
+// This version uses the fast `lessons-index.json` and is reliable.
+// =================================================================
 
-const REPO_OWNER = 'Abdallah-7amza';
-const REPO_NAME = 'NUB-Med';
-const API_BASE_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
+// This variable will hold all our lesson data so we only load it once.
+let allLessonsData = null;
 
-// Helper function to handle API requests
-async function fetchFromGitHub(path) {
+/**
+ * Fetches the data from our lessons-index.json file.
+ * This is the only network request this file will make for lists.
+ */
+async function getIndexData() {
+    // If we already loaded the data, don't load it again.
+    if (allLessonsData) {
+        return allLessonsData;
+    }
+
     try {
-        const response = await fetch(`${API_BASE_URL}/${path}`);
+        // Fetch the index file from the root of the site.
+        // NOTE: The path '/NUB-Med/' must match your repository name.
+        const response = await fetch('/NUB-Med/lessons-index.json'); 
         if (!response.ok) {
-            throw new Error(`GitHub API Error: ${response.status} ${response.statusText}`);
+            throw new Error(`Failed to load lesson index. Status: ${response.status}`);
         }
-        return await response.json();
+        allLessonsData = await response.json();
+        console.log('Lesson index loaded successfully!');
+        return allLessonsData;
     } catch (error) {
-        console.error(`Failed to fetch from GitHub path: ${path}`, error);
+        console.error("CRITICAL ERROR: Could not load lessons-index.json.", error);
+        const container = document.getElementById('content-container') || document.body;
+        container.innerHTML = `<p style="color: red; text-align: center;">Error: Could not load the main content file (lessons-index.json). The site cannot function.</p>`;
+        return []; // Return empty array to stop further errors
+    }
+}
+
+/**
+ * Fetches a list of specialties for a given year by filtering the index data.
+ */
+export async function getSpecialties(year) {
+    const allLessons = await getIndexData();
+    const yearNumber = parseInt(String(year).replace('year', ''));
+
+    const specialtyNames = new Set(
+        allLessons
+            .filter(lesson => lesson.year === yearNumber)
+            .map(lesson => lesson.specialty)
+    );
+
+    return Array.from(specialtyNames).map(name => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1)
+    }));
+}
+
+/**
+ * Fetches a list of lessons for a given specialty by filtering the index data.
+ */
+export async function getLessons(year, specialty) {
+    const allLessons = await getIndexData();
+    const yearNumber = parseInt(String(year).replace('year', ''));
+
+    return allLessons
+        .filter(lesson => lesson.year === yearNumber && lesson.specialty.toLowerCase() === specialty.toLowerCase())
+        .map(lesson => ({
+            name: lesson.title, // Use the full, user-friendly title
+            id: lesson.slug    // Use the slug as the unique ID for the URL
+        }));
+}
+
+/**
+ * Fetches the content for a specific lesson's Markdown file.
+ */
+export async function getLessonContent(year, specialty, lessonId) {
+    const allLessons = await getIndexData();
+    const lesson = allLessons.find(l => l.slug === lessonId);
+    if (!lesson) return null;
+
+    try {
+        // NOTE: The path '/NUB-Med/' must match your repository name.
+        const response = await fetch(`/NUB-Med/${lesson.path}`);
+        if (!response.ok) throw new Error('File not found');
+        return await response.text(); // Return the raw markdown text
+    } catch (error) {
+        console.error(`Failed to fetch content for ${lesson.path}`, error);
         return null;
     }
 }
 
 /**
- * Fetches a list of specialties (directories) for a given year.
- * The year corresponds to the folder name in the repo (e.g., 'year5').
- * @param {string} year - The academic year folder (e.g., 'year5').
- * @returns {Promise<Array|null>} A promise that resolves to an array of specialty objects or null on error.
- */
-export async function getSpecialties(year) {
-    const data = await fetchFromGitHub(`lessons/${year}`);
-    if (Array.isArray(data)) {
-        return data.filter(item => item.type === 'dir').map(dir => ({
-            name: dir.name.charAt(0).toUpperCase() + dir.name.slice(1), // Capitalize
-            path: dir.path
-        }));
-    }
-    return [];
-}
-
-/**
- * Fetches a list of lessons (.md files) for a given specialty.
- * @param {string} year - The academic year folder.
- * @param {string} specialty - The specialty folder name.
- * @returns {Promise<Array|null>} A promise that resolves to an array of lesson objects or null on error.
- */
-export async function getLessons(year, specialty) {
-    const data = await fetchFromGitHub(`lessons/${year}/${specialty}`);
-     if (Array.isArray(data)) {
-        return data
-            .filter(item => item.type === 'file' && item.name.endsWith('.md'))
-            .map(file => ({
-                name: file.name.replace('.md', '').replace(/_/g, ' '),
-                id: file.name.replace('.md', '')
-            }));
-    }
-    return [];
-}
-
-/**
- * Fetches the content of a specific lesson's Markdown file.
- * @param {string} year
- * @param {string} specialty
- * @param {string} lessonId - The filename without extension (e.g., 'anemia').
- * @returns {Promise<string|null>} A promise that resolves to the decoded content of the file.
- */
-export async function getLessonContent(year, specialty, lessonId) {
-    const data = await fetchFromGitHub(`lessons/${year}/${specialty}/${lessonId}.md`);
-    if (data && data.content) {
-        return atob(data.content); // Decode base64 content
-    }
-    return null;
-}
-
-/**
- * Fetches the quiz data from a specific JSON file.
- * @param {string} year
- * @param {string} specialty
- * @param {string} lessonId - The filename without extension.
- * @returns {Promise<Object|null>} A promise that resolves to the parsed JSON quiz data.
+ * Fetches the quiz data for a specific lesson.
  */
 export async function getQuizData(year, specialty, lessonId) {
-     const data = await fetchFromGitHub(`questions/${year}/${specialty}/${lessonId}.json`);
-    if (data && data.content) {
-        const decodedContent = atob(data.content);
-        return JSON.parse(decodedContent);
+    const allLessons = await getIndexData();
+    const lesson = allLessons.find(l => l.slug === lessonId);
+     if (!lesson || !lesson.quizPath) return null;
+
+    try {
+        // NOTE: The path '/NUB-Med/' must match your repository name.
+        const response = await fetch(`/NUB-Med/${lesson.quizPath}`);
+        if (!response.ok) throw new Error('File not found');
+        return await response.json();
+    } catch (error) {
+        console.error(`Failed to fetch quiz for ${lesson.quizPath}`, error);
+        return null;
     }
-    return null;
 }
