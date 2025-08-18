@@ -12,12 +12,18 @@
 </head>
 <body>
     <div id="index-view" class="view active">
-        <header class="main-header">
-    <div class="header-content">
-        <h1 id="page-title">Medical Specialties</h1>
-        </div>
-    <a href="index.html" class="btn btn-secondary">&larr; Back to Years</a>
+        <header class="main-header" style="display: flex; align-items: center; justify-content: space-between; padding: 10px;">
+    
+    <!-- Back Button on the Left -->
+    <a href="index.html" class="btn btn-secondary" style="order: 1;">&larr; Back to Years</a>
+    
+    <!-- Center Title -->
+    <div class="header-content" style="flex-grow: 1; text-align: center; order: 2;">
+        <h1 id="page-title">NUB MED Portal</h1>
+    </div>
+    
 </header>
+
         <main class="container">
             <h2>Select Your Academic Year</h2>
             <div id="years-container" class="grid-container">
