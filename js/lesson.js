@@ -1,4 +1,4 @@
-// The FINAL, COMPLETE, and PROFESSIONAL version of js/lesson.js
+// The FINAL, COMPLETE version of js/lesson.js with API Key logic restored.
 import { getLessonContent, getQuizData } from './github.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -50,7 +50,7 @@ async function loadLessonAndQuiz(lessonId) {
         contentEl.innerHTML = '<p style="color: red;">Could not load lesson content.</p>';
     }
 
-    // Render Quiz - FINAL FIX
+    // Render Quiz
     if (quizData && quizData.items && quizData.items.length > 0) {
         quizContainer.style.display = 'block';
         const quizContentEl = document.getElementById('quiz-content');
@@ -61,7 +61,6 @@ async function loadLessonAndQuiz(lessonId) {
                     <span>${option.text}</span>
                 </label>
             `).join('');
-
             return `
                 <div class="quiz-question">
                     <p><strong>${index + 1}. ${question.stem}</strong></p>
@@ -82,20 +81,9 @@ function setupAITutor() {
     const chatForm = document.getElementById('chat-input-form');
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
+    const API_KEY_STORAGE_ID = 'ai_tutor_api_key'; // Define a constant for the key
 
-    // Replace the icon with a professional SVG
-    tutorFab.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9.4 12.4L8 11l-1.4 1.4L5.2 11l-1.4 1.4L2.4 11l1.4-1.4L2.4 8.2l1.4-1.4L5.2 8.2l1.4-1.4L8 8.2l1.4-1.4 1.4 1.4-1.4 1.4 1.4 1.4-1.4 1.4zm6.6.6h-5v-2h5v2zm0-3h-5v-2h5v2z"/>
-        </svg>`;
-    
-    const sendBtn = document.getElementById('chat-send-btn');
-    sendBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>`;
-
-    // Open/Close functionality with animation
+    // Open/Close functionality
     tutorFab.addEventListener('click', () => { 
         chatOverlay.style.display = 'flex';
         setTimeout(() => chatOverlay.classList.add('visible'), 10);
@@ -105,14 +93,28 @@ function setupAITutor() {
         setTimeout(() => chatOverlay.style.display = 'none', 200);
     });
 
-    // Handle form submission - FINAL FIX
+    // Handle form submission - FINAL FIX with API Key Logic
     chatForm.addEventListener('submit', (event) => {
         event.preventDefault(); // Prevents page reload
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
+        // --- API KEY LOGIC RESTORED ---
+        let apiKey = localStorage.getItem(API_KEY_STORAGE_ID);
+
+        if (!apiKey) {
+            apiKey = prompt("To use the AI Tutor, please enter your API Key. It will be saved securely in this browser for future use.");
+            if (apiKey && apiKey.trim() !== '') {
+                localStorage.setItem(API_KEY_STORAGE_ID, apiKey);
+            } else {
+                alert("An API Key is required to use this feature. Please try again.");
+                return; // Stop if user cancels or enters nothing
+            }
+        }
+        // --- END OF API KEY LOGIC ---
+
         addChatMessage(userMessage, 'user');
-        chatInput.value = ''; // Clear input
+        chatInput.value = '';
 
         // Simulate AI Tutor thinking and responding
         setTimeout(() => {
@@ -129,6 +131,6 @@ function setupAITutor() {
         msgDiv.textContent = message;
         chatMessages.appendChild(msgDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        return msgDiv; // Return the message element to update it later
+        return msgDiv;
     }
 }
