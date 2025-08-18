@@ -17,21 +17,43 @@ async function getIndexData() {
 export async function getSpecialties(year) {
     const allLessons = await getIndexData();
     const yearNumber = parseInt(year.replace('year', ''));
-    const specialties = new Set(allLessons.filter(l => l.year === yearNumber).map(l => l.specialty);
-    return Array.from(specialties).map(name => ({ name }));
+
+    // اجمع كل التخصصات وحولها lowercase
+    const specialties = new Set(
+        allLessons
+            .filter(l => l.year === yearNumber)
+            .map(l => l.specialty.toLowerCase())
+    );
+
+    // name = القيمة للـ URL (lowercase)
+    // label = النص اللي يظهر للمستخدم
+    return Array.from(specialties).map(name => ({
+        name,
+        label: name.charAt(0).toUpperCase() + name.slice(1)
+    }));
 }
 
 export async function getLessons(year, specialty) {
     const allLessons = await getIndexData();
+    const yearNumber = parseInt(year.replace('year', ''));
+
     return allLessons
-        .filter(l => l.year === parseInt(year.replace('year', '')) && l.specialty === specialty)
-        .map(lesson => ({ name: lesson.title, id: lesson.slug }));
+        .filter(
+            l =>
+                l.year === yearNumber &&
+                l.specialty.toLowerCase() === specialty.toLowerCase()
+        )
+        .map(lesson => ({
+            name: lesson.title,
+            id: lesson.slug
+        }));
 }
 
 export async function getLessonContent(year, specialty, lessonId) {
     const allLessons = await getIndexData();
     const lesson = allLessons.find(l => l.slug === lessonId);
     if (!lesson) return null;
+
     try {
         const response = await fetch(lesson.path);
         return await response.text();
