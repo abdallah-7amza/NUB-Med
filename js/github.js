@@ -20,8 +20,7 @@ async function getIndexData() {
     try {
         // Fetch the index file from the root of the site.
         // NOTE: The path '/NUB-Med/' must match your repository name.
-        const response = await fetch('/NUB-Med/lessons-index.json'); 
-        if (!response.ok) {
+            const response = await fetch('/lessons-index.json');        if (!response.ok) {
             throw new Error(`Failed to load lesson index. Status: ${response.status}`);
         }
         allLessonsData = await response.json();
