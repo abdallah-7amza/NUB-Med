@@ -1,107 +1,212 @@
-/* MED Portal NUB - Main Stylesheet */
-
-/* 1) Variables */
-:root{
-  --primary-color:#9B2226;
-  --secondary-color:#2B4162;
-  --accent-color:#FFD700;
-  --bg-color:#F8F9FA;
-  --card-bg:#FFFFFF;
-  --border-color:#E9ECEF;
-  --text-color:#212529;
-  --light-text-color:#FFFFFF;
-  --font-body:'Inter',sans-serif;
-  --border-radius:12px;
-  --card-shadow:0 4px 6px rgba(0,0,0,0.05);
-  --card-shadow-hover:0 7px 14px rgba(0,0,0,0.07);
+/* ========== General Reset ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 2) Base */
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  display:flex;flex-direction:column;min-height:100vh;
-  font-family:var(--font-body);background-color:var(--bg-color);color:var(--text-color);line-height:1.7
+body {
+  background: #fafafa;
+  color: #333;
+  line-height: 1.6;
 }
-.container{width:100%;max-width:960px;margin:0 auto;padding:2rem 1.5rem;flex-grow:1}
 
-/* Header/Footer */
-.main-header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:1.5rem 4%;background:var(--secondary-color);color:var(--light-text-color)
+/* ========== Cards Section ========== */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.2rem;
+  padding: 2rem;
 }
-.main-footer{ text-align:center;padding:1.5rem;background:var(--border-color);color:var(--text-color);font-size:.9rem }
-.btn{display:inline-block;font-weight:600;text-decoration:none;padding:.75rem 1.5rem;border-radius:var(--border-radius);cursor:pointer;border:2px solid transparent}
-.btn-secondary{background:var(--card-bg);color:var(--secondary-color);border-color:var(--border-color)}
-.btn-secondary:hover{background:var(--border-color)}
 
-/* Lesson blocks */
-#lesson-content{background:var(--card-bg);padding:2.5rem;border-radius:var(--border-radius);box-shadow:var(--card-shadow);border:1px solid var(--border-color);margin-bottom:3rem}
-#lesson-content h1,#lesson-content h2,#lesson-content h3{margin-top:2rem;margin-bottom:1rem;border-bottom:1px solid var(--border-color);padding-bottom:.5rem}
-
-/* Quiz */
-#quiz-container{background:var(--card-bg);border-radius:var(--border-radius);padding:2rem;border:1px solid var(--border-color);box-shadow:var(--card-shadow)}
-.quiz-question{margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border-color)}
-.quiz-question:last-child{border-bottom:none}
-.quiz-options{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}
-.quiz-options label{display:flex;align-items:center;padding:.75rem 1rem;border-radius:8px;border:1px solid var(--border-color);cursor:pointer}
-.quiz-options label:hover{background:#f1f3f5}
-.quiz-options input{margin-right:10px}
-
-/* 3) AI Tutor */
-#ai-tutor-fab{
-  position:fixed;bottom:24px;right:24px;width:64px;height:64px;border:none;border-radius:50%;
-  background:linear-gradient(135deg,var(--secondary-color),var(--primary-color));color:#fff;
-  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:3000;cursor:pointer;transition:transform .14s ease
+.card {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  border: 1px solid #e0e0e0;
 }
-#ai-tutor-fab:hover{transform:scale(1.06)}
 
-#chat-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:3001;background:rgba(8,12,20,.45);backdrop-filter:blur(3px)}
-#chat-overlay.visible{display:flex}
-
-#chat-window{
-  width:94%;max-width:560px;height:78vh;max-height:720px;border-radius:14px;overflow:hidden;
-  background:rgba(255,255,255,.92);box-shadow:0 18px 60px rgba(10,10,20,.35);display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.06)
+.card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  background: linear-gradient(135deg, #e3f2fd, #ffffff);
 }
-.chat-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:linear-gradient(90deg,var(--secondary-color),var(--primary-color));color:#fff}
-.chat-header h3{margin:0;font-size:1.05rem}
-.chat-controls button{background:transparent;border:0;color:#fff;font-size:1rem;cursor:pointer}
 
-#chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
-.chat-message{max-width:86%;padding:10px 12px;border-radius:12px;line-height:1.45;box-shadow:0 4px 10px rgba(0,0,0,.04)}
-.chat-message.user{align-self:flex-end;background:var(--primary-color);color:#fff;border-bottom-right-radius:4px}
-.chat-message.tutor{align-self:flex-start;background:var(--card-bg);border:1px solid var(--border-color);color:var(--text-color);border-bottom-left-radius:4px}
-.typing{display:inline-block;font-style:italic;opacity:.9}
-
-.quick-prompts{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border-color);background:transparent}
-.quick-prompts button{background:transparent;border:1px solid var(--border-color);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:.9rem}
-
-.chat-input-form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border-color);background:var(--card-bg)}
-#chat-input{flex:1;border-radius:10px;border:1px solid var(--border-color);padding:8px 10px;font-family:var(--font-body)}
-#chat-send-btn{min-width:86px;border-radius:8px;padding:8px 12px;cursor:pointer;background:linear-gradient(90deg,var(--primary-color),var(--secondary-color));color:#fff;border:none}
-
-/* 4) Key Modal (Gemini API Key) */
-#key-modal{
-  position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:4000;
-  background:rgba(0,0,0,.45);backdrop-filter:blur(3px)
+/* ========== AI Chat Styles ========== */
+#ai-tutor-fab {
+  position: fixed;
+  bottom: 25px;
+  left: 25px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #004488, #00aaff);
+  color: white;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1000;
+  font-size: 24px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-#key-modal.visible{display:flex}
-.key-card{
-  width:92%;max-width:420px;background:#fff;border-radius:14px;box-shadow:0 18px 60px rgba(10,10,20,.35);padding:18px;border:1px solid rgba(0,0,0,.06)
-}
-.key-card h3{margin-bottom:6px}
-.key-card p{margin:.25rem 0 1rem 0;color:#555}
-#api-key-input{width:100%;padding:10px;border:1px solid var(--border-color);border-radius:10px;font-family:var(--font-body);margin-bottom:10px}
-.key-actions{display:flex;gap:10px;justify-content:flex-end}
-.btn-primary{background:linear-gradient(90deg,var(--primary-color),var(--secondary-color));color:#fff;border:none;border-radius:8px;padding:8px 12px;cursor:pointer}
-.btn-ghost{background:transparent;border:1px solid var(--border-color);border-radius:8px;padding:8px 12px;cursor:pointer}
-.key-hint{display:block;margin-top:.5rem;color:#666;font-size:.8rem}
 
-/* 5) Responsive */
-@media(max-width:600px){
-  .main-header{flex-direction:column;gap:.5rem;padding:1rem 1.5rem}
-  .main-header h1{font-size:1.2rem}
-  .container{padding:1.5rem 1rem}
-  #lesson-content{padding:1.5rem}
-  #chat-window{height:88vh;width:96%}
-  .quick-prompts{overflow:auto;gap:6px}
+#ai-tutor-fab:hover {
+  transform: scale(1.15) rotate(8deg);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Overlay */
+#chat-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1001;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+#chat-overlay.visible { display: flex; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Chat Window */
+#chat-window {
+  width: 90%; max-width: 500px;
+  height: 80vh; max-height: 700px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.35s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* Header */
+.chat-header {
+  padding: 1rem;
+  background: linear-gradient(135deg, #004488, #0077cc);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chat-header h3 {
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+#close-chat-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+#close-chat-btn:hover {
+  transform: rotate(90deg);
+}
+
+/* Messages */
+#chat-messages {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #fafafa;
+}
+
+.chat-message {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  max-width: 80%;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease;
+}
+.chat-message.user {
+  background: #E3F2FD;
+  align-self: flex-start;
+  border-bottom-left-radius: 0;
+}
+.chat-message.assistant {
+  background: #F1F8E9;
+  align-self: flex-end;
+  border-bottom-right-radius: 0;
+}
+
+/* Input */
+.chat-input-form {
+  display: flex;
+  padding: 0.5rem;
+  border-top: 1px solid #ccc;
+  background: #fff;
+}
+#chat-input {
+  flex-grow: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+#chat-input:focus {
+  border-color: #0077cc;
+  box-shadow: 0 0 5px rgba(0, 119, 204, 0.4);
+}
+
+#chat-send-btn {
+  background: #004488;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+#chat-send-btn:hover {
+  background: #0077cc;
+  transform: scale(1.1);
+}
+
+/* Quick Prompts */
+.quick-prompts {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+.quick-prompts button {
+  flex: 1;
+  border: none;
+  background: #eee;
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.quick-prompts button:hover {
+  background: #ddd;
+  transform: translateY(-2px);
 }
