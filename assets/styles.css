@@ -348,3 +348,8 @@ body {
 
   #lesson-content { padding: 1.5rem; }
 }
+
+#key-modal { display: none; position: fixed; inset: 0; z-index: 2001;
+  background: rgba(0,0,0,.5); align-items: center; justify-content: center; }
+#key-modal[aria-hidden="false"] { display: flex; }
+#key-modal .key-card { background: #fff; padding: 1.25rem; border-radius: 12px; max-width: 420px; width: 92%; }
