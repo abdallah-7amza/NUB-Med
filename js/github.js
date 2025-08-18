@@ -1,60 +1,44 @@
-// The CORRECTED and FINAL version of js/github.js
-
+// FINAL SYNCHRONIZED VERSION
 let allLessonsData = null;
 
 async function getIndexData() {
     if (allLessonsData) {
         return allLessonsData;
     }
-
     try {
-        // Fetch the index file from the root of the site.
-        const response = await fetch('lessons-index.json'); 
+        const response = await fetch('lessons-index.json');
         if (!response.ok) {
             throw new Error(`Failed to load lesson index. Status: ${response.status}`);
         }
         allLessonsData = await response.json();
-        console.log('Lesson index loaded successfully!');
         return allLessonsData;
     } catch (error) {
         console.error("CRITICAL ERROR: Could not load lessons-index.json.", error);
-        const container = document.getElementById('content-container') || document.body;
-        container.innerHTML = `<p style="color: red; text-align: center;">Error: Could not load the main content file.</p>`;
         return [];
     }
 }
 
 export async function getSpecialties(year) {
     const allLessons = await getIndexData();
-    // Converts "year5" into the number 5 for filtering
     const yearNumber = parseInt(String(year).replace('year', ''));
-    const specialtyNames = new Set(
-        allLessons
-            .filter(lesson => lesson.year === yearNumber)
-            .map(lesson => lesson.specialty)
-    );
-    return Array.from(specialtyNames).map(name => ({
-        name: name.charAt(0).toUpperCase() + name.slice(1)
-    }));
+    const specialtyNames = [...new Set(allLessons.filter(l => l.year === yearNumber).map(l => l.specialty))];
+    return specialtyNames.map(name => ({ name: name.charAt(0).toUpperCase() + name.slice(1) }));
 }
 
 export async function getLessons(year, specialty) {
     const allLessons = await getIndexData();
     const yearNumber = parseInt(String(year).replace('year', ''));
     return allLessons
-        .filter(lesson => lesson.year === yearNumber && lesson.specialty.toLowerCase() === specialty.toLowerCase())
-        .map(lesson => ({
-            name: lesson.title,
-        id: lesson.slug    // Use the slug as the unique ID for the URL
-        }));
+        .filter(l => l.year === yearNumber && l.specialty.toLowerCase() === specialty.toLowerCase())
+        .map(l => ({ name: l.title, id: l.slug }));
 }
 
-export async function getLessonContent(year, specialty, lessonId) {
+// CORRECTED: This function now only needs the lesson's unique ID (slug).
+export async function getLessonContent(lessonId) {
     const allLessons = await getIndexData();
     const lesson = allLessons.find(l => l.slug === lessonId);
     if (!lesson) return null;
     try {
-        // The path from the index is already correct and relative.
         const response = await fetch(lesson.path);
         if (!response.ok) throw new Error('File not found');
         return await response.text();
@@ -64,13 +48,12 @@ export async function getLessonContent(year, specialty, lessonId) {
     }
 }
 
-// THIS IS THE MISSING FUNCTION THAT CAUSED THE ERROR
-export async function getQuizData(year, specialty, lessonId) {
+// CORRECTED: This function also only needs the lesson's unique ID (slug).
+export async function getQuizData(lessonId) {
     const allLessons = await getIndexData();
     const lesson = allLessons.find(l => l.slug === lessonId);
     if (!lesson || !lesson.quizPath) return null;
     try {
-        // The path from the index is already correct and relative.
         const response = await fetch(lesson.quizPath);
         if (!response.ok) throw new Error('File not found');
         return await response.json();
