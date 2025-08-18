@@ -1,5 +1,4 @@
-// The FINAL, COMPLETE version of js/lesson.js
-// This version fixes the AI Tutor, loads the Quiz, and handles all page logic.
+// The FINAL, COMPLETE, and PROFESSIONAL version of js/lesson.js
 import { getLessonContent, getQuizData } from './github.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,40 +13,35 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Set the back link dynamically so it always works
     const backLink = document.getElementById('back-link-lesson');
     if (backLink) {
         backLink.href = `lessons-list.html?year=${year}&specialty=${specialty}`;
     }
 
-    // Load both the lesson and the quiz at the same time
     loadLessonAndQuiz(year, specialty, lessonId);
-    
-    // Set up the interactive functionality for the AI Tutor
     setupAITutor();
 });
 
 /**
- * Loads the lesson markdown and the quiz JSON data, then renders them.
+ * Loads and renders both lesson and quiz content.
  */
 async function loadLessonAndQuiz(year, specialty, lessonId) {
     const titleEl = document.getElementById('page-title');
     const contentEl = document.getElementById('lesson-content');
     const quizContainer = document.getElementById('quiz-container');
 
-    // Fetch both pieces of content in parallel for better performance
     const [markdownContent, quizData] = await Promise.all([
         getLessonContent(year, specialty, lessonId),
         getQuizData(year, specialty, lessonId)
     ]);
     
-    // --- Render Lesson Content ---
+    // Render Lesson
     if (markdownContent) {
         contentEl.innerHTML = marked.parse(markdownContent);
         const firstHeader = contentEl.querySelector('h1');
         if (firstHeader) {
             titleEl.textContent = firstHeader.textContent;
-            firstHeader.remove(); // Avoid showing the title twice
+            firstHeader.remove();
         } else {
             titleEl.textContent = lessonId.replace(/-/g, ' ');
         }
@@ -56,9 +50,9 @@ async function loadLessonAndQuiz(year, specialty, lessonId) {
         contentEl.innerHTML = '<p style="color: red;">Could not load lesson content.</p>';
     }
 
-    // --- Render Quiz Content (FIX) ---
+    // Render Quiz - FINAL FIX
     if (quizData && quizData.items && quizData.items.length > 0) {
-        quizContainer.style.display = 'block'; // Make the quiz section visible
+        quizContainer.style.display = 'block';
         const quizContentEl = document.getElementById('quiz-content');
         quizContentEl.innerHTML = quizData.items.map((question, index) => {
             const optionsHtml = question.options.map(option => `
@@ -79,7 +73,7 @@ async function loadLessonAndQuiz(year, specialty, lessonId) {
 }
 
 /**
- * Sets up all event listeners for the AI Tutor chat window.
+ * Sets up all functionality for the AI Tutor chat window.
  */
 function setupAITutor() {
     const tutorFab = document.getElementById('ai-tutor-fab');
@@ -87,21 +81,42 @@ function setupAITutor() {
     const closeChatBtn = document.getElementById('close-chat-btn');
     const chatForm = document.getElementById('chat-input-form');
     const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
 
-    // Open/Close functionality
-    tutorFab.addEventListener('click', () => { chatOverlay.style.display = 'flex'; });
-    closeChatBtn.addEventListener('click', () => { chatOverlay.style.display = 'none'; });
+    // Open/Close functionality with animation
+    tutorFab.addEventListener('click', () => { 
+        chatOverlay.style.display = 'flex';
+        setTimeout(() => chatOverlay.classList.add('visible'), 10);
+    });
+    closeChatBtn.addEventListener('click', () => { 
+        chatOverlay.classList.remove('visible');
+        setTimeout(() => chatOverlay.style.display = 'none', 200);
+    });
 
-    // --- Handle Form Submission (FIX) ---
+    // Handle form submission - FINAL FIX
     chatForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // This is the CRITICAL line that prevents the page from reloading.
-        
+        event.preventDefault(); // Prevents page reload
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
-        console.log("User asked:", userMessage);
-        // Here you would add the logic to call the AI API
-        
-        chatInput.value = ''; // Clear the input field
+        addChatMessage(userMessage, 'user');
+        chatInput.value = ''; // Clear input
+
+        // Simulate AI Tutor thinking and responding
+        setTimeout(() => {
+            const thinkingMsg = addChatMessage("Thinking...", 'tutor');
+            setTimeout(() => {
+                thinkingMsg.textContent = "AI response functionality is not yet connected. This is a placeholder.";
+            }, 1500);
+        }, 500);
     });
+
+    function addChatMessage(message, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-message ${sender}`;
+        msgDiv.textContent = message;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return msgDiv; // Return the message element to update it later
+    }
 }
