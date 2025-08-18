@@ -1,38 +1,39 @@
-// The FINAL, COMPLETE, and PROFESSIONAL version of js/lesson.js
+// FINAL SYNCHRONIZED VERSION
 import { getLessonContent, getQuizData } from './github.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    const lessonId = params.get('lesson'); 
+    const lessonId = params.get('lesson'); // The unique ID (slug) from the URL
     const year = params.get('year');
     const specialty = params.get('specialty');
     const contentEl = document.getElementById('lesson-content');
 
-    if (!lessonId || !year || !specialty) {
-        contentEl.innerHTML = '<p style="color: red; text-align: center;">Error: Lesson details are missing in the URL.</p>';
+    if (!lessonId) {
+        contentEl.innerHTML = '<p style="color: red; text-align: center;">Error: Lesson ID is missing in the URL.</p>';
         return;
     }
 
     const backLink = document.getElementById('back-link-lesson');
-    if (backLink) {
+    if (backLink && year && specialty) {
         backLink.href = `lessons-list.html?year=${year}&specialty=${specialty}`;
     }
 
-    loadLessonAndQuiz(year, specialty, lessonId);
+    loadLessonAndQuiz(lessonId); // Call the main function with just the ID
     setupAITutor();
 });
 
 /**
- * Loads and renders both lesson and quiz content.
+ * Loads and renders lesson and quiz content using only the lessonId.
  */
-async function loadLessonAndQuiz(year, specialty, lessonId) {
+async function loadLessonAndQuiz(lessonId) {
     const titleEl = document.getElementById('page-title');
     const contentEl = document.getElementById('lesson-content');
     const quizContainer = document.getElementById('quiz-container');
 
+    // CORRECTED: Call the functions with the correct, single argument (lessonId)
     const [markdownContent, quizData] = await Promise.all([
-        getLessonContent(year, specialty, lessonId),
-        getQuizData(year, specialty, lessonId)
+        getLessonContent(lessonId),
+        getQuizData(lessonId)
     ]);
     
     // Render Lesson
@@ -50,7 +51,7 @@ async function loadLessonAndQuiz(year, specialty, lessonId) {
         contentEl.innerHTML = '<p style="color: red;">Could not load lesson content.</p>';
     }
 
-    // Render Quiz - FINAL FIX
+    // Render Quiz
     if (quizData && quizData.items && quizData.items.length > 0) {
         quizContainer.style.display = 'block';
         const quizContentEl = document.getElementById('quiz-content');
@@ -61,7 +62,6 @@ async function loadLessonAndQuiz(year, specialty, lessonId) {
                     <span>${option.text}</span>
                 </label>
             `).join('');
-
             return `
                 <div class="quiz-question">
                     <p><strong>${index + 1}. ${question.stem}</strong></p>
@@ -83,7 +83,6 @@ function setupAITutor() {
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
 
-    // Open/Close functionality with animation
     tutorFab.addEventListener('click', () => { 
         chatOverlay.style.display = 'flex';
         setTimeout(() => chatOverlay.classList.add('visible'), 10);
@@ -93,20 +92,18 @@ function setupAITutor() {
         setTimeout(() => chatOverlay.style.display = 'none', 200);
     });
 
-    // Handle form submission - FINAL FIX
     chatForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Prevents page reload
+        event.preventDefault();
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
         addChatMessage(userMessage, 'user');
-        chatInput.value = ''; // Clear input
+        chatInput.value = '';
 
-        // Simulate AI Tutor thinking and responding
         setTimeout(() => {
             const thinkingMsg = addChatMessage("Thinking...", 'tutor');
             setTimeout(() => {
-                thinkingMsg.textContent = "AI response functionality is not yet connected. This is a placeholder.";
+                thinkingMsg.textContent = "AI response functionality is not yet connected.";
             }, 1500);
         }, 500);
     });
@@ -117,6 +114,6 @@ function setupAITutor() {
         msgDiv.textContent = message;
         chatMessages.appendChild(msgDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        return msgDiv; // Return the message element to update it later
+        return msgDiv;
     }
 }
