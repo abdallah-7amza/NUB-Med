@@ -1,9 +1,9 @@
-// FINAL SYNCHRONIZED VERSION
+// The FINAL, COMPLETE, and PROFESSIONAL version of js/lesson.js
 import { getLessonContent, getQuizData } from './github.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    const lessonId = params.get('lesson'); // The unique ID (slug) from the URL
+    const lessonId = params.get('lesson'); 
     const year = params.get('year');
     const specialty = params.get('specialty');
     const contentEl = document.getElementById('lesson-content');
@@ -18,19 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
         backLink.href = `lessons-list.html?year=${year}&specialty=${specialty}`;
     }
 
-    loadLessonAndQuiz(lessonId); // Call the main function with just the ID
+    loadLessonAndQuiz(lessonId);
     setupAITutor();
 });
 
 /**
- * Loads and renders lesson and quiz content using only the lessonId.
+ * Loads and renders both lesson and quiz content.
  */
 async function loadLessonAndQuiz(lessonId) {
     const titleEl = document.getElementById('page-title');
     const contentEl = document.getElementById('lesson-content');
     const quizContainer = document.getElementById('quiz-container');
 
-    // CORRECTED: Call the functions with the correct, single argument (lessonId)
     const [markdownContent, quizData] = await Promise.all([
         getLessonContent(lessonId),
         getQuizData(lessonId)
@@ -51,7 +50,7 @@ async function loadLessonAndQuiz(lessonId) {
         contentEl.innerHTML = '<p style="color: red;">Could not load lesson content.</p>';
     }
 
-    // Render Quiz
+    // Render Quiz - FINAL FIX
     if (quizData && quizData.items && quizData.items.length > 0) {
         quizContainer.style.display = 'block';
         const quizContentEl = document.getElementById('quiz-content');
@@ -62,6 +61,7 @@ async function loadLessonAndQuiz(lessonId) {
                     <span>${option.text}</span>
                 </label>
             `).join('');
+
             return `
                 <div class="quiz-question">
                     <p><strong>${index + 1}. ${question.stem}</strong></p>
@@ -83,6 +83,19 @@ function setupAITutor() {
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
 
+    // Replace the icon with a professional SVG
+    tutorFab.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9.4 12.4L8 11l-1.4 1.4L5.2 11l-1.4 1.4L2.4 11l1.4-1.4L2.4 8.2l1.4-1.4L5.2 8.2l1.4-1.4L8 8.2l1.4-1.4 1.4 1.4-1.4 1.4 1.4 1.4-1.4 1.4zm6.6.6h-5v-2h5v2zm0-3h-5v-2h5v2z"/>
+        </svg>`;
+    
+    const sendBtn = document.getElementById('chat-send-btn');
+    sendBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>`;
+
+    // Open/Close functionality with animation
     tutorFab.addEventListener('click', () => { 
         chatOverlay.style.display = 'flex';
         setTimeout(() => chatOverlay.classList.add('visible'), 10);
@@ -92,14 +105,16 @@ function setupAITutor() {
         setTimeout(() => chatOverlay.style.display = 'none', 200);
     });
 
+    // Handle form submission - FINAL FIX
     chatForm.addEventListener('submit', (event) => {
-        event.preventDefault();
+        event.preventDefault(); // Prevents page reload
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
         addChatMessage(userMessage, 'user');
-        chatInput.value = '';
+        chatInput.value = ''; // Clear input
 
+        // Simulate AI Tutor thinking and responding
         setTimeout(() => {
             const thinkingMsg = addChatMessage("Thinking...", 'tutor');
             setTimeout(() => {
@@ -114,6 +129,6 @@ function setupAITutor() {
         msgDiv.textContent = message;
         chatMessages.appendChild(msgDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        return msgDiv;
+        return msgDiv; // Return the message element to update it later
     }
 }
