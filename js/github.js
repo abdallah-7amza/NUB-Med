@@ -1,7 +1,7 @@
 // --- GitHub API Service ---
 
 const REPO_OWNER = 'Abdallah-7amza';
-const REPO_NAME = 'MED-Portal-NUB';
+const REPO_NAME = 'NUB-Med';
 const API_BASE_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
 
 // Helper function to handle API requests
