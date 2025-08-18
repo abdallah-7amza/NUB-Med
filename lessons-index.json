@@ -1,5 +1,16 @@
 [
   {
+    "title": "Introduction to Antibiotics",
+    "slug": "introduction-to-antibiotics",
+    "path": "lessons/year2/pharmacology/introduction-to-antibiotics.md",
+    "quizPath": "questions/year2/pharmacology/introduction-to-antibiotics.json",
+    "year": 2,
+    "specialty": "pharmacology",
+    "summary": "This lesson covers the basic classification and mechanisms of action for major antibiotic classes.",
+    "tags": [],
+    "version": "1.0"
+  },
+  {
     "title": "Anemia in Children",
     "slug": "anemia",
     "path": "lessons/year5/pediatrics/anemia.md",
