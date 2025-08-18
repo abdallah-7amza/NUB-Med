@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "stem": "A 32-year-old patient complains of severe menstrual pain that starts 2-3 days before her period, peaks during, and subsides after. She describes it as a 'crescendo-decrescendo' pattern. This clinical feature is most characteristic of which condition?",
+      "options": [
+        { "id": "a", "text": "Primary (Spasmodic) Dysmenorrhea" },
+        { "id": "b", "text": "Uterine Fibroids" },
+        { "id": "c", "text": "Endometriosis" },
+        { "id": "d", "text": "Pelvic Inflammatory Disease" }
+      ],
+      "correct": "c"
+    }
+  ]
+}
