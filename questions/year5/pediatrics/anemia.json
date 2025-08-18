@@ -1,0 +1,39 @@
+{
+  "id": "anemia_quiz_v1",
+  "lesson": "pediatrics/anemia",
+  "items": [
+    {
+      "id": "q1",
+      "stem": "A 5-year-old child presents with pallor, fatigue, and a history of pica. A CBC reveals a hemoglobin of 8 g/dL and an MCV of 68 fL. Which of the following lab findings would be most specific for confirming the diagnosis?",
+      "options": [
+        {"id": "A", "text": "Low serum iron"},
+        {"id": "B", "text": "Low serum ferritin"},
+        {"id": "C", "text": "High Total Iron Binding Capacity (TIBC)"},
+        {"id": "D", "text": "High Red Cell Distribution Width (RDW)"}
+      ],
+      "correct": ["B"],
+      "explanation": "While low serum iron, high TIBC, and high RDW are all characteristic of Iron Deficiency Anemia, low serum ferritin is the most specific test as it reflects the body's total iron stores.",
+      "difficulty": "medium",
+      "tags": ["diagnosis", "ida"],
+      "image": null,
+      "multi_select": false
+    },
+    {
+      "id": "q2",
+      "stem": "Which of the following is NOT a typical clinical feature of Iron Deficiency Anemia in children?",
+      "options": [
+        {"id": "A", "text": "Pallor"},
+        {"id": "B", "text": "Jaundice"},
+        {"id": "C", "text": "Koilonychia"},
+        {"id": "D", "text": "Irritability"}
+      ],
+      "correct": ["B"],
+      "explanation": "Jaundice is a sign of hemolysis (increased red blood cell breakdown), which is not a primary feature of iron deficiency anemia. Pallor, koilonychia (spoon nails), and irritability are all classic signs.",
+      "difficulty": "easy",
+      "tags": ["clinical features"],
+      "image": null,
+      "multi_select": false
+    }
+  ]
+}
+
