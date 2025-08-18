@@ -180,3 +180,43 @@ quickPrompts.addEventListener("click", (e) => {
     handleSendMessage(prompt);
   }
 });
+
+// --- Export Chat History ---
+const exportChatBtn = document.getElementById("export-chat-btn");
+
+function exportChat() {
+  if (chatHistory.length === 0) {
+    alert("No chat history to export!");
+    return;
+  }
+
+  let exportText = "=== AI Medical Tutor Chat Export ===\n\n";
+  chatHistory.forEach((msg) => {
+    exportText += `${msg.role.toUpperCase()}: ${msg.text}\n\n`;
+  });
+
+  const blob = new Blob([exportText], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "ai_tutor_chat.txt";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+exportChatBtn.addEventListener("click", exportChat);
+
+// --- Prevent double send ---
+sendBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  if (!isChatLoading) {
+    handleSendMessage(chatInput.value.trim());
+  }
+});
+
+// --- Load key on startup ---
+document.addEventListener("DOMContentLoaded", () => {
+  loadApiKey(); // يحاول يجيب المفتاح من التخزين المحلي
+});
