@@ -2,14 +2,14 @@
 
 /* --- 1. Global Settings & Variables --- */
 :root {
-    --primary-color: #9B2226;
-    --secondary-color: #2B4162;
-    --accent-color: #FFD700;
-    --bg-color: #F8F9FA;
-    --card-bg: #FFFFFF;
-    --border-color: #E9ECEF;
-    --text-color: #212529;
-    --light-text-color: #FFFFFF;
+    --primary-color: #9B2226;   /* Rich Maroon */
+    --secondary-color: #2B4162;    /* Slate Blue */
+    --accent-color: #FFD700;     /* Gold */
+    --bg-color: #F8F9FA;         /* Clean Off-white */
+    --card-bg: #FFFFFF;          /* White */
+    --border-color: #E9ECEF;     /* Lighter Gray Border */
+    --text-color: #212529;       /* Dark, soft text */
+    --light-text-color: #FFFFFF;   /* For dark backgrounds */
     --font-body: 'Inter', sans-serif;
     --border-radius: 12px;
     --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -22,15 +22,11 @@
     padding: 0;
 }
 
-/* --- 2. Core Layout (with Sticky Footer) --- */
-html {
-    height: 100%;
-}
-
+/* --- 2. Core Layout --- */
 body {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Critical for sticky footer */
+    min-height: 100vh;
     font-family: var(--font-body);
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -40,9 +36,9 @@ body {
 .container {
     width: 100%;
     max-width: 960px;
-    margin: 0 auto; /* Centered */
+    margin: 0 auto;
     padding: 2rem 1.5rem;
-    flex-grow: 1; /* Pushes footer down */
+    flex-grow: 1;
 }
 
 .main-header {
@@ -61,7 +57,7 @@ body {
 }
 
 .main-footer {
-    flex-shrink: 0; /* Prevents footer from shrinking */
+    flex-shrink: 0;
     text-align: center;
     padding: 1.5rem;
     background-color: var(--border-color);
@@ -69,9 +65,7 @@ body {
     font-size: 0.9rem;
 }
 
-
 /* --- 3. Components --- */
-/* (Card, Button, Lesson, Quiz styles remain the same as before) */
 .grid-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2rem}.card{background-color:var(--card-bg);border-radius:var(--border-radius);box-shadow:var(--card-shadow);padding:2.5rem 1.5rem;text-align:center;text-decoration:none;color:var(--text-color);border:2px solid var(--border-color);display:flex;align-items:center;justify-content:center;min-height:120px;transition:transform .2s,box-shadow .2s,border-color .2s}.card:hover{transform:translateY(-5px);box-shadow:var(--card-shadow-hover);border-color:var(--accent-color);cursor:pointer}.card h3{font-size:1.3rem;margin:0}.btn{display:inline-block;font-weight:600;text-decoration:none;padding:.75rem 1.5rem;border-radius:var(--border-radius);cursor:pointer;transition:all .2s ease-in-out;border:2px solid transparent;text-align:center}.btn-secondary{background-color:var(--card-bg);color:var(--secondary-color);border-color:var(--border-color)}.btn-secondary:hover{background-color:var(--border-color)}#lesson-content{background:var(--card-bg);padding:2.5rem;border-radius:var(--border-radius);box-shadow:var(--card-shadow);border:1px solid var(--border-color);margin-bottom:3rem}#lesson-content h1,#lesson-content h2,#lesson-content h3{margin-top:2rem;margin-bottom:1rem;border-bottom:1px solid var(--border-color);padding-bottom:.5rem}#quiz-container{background-color:var(--card-bg);border-radius:var(--border-radius);padding:2rem;border:1px solid var(--border-color);box-shadow:var(--card-shadow)}.quiz-question{margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border-color)}.quiz-question:last-child{border-bottom:none}.quiz-options{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}.quiz-options label{display:flex;align-items:center;padding:.75rem 1rem;border-radius:8px;border:1px solid var(--border-color);cursor:pointer;transition:background-color .2s}.quiz-options label:hover{background-color:#f1f3f5}.quiz-options input{margin-right:10px}
 
 /* --- 4. AI Tutor (Professional Redesign) --- */
@@ -84,19 +78,15 @@ body {
         flex-direction: column;
         gap: 0.5rem;
     }
-
     .main-header h1 {
         font-size: 1.2rem;
     }
-
     .container {
         padding: 1.5rem 1rem;
     }
-
     .grid-container {
         gap: 1rem;
     }
-
     #lesson-content {
         padding: 1.5rem;
     }
