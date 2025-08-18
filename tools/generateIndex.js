@@ -26,8 +26,7 @@ try {
         // Loop through each specialty inside the year
         for (const specialtyDir of specialtyDirs) {
             const specialtyPath = path.join(yearPath, specialtyDir);
-            const lessonFiles = fs.readdirSync(specialPath).filter(file => file.endsWith('.md'));
-
+            const lessonFiles = fs.readdirSync(specialtyPath).filter(file => file.endsWith('.md'));
             // Process each lesson file
             for (const lessonFile of lessonFiles) {
                 const filePath = path.join(specialtyPath, lessonFile);
