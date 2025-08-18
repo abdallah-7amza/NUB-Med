@@ -28,15 +28,14 @@ export function initAITutor({ getLessonContext } = {}) {
   // ---------- State ----------
   let apiKey = null;
   let isChatLoading = false;
-  let sessionOpened = false; // to drop one welcome message per open
-  const chatHistory = []; // {role: 'user'|'assistant', text: string}
+  let sessionOpened = false; 
+  const chatHistory = []; 
 
   // ---------- Helpers ----------
   const hideElement = (el) => { if (!el) return; el.style.display = "none"; el.setAttribute("aria-hidden", "true"); };
   const showFlex = (el) => { if (!el) return; el.style.display = "flex"; el.setAttribute("aria-hidden", "false"); };
   const showBlock = (el) => { if (!el) return; el.style.display = "block"; el.setAttribute("aria-hidden", "false"); };
 
-  // Ensure the key modal is hidden on startup even if CSS missing (fixes text showing on page).
   if (keyModal) hideElement(keyModal);
 
   function loadApiKey() {
@@ -62,7 +61,6 @@ export function initAITutor({ getLessonContext } = {}) {
   }
 
   function openChat() {
-    // Update lesson context line (small text under title)
     if (typeof getLessonContext === "function") {
       const ctx = getLessonContext() || {};
       const title = (ctx.title || "").trim();
@@ -77,6 +75,7 @@ export function initAITutor({ getLessonContext } = {}) {
 
     if (!loadApiKey()) {
       showKeyModal();
+      addMessage("assistant", "⚠️ Please enter your Gemini API key to start chatting.");
       return;
     }
 
@@ -98,13 +97,19 @@ export function initAITutor({ getLessonContext } = {}) {
     }
   }
 
+  // ---------- Message formatting ----------
   function addMessage(role, text) {
     if (!chatMessages) return;
     const el = document.createElement("div");
-    // add both classes to be compatible with either CSS (.assistant or .tutor)
     const roleClass = role === "user" ? "user" : "assistant";
     el.classList.add("chat-message", roleClass, "tutor");
-    el.textContent = text;
+
+    // تحويل * bullets إلى نجوم ⭐ واحتفاظ بالBold
+    const formatted = text
+      .replace(/\* \*\*(.*?)\*\*/g, '⭐ <b>$1</b>')  
+      .replace(/\* (.*?)$/gm, '⭐ $1');              
+
+    el.innerHTML = formatted;
     chatMessages.appendChild(el);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
@@ -133,17 +138,17 @@ export function initAITutor({ getLessonContext } = {}) {
 
   // ---------- Gemini API ----------
   function buildSystemInstruction() {
-    // Clear, exam-oriented, bilingual micro-clarifications for medical terms.
     const ctx = (typeof getLessonContext === "function") ? (getLessonContext() || {}) : {};
     const title = ctx.title ? `Title: ${ctx.title}\n` : "";
     const slug = ctx.slug ? `Slug: ${ctx.slug}\n` : "";
     const summary = ctx.summary ? `Summary:\n${ctx.summary}\n` : "";
     return {
-      role: "user", // Google API expects content objects; systemInstruction is a Content-like object
+      role: "user",
       parts: [{
         text:
 `You are an expert medical tutor for a clinical-stage medical student in Egypt.
-Write your main explanation in English, but after difficult medical terms add a brief Arabic clarification in parentheses. (مثال: edema (يعني تورم))
+Respond naturally and professionally. If user writes in Arabic, reply in Arabic. 
+Do not translate or explain medical/technical terms.
 Be concise, clinically reasoned, exam-focused. Use bullets when helpful.
 
 Context:
@@ -153,8 +158,6 @@ ${title}${slug}${summary}`
   }
 
   function toGeminiHistory() {
-    // Map our chatHistory to Google "contents" (user/model)
-    // We keep history short to stay within token limits.
     const last = chatHistory.slice(-12).map(m => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.text }]
@@ -169,8 +172,6 @@ ${title}${slug}${summary}`
     }
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
-
-    // Compose contents: prior history + latest user turn
     const contents = [...toGeminiHistory(), { role: "user", parts: [{ text: userText }] }];
 
     const payload = {
@@ -191,12 +192,11 @@ ${title}${slug}${summary}`
     });
 
     if (!res.ok) {
-      // If key invalid or quota exceeded, tell user clearly.
       let msg = `HTTP ${res.status}`;
       try {
         const errData = await res.json();
         if (errData?.error?.message) msg += ` — ${errData.error.message}`;
-      } catch { /* ignore */ }
+      } catch {}
       throw new Error(msg);
     }
 
@@ -224,7 +224,6 @@ ${title}${slug}${summary}`
       const msg = `❌ Error: ${err.message || err}`;
       addMessage("assistant", msg);
       chatHistory.push({ role: "assistant", text: msg });
-      // If error due to missing/invalid key, reopen modal
       if ((msg + "").toLowerCase().includes("api key")) showKeyModal();
     }
   }
@@ -251,15 +250,11 @@ ${title}${slug}${summary}`
 
   // ---------- Events ----------
   aiTutorFab?.addEventListener("click", openChat);
-
   closeChatBtn?.addEventListener("click", closeChat);
-
-  // click outside window closes chat
   chatOverlay?.addEventListener("click", (e) => {
     if (e.target === chatOverlay) closeChat();
   });
 
-  // quick prompts (event delegation)
   quickPrompts?.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -267,25 +262,21 @@ ${title}${slug}${summary}`
     if (prompt) handleSendMessage(prompt);
   });
 
-  // send via form
   chatInputForm?.addEventListener("submit", (e) => {
     e.preventDefault();
     if (!isChatLoading) handleSendMessage(chatInput?.value);
   });
 
-  // extra safety: send button click
   sendBtn?.addEventListener("click", (e) => {
     e.preventDefault();
     if (!isChatLoading) handleSendMessage(chatInput?.value);
   });
 
-  // change key
   changeKeyBtn?.addEventListener("click", () => {
     apiKeyInput.value = apiKey || "";
     showKeyModal();
   });
 
-  // save key
   saveKeyBtn?.addEventListener("click", () => {
     const k = (apiKeyInput?.value || "").trim();
     if (!/^AIza[0-9A-Za-z_\-]{20,}$/.test(k)) {
@@ -294,21 +285,17 @@ ${title}${slug}${summary}`
     }
     saveApiKey(k);
     hideKeyModal();
-    // gentle note inside chat if open
     if (chatOverlay?.classList.contains("visible")) {
       addMessage("assistant", "✅ API key saved. You can continue.");
     }
   });
 
-  // cancel key
   cancelKeyBtn?.addEventListener("click", () => {
     hideKeyModal();
-    // If we opened chat but there is still no key, close the chat to avoid a dead UI
     if (!loadApiKey()) closeChat();
   });
 
   // ---------- Startup ----------
-  // Try load key on start (does NOT show modal). Also ensure modal hidden (if HTML/CSS missing default hide).
   loadApiKey();
   if (keyModal) hideElement(keyModal);
 }
