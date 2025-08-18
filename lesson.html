@@ -3,27 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lessons - MED Portal</title>
+    <title>Lesson - MED Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/styles.css">
+    <!-- The Markdown-to-HTML converter library -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <header class="main-header">
-        <a id="back-link-list" href="index.html" class="btn btn-secondary">&larr; Back</a>
+        <a id="back-link-lesson" href="#" class="btn btn-secondary">&larr; Back</a>
         <div class="header-content">
-            <h1 id="page-title"></h1>
+            <h1 id="page-title">Loading Lesson...</h1>
         </div>
     </header>
     <main class="container">
-        <div id="content-container" class="grid-container">
-            <!-- Specialties or Lessons will be loaded here by JavaScript -->
-        </div>
+        <article id="lesson-content">
+            <!-- Lesson content is loaded here -->
+        </article>
+        <section id="quiz-container" style="display: none;">
+            <h2>Test Yourself</h2>
+            <div id="quiz-content">
+                <!-- Quiz questions are loaded here -->
+            </div>
+        </section>
     </main>
     <footer class="main-footer">
         <p>Powered by Abdallah Hamza</p>
     </footer>
-    <script type="module" src="js/app.js?v=2"></script>
+
+    <!-- AI Tutor Floating Action Button and Chat Window -->
+    <button id="ai-tutor-fab" aria-label="Open AI Tutor"></button>
+    <div id="chat-overlay">
+        <div id="chat-window">
+            <div class="chat-header">
+                <h3>AI Medical Tutor</h3>
+                <button id="close-chat-btn">&times;</button>
+            </div>
+            <div id="chat-messages"></div>
+            <form id="chat-input-form" class="chat-input-form">
+                <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off">
+                <button id="chat-send-btn" type="submit" aria-label="Send Message"></button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="js/lesson.js?v=3"></script>
 </body>
 </html>
