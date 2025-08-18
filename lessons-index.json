@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Anemia in Children",
+    "slug": "anemia",
+    "path": "lessons/year5/pediatrics/anemia.md",
+    "quizPath": "questions/year5/pediatrics/anemia.json",
+    "year": 5,
+    "specialty": "pediatrics",
+    "subspecialty": "hematology",
+    "summary": "An overview of the diagnosis and management of common types of anemia in pediatric patients.",
+    "duration": "25 min",
+    "tags": [
+      "anemia",
+      "pediatrics",
+      "hematology",
+      "iron deficiency"
+    ],
+    "version": "1.1"
+  },
+  {
+    "title": "Ventricular Septal Defect (VSD)",
+    "slug": "vsd",
+    "path": "lessons/year5/pediatrics/vsd.md",
+    "quizPath": "questions/year5/pediatrics/vsd.json",
+    "year": 5,
+    "specialty": "pediatrics",
+    "subspecialty": "cardiology",
+    "summary": "Understanding the pathophysiology, clinical features, and management of VSD, the most common congenital heart defect.",
+    "duration": "15 min",
+    "tags": [
+      "vsd",
+      "cardiology",
+      "pediatrics",
+      "congenital heart disease"
+    ],
+    "version": "1.0"
+  }
+]
