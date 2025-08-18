@@ -1,3 +1,4 @@
+// The FINAL, corrected version of js/app.js
 import { getSpecialties, getLessons } from './github.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,22 +8,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const titleEl = document.getElementById('page-title');
     const containerEl = document.getElementById('content-container');
-    const loaderEl = document.getElementById('loader');
+    const backLink = document.querySelector('.back-link');
 
     if (!year) {
-        containerEl.innerHTML = '<p>No academic year selected. Please go back and choose a year.</p>';
-        loaderEl.style.display = 'none';
+        containerEl.innerHTML = '<p>No academic year selected.</p>';
         return;
     }
 
     if (specialty) {
-        // We are viewing lessons for a specific specialty
         titleEl.textContent = `Lessons for ${capitalize(specialty)}`;
+        backLink.style.display = 'inline-block';
+        backLink.href = `lessons-list.html?year=${year}`;
         loadLessons(year, specialty);
     } else {
-        // We are viewing the list of specialties for a year
-        const yearName = `Year ${year.replace('year', '')}`;
-        titleEl.textContent = `Specialties for ${yearName}`;
+        titleEl.textContent = `Specialties for Year ${year.replace('year', '')}`;
+        backLink.style.display = 'none';
         loadSpecialties(year);
     }
 });
@@ -33,16 +33,13 @@ function capitalize(str) {
 
 async function loadSpecialties(year) {
     const containerEl = document.getElementById('content-container');
-    const loaderEl = document.getElementById('loader');
-
     const specialties = await getSpecialties(year);
-    loaderEl.style.display = 'none';
 
     if (specialties && specialties.length > 0) {
         specialties.forEach(spec => {
             const card = document.createElement('a');
             card.className = 'card';
-            card.href = `?year=${year}&specialty=${spec.name.toLowerCase()}`;
+            card.href = `lessons-list.html?year=${year}&specialty=${spec.name.toLowerCase()}`;
             card.innerHTML = `<h3>${spec.name}</h3>`;
             containerEl.appendChild(card);
         });
@@ -53,19 +50,15 @@ async function loadSpecialties(year) {
 
 async function loadLessons(year, specialty) {
     const containerEl = document.getElementById('content-container');
-    const loaderEl = document.getElementById('loader');
-    
-    document.querySelector('.back-link').href = `lessons-list.html?year=${year}`;
-
     const lessons = await getLessons(year, specialty);
-    loaderEl.style.display = 'none';
 
     if (lessons && lessons.length > 0) {
         lessons.forEach(lesson => {
             const card = document.createElement('a');
             card.className = 'card';
+            // This now correctly uses the 'id' (which is the slug) to build the link for lesson.html
             card.href = `lesson.html?year=${year}&specialty=${specialty}&lesson=${lesson.id}`;
-            card.innerHTML = `<h3>${capitalize(lesson.name)}</h3>`;
+            card.innerHTML = `<h3>${lesson.name}</h3>`;
             containerEl.appendChild(card);
         });
     } else {
