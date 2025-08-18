@@ -1,72 +1,74 @@
-// tools/generateIndex.js
+// tools/generateIndex.js (UPGRADED SCRIPT)
 const fs = require('fs');
 const path = require('path');
 const matter = require('gray-matter');
 const lunr = require('lunr');
 
-const lessonsDir = path.join(__dirname, '../lessons/year5'); // We'll focus on year5 for now
+const lessonsBaseDir = path.join(__dirname, '../lessons');
 const indexPath = path.join(__dirname, '../lessons-index.json');
 const searchIndexPath = path.join(__dirname, '../search-index.json');
 
-console.log('Starting index generation...');
+console.log('Starting universal index generation...');
 
 try {
-    const lessonFiles = [];
-    const specialties = fs.readdirSync(lessonsDir);
+    const lessonsIndex = [];
+    // Get all year folders (e.g., 'year1', 'year4', 'year5')
+    const yearDirs = fs.readdirSync(lessonsBaseDir).filter(dir => fs.statSync(path.join(lessonsBaseDir, dir)).isDirectory());
 
-    for (const specialty of specialties) {
-        const specialtyPath = path.join(lessonsDir, specialty);
-        if (fs.statSync(specialtyPath).isDirectory()) {
-            const files = fs.readdirSync(specialtyPath).filter(file => file.endsWith('.md'));
-            for (const file of files) {
-                lessonFiles.push({ specialty, file, path: path.join(specialtyPath, file) });
+    console.log(`Found year directories: ${yearDirs.join(', ')}`);
+
+    // Loop through each year directory
+    for (const yearDir of yearDirs) {
+        const yearNumber = yearDir.replace('year', '');
+        const yearPath = path.join(lessonsBaseDir, yearDir);
+        const specialtyDirs = fs.readdirSync(yearPath).filter(dir => fs.statSync(path.join(yearPath, dir)).isDirectory());
+
+        // Loop through each specialty inside the year
+        for (const specialtyDir of specialtyDirs) {
+            const specialtyPath = path.join(yearPath, specialtyDir);
+            const lessonFiles = fs.readdirSync(specialPath).filter(file => file.endsWith('.md'));
+
+            // Process each lesson file
+            for (const lessonFile of lessonFiles) {
+                const filePath = path.join(specialtyPath, lessonFile);
+                const content = fs.readFileSync(filePath, 'utf8');
+                const { data } = matter(content);
+
+                if (!data.title || !data.slug || !data.summary) {
+                    console.warn(`WARN: Missing required front matter in ${filePath}`);
+                    continue;
+                }
+
+                lessonsIndex.push({
+                    title: data.title,
+                    slug: data.slug,
+                    path: `lessons/${yearDir}/${specialtyDir}/${lessonFile}`,
+                    quizPath: `questions/${yearDir}/${specialtyDir}/${lessonFile.replace('.md', '.json')}`,
+                    year: parseInt(yearNumber), // Store year as a number
+                    specialty: data.specialty,
+                    subspecialty: data.subspecialty,
+                    summary: data.summary,
+                    duration: data.duration,
+                    tags: data.tags || [],
+                    version: data.version || '1.0'
+                });
             }
         }
     }
 
-    console.log(`Found ${lessonFiles.length} lesson files.`);
-
-    const lessonsIndex = lessonFiles.map(({ specialty, file, path: filePath }) => {
-        const content = fs.readFileSync(filePath, 'utf8');
-        const { data } = matter(content); // Use gray-matter to parse front matter
-
-        // Basic validation
-        if (!data.title || !data.slug || !data.summary) {
-            console.warn(`WARN: Missing required front matter in ${file}`);
-            return null;
-        }
-
-        return {
-            title: data.title,
-            slug: data.slug,
-            path: `lessons/year5/${specialty}/${file}`,
-            quizPath: `questions/year5/${specialty}/${file.replace('.md', '.json')}`,
-            year: data.year,
-            specialty: data.specialty,
-            subspecialty: data.subspecialty,
-            summary: data.summary,
-            duration: data.duration,
-            tags: data.tags || [],
-            version: data.version || '1.0'
-        };
-    }).filter(Boolean); // Remove nulls from failed validations
-
     // Write the main lessons index
     fs.writeFileSync(indexPath, JSON.stringify(lessonsIndex, null, 2));
-    console.log(`Successfully generated lessons-index.json with ${lessonsIndex.length} entries.`);
+    console.log(`Successfully generated lessons-index.json with ${lessonsIndex.length} total entries.`);
 
-    // Generate the search index using lunr
+    // Generate the search index
     const searchIndex = lunr(function () {
         this.ref('slug');
         this.field('title', { boost: 10 });
         this.field('summary');
         this.field('tags', { boost: 5 });
         this.field('specialty');
-        this.field('subspecialty');
-
-        lessonsIndex.forEach(doc => {
-            this.add(doc);
-        });
+        
+        lessonsIndex.forEach(doc => this.add(doc));
     });
 
     fs.writeFileSync(searchIndexPath, JSON.stringify(searchIndex));
