@@ -32,6 +32,19 @@
 
 html {
     scroll-behavior: smooth;
+html {
+    height: 100%; /* Make sure the html element takes full height */
+}
+
+body {
+    min-height: 100%; /* Make the body at least as tall as the screen */
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex-grow: 1; /* This is the key: tells the main content to take up all available space */
+}
 }
 
 body {
