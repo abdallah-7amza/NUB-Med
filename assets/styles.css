@@ -161,3 +161,62 @@ h1, h2, h3, h4, h5, h6 {
 #ai-tutor-fab:hover { transform: scale(1.1); }
 #ai-tutor-fab svg { width: 32px; height: 32px; }
 /* ... (and so on for the rest of your existing CSS) ... */
+
+/* assets/styles.css */
+
+/* --- Modern Button System --- */
+.btn {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: var(--light-text-color);
+    background-color: var(--primary-color);
+    padding: 0.75rem 1.5rem;
+    border: 2px solid transparent;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.btn:hover {
+    background-color: #7c1b1e; /* A slightly darker shade of our primary red */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Secondary Button Style (for "Back" links) */
+.btn.btn-secondary {
+    background-color: var(--card-bg);
+    color: var(--secondary-color);
+    border-color: var(--border-color);
+}
+
+.btn.btn-secondary:hover {
+    background-color: var(--secondary-color);
+    color: var(--light-text-color);
+    border-color: var(--secondary-color);
+}
+
+/* --- Header Layout Improvement --- */
+.main-header {
+    /* Update this existing rule */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 4%; /* Use percentage for better responsiveness */
+    text-align: left; /* Change from center */
+}
+
+.header-content h1, .header-content p {
+    margin: 0;
+    color: var(--light-text-color);
+}
