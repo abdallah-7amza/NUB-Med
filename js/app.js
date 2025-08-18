@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const titleEl = document.getElementById('page-title');
     const containerEl = document.getElementById('content-container');
-    const backLink = document.querySelector('.btn-secondary'); // Selector for the back button
+    const backLink = document.querySelector('.btn-secondary'); // A more robust selector for the back button
 
     if (!year) {
         containerEl.innerHTML = '<p>No academic year selected.</p>';
@@ -21,14 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
         titleEl.textContent = `Lessons for ${capitalize(specialty)}`;
         if (backLink) {
            backLink.style.display = 'inline-block';
-           backLink.href = `lessons-list.html?year=${year}`; // Link back to specialties
+           // This correctly links back to the list of specialties for that year
+           backLink.href = `lessons-list.html?year=${year}`;
         }
         loadLessons(year, specialty);
     } else {
         // We are on the specialties page
         titleEl.textContent = `Specialties for Year ${year.replace('year', '')}`;
         if (backLink) {
-            backLink.href = `index.html`; // Link back to the main page
+            // This correctly links back to the main index page
+            backLink.href = `index.html`;
         }
         loadSpecialties(year);
     }
@@ -48,6 +50,7 @@ async function loadSpecialties(year) {
         specialties.forEach(spec => {
             const card = document.createElement('a');
             card.className = 'card';
+            // This link goes to the list of lessons for this specialty
             card.href = `lessons-list.html?year=${year}&specialty=${spec.name.toLowerCase()}`;
             card.innerHTML = `<h3>${spec.name}</h3>`;
             containerEl.appendChild(card);
@@ -66,7 +69,7 @@ async function loadLessons(year, specialty) {
         lessons.forEach(lesson => {
             const card = document.createElement('a');
             card.className = 'card';
-            // This now correctly uses the 'id' (which is the slug) to build the link for lesson.html
+            // THIS IS THE CRITICAL LINE: It builds the full, correct link to the lesson page
             card.href = `lesson.html?year=${year}&specialty=${specialty}&lesson=${lesson.id}`;
             card.innerHTML = `<h3>${lesson.name}</h3>`;
             containerEl.appendChild(card);
