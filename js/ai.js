@@ -1,298 +1,182 @@
-// js/ai-tutor.js
+// js/ai.js
 
-const STORAGE = {
-  API_KEY: 'nub_med_gemini_api_key',
-  CHAT_HISTORY: 'nub_med_ai_chat_history'
-};
+let apiKey = null;
+let chatHistory = [];
 
-let chatHistory = [];/* =====================================================
-   NUB MED Portal - Main Logic + AI Tutor (Gemini)
-   ===================================================== */
+// Elements
+const keyModal = document.getElementById("key-modal");
+const apiKeyInput = document.getElementById("api-key-input");
+const saveKeyBtn = document.getElementById("save-key-btn");
+const cancelKeyBtn = document.getElementById("cancel-key-btn");
 
-const app = {
-  // State
-  currentYear: null,
-  currentSpecialty: null,
-  currentLesson: null,
-  currentQuestionIndex: 0,
+const aiTutorFab = document.getElementById("ai-tutor-fab");
+const chatOverlay = document.getElementById("chat-overlay");
+const closeChatBtn = document.getElementById("close-chat-btn");
+const changeKeyBtn = document.getElementById("change-key-btn");
 
-  // DOM Elements
-  views: document.querySelectorAll('.view'),
-  aiTutorFab: document.getElementById('ai-tutor-fab'),
-  chatOverlay: document.getElementById('chat-overlay'),
-  chatMessagesContainer: document.getElementById('chat-messages'),
-  chatInputForm: document.getElementById('chat-input-form'),
-  chatInput: document.getElementById('chat-input'),
-  closeChatBtn: document.getElementById('close-chat-btn'),
-  chatSendBtn: document.getElementById('chat-send-btn'),
+// ✅ 1. Load saved key if exists
+function loadApiKey() {
+  apiKey = localStorage.getItem("gemini_api_key");
+  return apiKey;
+}
 
-  // Quick prompt buttons
-  quickPrompts: document.querySelectorAll('.quick-prompts button'),
+// ✅ 2. Show the modal
+function showKeyModal() {
+  keyModal.setAttribute("aria-hidden", "false");
+  keyModal.style.display = "flex";
+  apiKeyInput.value = apiKey || "";
+  apiKeyInput.focus();
+}
 
-  // AI Tutor State
-  chatHistory: [],
-  isChatLoading: false,
-  apiKey: localStorage.getItem("gemini_api_key") || null,
+// ✅ 3. Hide the modal
+function hideKeyModal() {
+  keyModal.setAttribute("aria-hidden", "true");
+  keyModal.style.display = "none";
+}
 
-  /* ---------------------------
-     Initialization
-  ---------------------------- */
-  init() {
-    // AI Tutor listeners
-    if (this.aiTutorFab) {
-      this.aiTutorFab.addEventListener('click', () => this.openChat());
-    }
-    if (this.closeChatBtn) {
-      this.closeChatBtn.addEventListener('click', () => this.closeChat());
-    }
-    if (this.chatOverlay) {
-      this.chatOverlay.addEventListener('click', (e) => {
-        if (e.target === this.chatOverlay) this.closeChat();
-      });
-    }
-    if (this.chatInputForm) {
-      this.chatInputForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        this.handleSendMessage();
-      });
-    }
-    if (this.chatSendBtn) {
-      this.chatSendBtn.addEventListener('click', () => this.handleSendMessage());
-    }
-
-    // Quick prompt buttons
-    this.quickPrompts.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const prompt = btn.dataset.prompt;
-        this.handleQuickPrompt(prompt);
-      });
-    });
-  },
-
-  /* ---------------------------
-     AI Tutor Core
-  ---------------------------- */
-  openChat() {
-    this.chatHistory = [];
-    this.addMessageToChat("tutor", "👋 Welcome! I’m your AI Tutor. How can I help you today?");
-    this.chatOverlay.classList.add("visible");
-    this.chatInput.focus();
-
-    // Ask for API Key if not saved
-    if (!this.apiKey) {
-      this.askForApiKey();
-    }
-  },
-
-  closeChat() {
-    this.chatOverlay.classList.remove("visible");
-  },
-
-  askForApiKey() {
-    const key = prompt("Enter your Gemini API Key:");
-    if (key && key.trim() !== "") {
-      this.apiKey = key.trim();
-      localStorage.setItem("gemini_api_key", this.apiKey);
-      this.addMessageToChat("tutor", "✅ API Key saved successfully. You can now chat.");
-    } else {
-      this.addMessageToChat("tutor", "⚠️ No API key provided. Please enter it to continue.");
-    }
-  },
-
-  addMessageToChat(role, text) {
-    const msg = document.createElement("div");
-    msg.classList.add("chat-message", role === "user" ? "user" : "assistant");
-    msg.textContent = text;
-    this.chatMessagesContainer.appendChild(msg);
-    this.chatMessagesContainer.scrollTop = this.chatMessagesContainer.scrollHeight;
-  },
-
-  async handleSendMessage() {
-    const userInput = this.chatInput.value.trim();
-    if (!userInput || this.isChatLoading) return;
-
-    // Add user message
-    this.addMessageToChat("user", userInput);
-    this.chatHistory.push({ role: "user", parts: [{ text: userInput }] });
-    this.chatInput.value = "";
-
-    // Show loading
-    this.showLoadingIndicator();
-
-    try {
-      const response = await this.callGeminiAPI(this.chatHistory);
-      this.hideLoadingIndicator();
-      this.addMessageToChat("assistant", response);
-      this.chatHistory.push({ role: "model", parts: [{ text: response }] });
-    } catch (err) {
-      this.hideLoadingIndicator();
-      this.addMessageToChat("assistant", "❌ Error: " + err.message);
-      console.error(err);
-    }
-  },
-
-  async handleQuickPrompt(prompt) {
-    if (!prompt) return;
-    this.chatInput.value = prompt;
-    this.handleSendMessage();
-  },
-
-  showLoadingIndicator() {
-    this.isChatLoading = true;
-    const indicator = document.createElement("div");
-    indicator.classList.add("chat-message", "assistant");
-    indicator.id = "loading-indicator";
-    indicator.textContent = "Typing...";
-    this.chatMessagesContainer.appendChild(indicator);
-    this.chatMessagesContainer.scrollTop = this.chatMessagesContainer.scrollHeight;
-  },
-
-  hideLoadingIndicator() {
-    this.isChatLoading = false;
-    const indicator = document.getElementById("loading-indicator");
-    if (indicator) indicator.remove();
-  },
-
-  /* ---------------------------
-     Gemini API
-  ---------------------------- */
-  async callGeminiAPI(history) {
-    if (!this.apiKey) {
-      this.askForApiKey();
-      throw new Error("Missing API Key");
-    }
-
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
-
-    const payload = {
-      contents: history,
-      generationConfig: {
-        temperature: 0.7,
-        topP: 1,
-        topK: 1,
-        maxOutputTokens: 512,
-      },
-    };
-
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
-
-    const data = await res.json();
-    if (data.candidates && data.candidates.length > 0) {
-      return data.candidates[0].content.parts[0].text;
-    } else {
-      return "🤔 I couldn’t generate an answer. Try rephrasing.";
-    }
+// ✅ 4. Save key
+saveKeyBtn.addEventListener("click", () => {
+  const newKey = apiKeyInput.value.trim();
+  if (!newKey.startsWith("AIza")) {
+    alert("Please enter a valid Gemini API key (starts with AIza...)");
+    return;
   }
-};
-
-/* ---------------------------
-   Start App
----------------------------- */
-document.addEventListener("DOMContentLoaded", () => app.init());
-
-
-function $(id){ return document.getElementById(id); }
-
-// Load chat history
-function loadChatHistory(){ try{return JSON.parse(localStorage.getItem(STORAGE.CHAT_HISTORY))||[];}catch(e){return[];} }
-function saveChatHistory(h){ localStorage.setItem(STORAGE.CHAT_HISTORY,JSON.stringify(h)); }
-
-// DOM
-const fab = $('ai-tutor-fab');
-const overlay = $('chat-overlay');
-const closeBtn = $('close-chat-btn');
-const sendForm = $('chat-input-form');
-const chatInput = $('chat-input');
-const messages = $('chat-messages');
-const quickPrompts = document.querySelector('.quick-prompts');
-
-// Events
-fab.addEventListener('click', openChat);
-closeBtn.addEventListener('click', closeChat);
-overlay.addEventListener('click', e=>{ if(e.target===overlay) closeChat(); });
-sendForm.addEventListener('submit', handleSend);
-quickPrompts.addEventListener('click', e=>{
-  const btn = e.target.closest('button[data-prompt]');
-  if(!btn) return;
-  chatInput.value = btn.dataset.prompt;
-  sendForm.requestSubmit();
+  apiKey = newKey;
+  localStorage.setItem("gemini_api_key", apiKey);
+  hideKeyModal();
+  alert("API Key saved successfully!");
 });
 
-// Functions
-function openChat(){
-  overlay.classList.add('visible');
-  chatHistory = loadChatHistory();
-  renderChat();
-  chatInput.focus();
-  ensureApiKey();
-}
-function closeChat(){
-  overlay.classList.remove('visible');
-  saveChatHistory(chatHistory);
-}
-function renderChat(){
-  messages.innerHTML='';
-  chatHistory.forEach(m=>pushMessage(m.role,m.content,false));
-}
-function pushMessage(role,text,save=true){
-  const div=document.createElement('div');
-  div.className=`chat-message ${role}`;
-  div.textContent=text;
-  messages.appendChild(div);
-  if(save){ chatHistory.push({role,content:text}); saveChatHistory(chatHistory); }
-  messages.scrollTop=messages.scrollHeight;
-  return div;
+// ✅ 5. Cancel key entry
+cancelKeyBtn.addEventListener("click", () => {
+  hideKeyModal();
+});
+
+// ✅ 6. Change Key button
+changeKeyBtn.addEventListener("click", () => {
+  showKeyModal();
+});
+
+// ✅ 7. Open Chat
+function openChat() {
+  if (!loadApiKey()) {
+    showKeyModal();
+    return;
+  }
+  chatOverlay.classList.add("visible");
+  chatOverlay.setAttribute("aria-hidden", "false");
 }
 
-async function handleSend(ev){
-  ev.preventDefault();
-  const text = chatInput.value.trim();
-  if(!text) return;
-  const key = await ensureApiKey();
-  if(!key) return;
+// ✅ 8. Close Chat
+function closeChat() {
+  chatOverlay.classList.remove("visible");
+  chatOverlay.setAttribute("aria-hidden", "true");
+}
 
-  pushMessage('user',text);
-  chatInput.value='';
-  const typingEl = pushMessage('assistant','Thinking...');
+// Event Listeners
+aiTutorFab.addEventListener("click", openChat);
+closeChatBtn.addEventListener("click", closeChat);
+chatOverlay.addEventListener("click", (e) => {
+  if (e.target === chatOverlay) closeChat();
+});
+
+// --- Chat Elements ---
+const chatMessages = document.getElementById("chat-messages");
+const chatInputForm = document.getElementById("chat-input-form");
+const chatInput = document.getElementById("chat-input");
+const sendBtn = document.getElementById("chat-send-btn");
+const quickPrompts = document.getElementById("quick-prompts");
+
+let isChatLoading = false;
+
+// --- Helper to add messages to chat ---
+function addMessage(role, text) {
+  const messageEl = document.createElement("div");
+  messageEl.classList.add("chat-message", role);
+  messageEl.textContent = text;
+  chatMessages.appendChild(messageEl);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// --- Loading indicator ---
+function showLoading() {
+  isChatLoading = true;
+  const loader = document.createElement("div");
+  loader.id = "loading-indicator";
+  loader.classList.add("chat-message", "assistant");
+  loader.innerHTML = `<em>AI is typing...</em>`;
+  chatMessages.appendChild(loader);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function hideLoading() {
+  isChatLoading = false;
+  const loader = document.getElementById("loading-indicator");
+  if (loader) loader.remove();
+}
+
+// --- Call Gemini API ---
+async function callGeminiAPI(prompt) {
+  if (!apiKey) {
+    showKeyModal();
+    throw new Error("No API key set");
+  }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+  const payload = {
+    contents: [
+      { role: "user", parts: [{ text: prompt }] }
+    ]
+  };
 
   try {
-    const inputText = `You are a medical tutor. Answer in English with Arabic clarification for hard words.\n\nChat History:\n${chatHistory.map(m=>m.role+': '+m.content).join('\n')}\n\nStudent: ${text}`;
-    const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        contents: [{ parts: [{ text: inputText }] }]
-      })
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
-    const data=await response.json();
-    const aiText=data.candidates?.[0]?.content?.parts?.[0]?.text || "Error: empty reply.";
-    typingEl.textContent=aiText;
-    chatHistory.push({role:'assistant',content:aiText}); saveChatHistory(chatHistory);
-  } catch(err){
-    typingEl.textContent="Error contacting Gemini.";
-    console.error(err);
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return data.candidates[0].content.parts[0].text;
+    } else {
+      return "⚠️ No response from Gemini.";
+    }
+  } catch (err) {
+    console.error("Gemini API Error:", err);
+    return "❌ Error contacting Gemini API.";
   }
 }
 
-async function ensureApiKey(){
-  let key=localStorage.getItem(STORAGE.API_KEY);
-  if(!key){
-    key=prompt("Enter your Gemini API Key:");
-    if(key && key.trim()){
-      localStorage.setItem(STORAGE.API_KEY,key.trim());
-      return key.trim();
-    } else {
-      alert("API Key required to use AI Tutor.");
-      return null;
-    }
-  }
-  return key;
+// --- Handle sending user message ---
+async function handleSendMessage(userText) {
+  if (!userText || isChatLoading) return;
+
+  addMessage("user", userText);
+  chatHistory.push({ role: "user", text: userText });
+  chatInput.value = "";
+
+  showLoading();
+  const aiResponse = await callGeminiAPI(userText);
+  hideLoading();
+
+  addMessage("assistant", aiResponse);
+  chatHistory.push({ role: "assistant", text: aiResponse });
 }
+
+// --- Event: Send form ---
+chatInputForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  handleSendMessage(chatInput.value.trim());
+});
+
+// --- Event: Quick Prompts ---
+quickPrompts.addEventListener("click", (e) => {
+  if (e.target.tagName === "BUTTON") {
+    const prompt = e.target.getAttribute("data-prompt");
+    handleSendMessage(prompt);
+  }
+});
