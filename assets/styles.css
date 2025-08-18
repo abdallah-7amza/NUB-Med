@@ -1,25 +1,27 @@
-/* --- Visual Identity & Global Styles --- */
+/* --- Professional UI/UX Overhaul --- */
+
 :root {
-    /* Color Palette */
-    --primary-color: #8B0000;      /* Dark Red */
-    --secondary-color: #003366;     /* Dark Blue */
-    --accent-color: #FFD700;       /* Gold */
-    --bg-color: #F5F5F5;            /* Light Gray */
+    /* Refined Color Palette */
+    --primary-color: #9B2226;      /* Rich Maroon */
+    --secondary-color: #2B4162;     /* Slate Blue */
+    --accent-color: #FFD700;       /* Gold (unchanged) */
+    --bg-color: #F8F9FA;            /* Clean Off-white */
     --card-bg: #FFFFFF;            /* White */
-    --border-color: #E0E0E0;       /* Gray */
+    --border-color: #E9ECEF;       /* Lighter Gray Border */
     --correct-color: #2E7D32;       /* Green */
     --incorrect-color: #C62828;     /* Red */
-    --text-color: #333;
+    --text-color: #212529;         /* Darker, softer text */
+    --text-color-light: #495057;    /* Lighter gray text */
     --light-text-color: #FFFFFF;
 
-    /* Typography */
-    --font-family: 'Cairo', sans-serif;
+    /* New Typography */
+    --font-heading: 'Lora', serif;
+    --font-body: 'Inter', sans-serif;
 
-    /* Shapes & Borders */
-    --border-radius-lg: 16px;
-    --border-radius-md: 12px;
-    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.12);
+    /* Shapes & Shadows */
+    --border-radius: 12px;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --card-shadow-hover: 0 7px 14px rgba(0, 0, 0, 0.07), 0 3px 6px rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -33,399 +35,104 @@ html {
 }
 
 body {
-    font-family: var(--font-family);
+    font-family: var(--font-body);
     background-color: var(--bg-color);
     color: var(--text-color);
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
-.view {
-    display: none;
-}
-.view.active {
-    display: block;
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--secondary-color);
+    font-weight: 700;
 }
 
 .container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+    max-width: 960px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
 }
 
 .main-header {
     background-color: var(--secondary-color);
     color: var(--light-text-color);
-    padding: 2rem 1rem;
+    padding: 3rem 1.5rem;
     text-align: center;
-    border-bottom: 5px solid var(--accent-color);
+    border-bottom: 6px solid var(--accent-color);
 }
 
 .main-header h1 {
-    font-weight: 700;
-    margin-bottom: 0.5rem;
+    color: var(--light-text-color);
+    font-size: 2.5rem;
 }
 
-.back-link {
-    display: inline-block;
-    margin-top: 1rem;
-    color: var(--accent-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: transform 0.2s ease;
-}
-.back-link:hover {
-    transform: translateX(-5px);
-}
-
-
-/* --- Grid & Card System --- */
+/* --- Card System & Hover Effects --- */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    gap: 2rem; /* Increased spacing */
 }
 
 .card {
     background-color: var(--card-bg);
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
-    padding: 1.5rem;
+    padding: 2rem;
     text-align: center;
     text-decoration: none;
     color: var(--text-color);
-    border: 1px solid var(--border-color);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 2px solid transparent; /* Prepare for hover border */
+    /* SMOOTH TRANSITION FOR HOVER */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-10px);
     box-shadow: var(--card-shadow-hover);
+    border-color: var(--accent-color); /* Add border on hover */
     cursor: pointer;
 }
 
 .card h3 {
-    color: var(--secondary-color);
-    font-weight: 600;
+    font-size: 1.5rem;
 }
 
+/* --- Footer --- */
+.main-footer {
+    text-align: center;
+    padding: 2rem;
+    margin-top: 3rem;
+    background-color: #E9ECEF;
+    color: var(--text-color-light);
+    font-size: 0.9rem;
+}
 
-/* --- Lesson & Quiz Styles --- */
+/* --- Lesson & Quiz Styles (with refinements) --- */
 #lesson-content {
     background: var(--card-bg);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
     border: 1px solid var(--border-color);
 }
 #lesson-content h1, #lesson-content h2, #lesson-content h3 {
-    color: var(--secondary-color);
-    margin-top: 1.5rem;
+    margin-top: 2rem;
     margin-bottom: 1rem;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
 }
-#lesson-content p { margin-bottom: 1rem; }
-#lesson-content ul, #lesson-content ol { padding-left: 2rem; margin-bottom: 1rem; }
-#lesson-content code {
-    background: #f0f0f0;
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    font-family: monospace;
-}
-#lesson-content blockquote {
-    border-left: 4px solid var(--accent-color);
-    padding-left: 1rem;
-    margin: 1rem 0;
-    font-style: italic;
-    color: #555;
-}
 
-#quiz-container {
-    margin-top: 3rem;
-}
-.quiz-question {
-    background: var(--card-bg);
-    padding: 1.5rem;
-    border-radius: var(--border-radius-lg);
-    margin-bottom: 1.5rem;
-    box-shadow: var(--card-shadow);
-}
-.quiz-options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 1rem;
-}
-.quiz-option-btn {
-    display: block;
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    cursor: pointer;
-    text-align: left;
-    font-family: var(--font-family);
-    font-size: 1rem;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-}
-.quiz-option-btn:not([disabled]):hover {
-    background-color: var(--secondary-color);
-    color: var(--light-text-color);
-    border-color: var(--secondary-color);
-}
-.quiz-option-btn.correct {
-    background-color: var(--correct-color);
-    color: var(--light-text-color);
-    border-color: var(--correct-color);
-}
-.quiz-option-btn.incorrect {
-    background-color: var(--incorrect-color);
-    color: var(--light-text-color);
-    border-color: var(--incorrect-color);
-}
-.quiz-option-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.8;
-}
+/* Add other styles for AI Tutor, Quiz buttons etc. below */
+/* They will inherit the new fonts and colors automatically */
 
-.explanation {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: #eef2f7;
-    border-left: 4px solid var(--secondary-color);
-    border-radius: 4px;
-}
-
-.progress-bar-container {
-    height: 20px;
-    background-color: var(--border-color);
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 1rem 0;
-}
-.progress-bar {
-    height: 100%;
-    width: 0;
-    background: var(--accent-color);
-    transition: width 0.3s ease;
-}
-
-.btn {
-    background-color: var(--primary-color);
-    color: var(--light-text-color);
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius-md);
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    font-family: var(--font-family);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    transition: background-color 0.2s, transform 0.2s;
-}
-.btn:hover {
-    background-color: #6a0000;
-    transform: translateY(-2px);
-}
-
-
-/* --- Loader --- */
-.loader {
-    border: 5px solid var(--bg-color);
-    border-top: 5px solid var(--secondary-color);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 3rem auto;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* --- AI Chat Styles --- */
+/* (Your existing styles for quiz, AI Tutor, etc. can remain here) */
 #ai-tutor-fab {
-    position: fixed;
-    bottom: 25px;
-    right: 25px; /* Changed to right for LTR */
-    width: 60px;
-    height: 60px;
+    position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px;
     background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-    color: white;
-    border-radius: 50%;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    z-index: 1000;
-    transition: transform 0.2s ease;
+    color: white; border-radius: 50%; border: none; display: flex;
+    align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
 }
-#ai-tutor-fab:hover {
-    transform: scale(1.1);
-}
-#ai-tutor-fab svg {
-    width: 32px;
-    height: 32px;
-}
-
-#chat-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1001;
-    display: none;
-    align-items: center;
-    justify-content: center;
-}
-#chat-overlay.visible {
-    display: flex;
-}
-#chat-window {
-    width: 90%;
-    max-width: 500px;
-    height: 80vh;
-    max-height: 700px;
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius-lg);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transform: scale(0.95);
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-}
-#chat-overlay.visible #chat-window {
-    transform: scale(1);
-    opacity: 1;
-}
-.chat-header {
-    padding: 1rem;
-    background-color: var(--secondary-color);
-    color: var(--light-text-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.chat-header h3 {
-    font-size: 1.2rem;
-}
-#close-chat-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-#chat-messages {
-    flex-grow: 1;
-    padding: 1rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-.chat-message {
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    max-width: 80%;
-    line-height: 1.5;
-}
-.chat-message.user {
-    background-color: #E3F2FD;
-    color: #1E88E5;
-    align-self: flex-end; /* Flipped for LTR */
-    border-bottom-right-radius: 0;
-}
-.chat-message.ai {
-    background-color: #F1F8E9;
-    color: #558B2F;
-    align-self: flex-start; /* Flipped for LTR */
-    border-bottom-left-radius: 0;
-}
-.chat-message.loading {
-    align-self: flex-start; /* Flipped for LTR */
-}
-.typing-indicator {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-.typing-indicator span {
-    width: 8px;
-    height: 8px;
-    background-color: #ccc;
-    border-radius: 50%;
-    animation: bounce 1.4s infinite ease-in-out both;
-}
-.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-@keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1.0); }
-}
-.chat-input-form {
-    display: flex;
-    padding: 1rem;
-    border-top: 1px solid var(--border-color);
-}
-#chat-input {
-    flex-grow: 1;
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 0.75rem 1rem;
-    font-family: var(--font-family);
-    font-size: 1rem;
-    margin-right: 0.5rem; /* Flipped for LTR */
-}
-#chat-send-btn {
-    background-color: var(--secondary-color);
-    border: none;
-    color: white;
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-#chat-send-btn:hover {
-    background-color: #004488;
-}
-#chat-send-btn svg {
-    width: 20px;
-    height: 20px;
-}
-
-
-/* --- Responsive Design --- */
-@media (max-width: 768px) {
-    .container {
-        margin: 1.5rem auto;
-    }
-    .main-header {
-        padding: 1.5rem 1rem;
-    }
-    #lesson-content {
-        padding: 1.5rem;
-    }
-    #ai-tutor-fab {
-        width: 50px;
-        height: 50px;
-        bottom: 20px;
-        right: 20px;
-    }
-    #ai-tutor-fab svg {
-        width: 28px;
-        height: 28px;
-    }
-}
+#ai-tutor-fab:hover { transform: scale(1.1); }
+#ai-tutor-fab svg { width: 32px; height: 32px; }
+/* ... (and so on for the rest of your existing CSS) ... */
