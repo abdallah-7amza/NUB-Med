@@ -28,8 +28,8 @@ export function initAITutor({ getLessonContext } = {}) {
   // ---------- State ----------
   let apiKey = null;
   let isChatLoading = false;
-  let sessionOpened = false; 
-  const chatHistory = []; 
+  let sessionOpened = false;
+  const chatHistory = [];
 
   // ---------- Helpers ----------
   const hideElement = (el) => { if (!el) return; el.style.display = "none"; el.setAttribute("aria-hidden", "true"); };
@@ -48,10 +48,16 @@ export function initAITutor({ getLessonContext } = {}) {
     localStorage.setItem("gemini_api_key", apiKey);
   }
 
+  // ---------- API Key Modal ----------
   function showKeyModal() {
     if (!keyModal) return;
     apiKeyInput.value = apiKey || "";
     showFlex(keyModal);
+
+    // **التعديل الأساسي:** نص النافذة يكون حسب طلبك
+    const modalText = keyModal.querySelector(".modal-text");
+    if(modalText) modalText.textContent = "Paste your Gemini API key to enable the AI tutor";
+
     setTimeout(() => apiKeyInput?.focus(), 0);
   }
 
@@ -60,6 +66,7 @@ export function initAITutor({ getLessonContext } = {}) {
     hideElement(keyModal);
   }
 
+  // ---------- Chat Control ----------
   function openChat() {
     if (typeof getLessonContext === "function") {
       const ctx = getLessonContext() || {};
@@ -97,19 +104,17 @@ export function initAITutor({ getLessonContext } = {}) {
     }
   }
 
-  // ---------- Message formatting ----------
+  // ---------- Message Formatting ----------
   function addMessage(role, text) {
     if (!chatMessages) return;
     const el = document.createElement("div");
     const roleClass = role === "user" ? "user" : "assistant";
     el.classList.add("chat-message", roleClass, "tutor");
 
-    // تحويل * bullets إلى نجوم ⭐ واحتفاظ بالBold
-    const formatted = text
-      .replace(/\* \*\*(.*?)\*\*/g, '⭐ <b>$1</b>')  
-      .replace(/\* (.*?)$/gm, '⭐ $1');              
+    // **التعديل الأساسي:** الرد رسمي ومنسق بدون نجوم، تقسيم النص لفقرة <p>
+    const paragraphs = text.split(/\n+/).map(line => `<p>${line}</p>`).join('');
+    el.innerHTML = paragraphs;
 
-    el.innerHTML = formatted;
     chatMessages.appendChild(el);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
@@ -142,14 +147,17 @@ export function initAITutor({ getLessonContext } = {}) {
     const title = ctx.title ? `Title: ${ctx.title}\n` : "";
     const slug = ctx.slug ? `Slug: ${ctx.slug}\n` : "";
     const summary = ctx.summary ? `Summary:\n${ctx.summary}\n` : "";
+
+    // **التعديل الأساسي:** تعليمات رسمية، عربي أو إنجليزي حسب المستخدم، المصطلحات العلمية تبقى كما هي
     return {
       role: "user",
       parts: [{
         text:
 `You are an expert medical tutor for a clinical-stage medical student in Egypt.
-Respond naturally and professionally. If user writes in Arabic, reply in Arabic. 
-Do not translate or explain medical/technical terms.
-Be concise, clinically reasoned, exam-focused. Use bullets when helpful.
+Respond professionally and clearly.
+If user writes in Arabic, reply in Arabic. 
+Do not translate or explain scientific/medical terms.
+Keep explanations concise, structured, and well-formatted using paragraphs.
 
 Context:
 ${title}${slug}${summary}`
