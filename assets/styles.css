@@ -1,20 +1,21 @@
-/* --- Professional UI/UX Overhaul --- */
+/* MED Portal NUB - Main Stylesheet */
 
+/* --- 1. Global Settings & Variables --- */
 :root {
-    /* Refined Color Palette */
-    --primary-color: #9B2226;      /* Rich Maroon */
-    --secondary-color: #2B4162;     /* Slate Blue */
-    --accent-color: #FFD700;       /* Gold (unchanged) */
-    --bg-color: #F8F9FA;            /* Clean Off-white */
-    --card-bg: #FFFFFF;            /* White */
-    --border-color: #E9ECEF;       /* Lighter Gray Border */
-    --correct-color: #2E7D32;       /* Green */
+    /* Color Palette */
+    --primary-color: #9B2226;   /* Rich Maroon */
+    --secondary-color: #2B4162;    /* Slate Blue */
+    --accent-color: #FFD700;     /* Gold */
+    --bg-color: #F8F9FA;         /* Clean Off-white */
+    --card-bg: #FFFFFF;          /* White */
+    --border-color: #E9ECEF;     /* Lighter Gray Border */
+    --correct-color: #2E7D32;      /* Green */
     --incorrect-color: #C62828;     /* Red */
-    --text-color: #212529;         /* Darker, softer text */
-    --text-color-light: #495057;    /* Lighter gray text */
-    --light-text-color: #FFFFFF;
+    --text-color: #212529;       /* Dark, soft text */
+    --text-color-light: #495057; /* Lighter gray text */
+    --light-text-color: #FFFFFF;   /* For dark backgrounds */
 
-    /* New Typography */
+    /* Typography */
     --font-heading: 'Lora', serif;
     --font-body: 'Inter', sans-serif;
 
@@ -30,21 +31,15 @@
     padding: 0;
 }
 
-/* assets/styles.css */
-
-/* --- CORE LAYOUT - VERIFIED FIX --- */
-/* assets/styles.css */
-
-/* --- CORE LAYOUT - VERIFIED FIX --- */
+/* --- 2. Core Layout --- */
 html {
     height: 100%;
 }
 
 body {
-    display: flex;             /* 1. Activate Flexbox layout */
-    flex-direction: column;    /* 2. Stack elements vertically (header, then content, then footer) */
-    min-height: 100vh;         /* 3. Make the body at least as tall as the screen */
-    margin: 0;                 /* Remove default margin */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     font-family: var(--font-body);
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -56,24 +51,28 @@ body {
     max-width: 960px;
     margin: 3rem auto;
     padding: 0 1.5rem;
-    flex-grow: 1;              /* 4. This is the key: it pushes the footer to the bottom */
+    flex-grow: 1; /* Pushes footer down */
 }
 
 .main-header {
-    flex-shrink: 0;            /* Prevents the header from shrinking */
-    /* All other header styles like background-color, padding, etc., go here */
+    flex-shrink: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2rem 4%;
+    padding: 1.5rem 4%;
     background-color: var(--secondary-color);
     border-bottom: 6px solid var(--accent-color);
     width: 100%;
 }
 
+.main-header .header-content h1, 
+.main-header .header-content p {
+    margin: 0;
+    color: var(--light-text-color);
+}
+
 .main-footer {
-    flex-shrink: 0;            /* Prevents the footer from shrinking */
-    /* All other footer styles like background-color, text-align, etc., go here */
+    flex-shrink: 0;
     text-align: center;
     padding: 2rem;
     background-color: #E9ECEF;
@@ -81,94 +80,48 @@ body {
     font-size: 0.9rem;
     width: 100%;
 }
-/* --- END OF CORE LAYOUT FIX --- */
-/* --- END OF CORE LAYOUT FIX --- */
-/* --- Card System & Hover Effects --- */
+
+/* --- 3. Components --- */
+
+/* Grid & Cards */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem; /* Increased spacing */
+    gap: 2rem;
 }
 
-/* In assets/styles.css */
 .card {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
-    padding: 2.5rem 1.5rem; /* More padding top/bottom */
+    padding: 2.5rem 1.5rem;
     text-align: center;
     text-decoration: none;
     color: var(--text-color);
-    border: 2px solid var(--border-color); /* A subtle default border */
-    display: flex; /* Added for centering */
-    align-items: center; /* Added for centering */
-    justify-content: center; /* Added for centering */
-    min-height: 120px; /* Give it a consistent height */
-    
-    /* ENHANCED TRANSITION FOR HOVER */
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
     transition: 
         transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
         box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        background-color 0.2s ease,
         border-color 0.2s ease;
 }
 
 .card:hover {
-    transform: translateY(-5px) scale(1.03); /* Lift and slightly grow */
+    transform: translateY(-5px) scale(1.03);
     box-shadow: var(--card-shadow-hover);
     border-color: var(--accent-color);
-    background-color: #fff; /* Ensure background stays white on hover */
     cursor: pointer;
 }
 
 .card h3 {
-    font-size: 1.3rem; /* Slightly smaller font for a cleaner look */
-}
-}
-
-/* --- Footer --- */
-.main-footer {
-    text-align: center;
-    padding: 2rem;
-    margin-top: 3rem;
-    background-color: #E9ECEF;
-    color: var(--text-color-light);
-    font-size: 0.9rem;
+    font-size: 1.3rem;
+    margin: 0;
 }
 
-/* --- Lesson & Quiz Styles (with refinements) --- */
-#lesson-content {
-    background: var(--card-bg);
-    padding: 2.5rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
-    border: 1px solid var(--border-color);
-}
-#lesson-content h1, #lesson-content h2, #lesson-content h3 {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.5rem;
-}
-
-/* Add other styles for AI Tutor, Quiz buttons etc. below */
-/* They will inherit the new fonts and colors automatically */
-
-/* (Your existing styles for quiz, AI Tutor, etc. can remain here) */
-#ai-tutor-fab {
-    position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px;
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-    color: white; border-radius: 50%; border: none; display: flex;
-    align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
-}
-#ai-tutor-fab:hover { transform: scale(1.1); }
-#ai-tutor-fab svg { width: 32px; height: 32px; }
-/* ... (and so on for the rest of your existing CSS) ... */
-
-/* assets/styles.css */
-
-/* --- Modern Button System --- */
+/* Buttons */
 .btn {
     display: inline-block;
     font-family: var(--font-body);
@@ -187,7 +140,7 @@ body {
 }
 
 .btn:hover {
-    background-color: #7c1b1e; /* A slightly darker shade of our primary red */
+    background-color: #7c1b1e;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     transform: translateY(-2px);
 }
@@ -197,7 +150,6 @@ body {
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-/* Secondary Button Style (for "Back" links) */
 .btn.btn-secondary {
     background-color: var(--card-bg);
     color: var(--secondary-color);
@@ -210,18 +162,38 @@ body {
     border-color: var(--secondary-color);
 }
 
-/* --- Header Layout Improvement --- */
-.main-header {
-    /* Update this existing rule */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2rem 4%; /* Use percentage for better responsiveness */
-    text-align: left; /* Change from center */
+/* Lesson Content */
+#lesson-content {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
 }
 
-.header-content h1, .header-content p {
-    margin: 0;
-    color: var(--light-text-color);
+#lesson-content h1, #lesson-content h2, #lesson-content h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
 }
-   
+
+/* AI Tutor */
+#ai-tutor-fab {
+    position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px;
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    color: white; border-radius: 50%; border: none; display: flex;
+    align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
+}
+
+#ai-tutor-fab:hover { 
+    transform: scale(1.1); 
+}
+
+#ai-tutor-fab svg { 
+    width: 32px; 
+    height: 32px; 
+}
+
+/* Add other component styles (quiz, chat window, etc.) here */
