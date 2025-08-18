@@ -1,140 +1,117 @@
-// The FINAL and COMPLETE version of js/lesson.js
-import { getLessonContent, getQuizData } from './github.js';
+// js/ai-tutor.js
+// AI Tutor using Google Gemini API
 
-// --- Main Function: Runs when the page loads ---
-document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const lessonId = params.get('lesson'); 
-    const year = params.get('year');
-    const specialty = params.get('specialty');
-    const contentEl = document.getElementById('lesson-content');
-    const loaderEl = document.getElementById('loader');
+const STORAGE = {
+  API_KEY: 'nub_med_gemini_api_key',
+  CHAT_HISTORY: 'nub_med_ai_chat_history'
+};
 
-    if (!lessonId || !year || !specialty) {
-        if(loaderEl) loaderEl.style.display = 'none';
-        contentEl.innerHTML = '<p style="color: red;">Error: Lesson details missing.</p>';
-        return;
-    }
+const DEFAULT_SYSTEM_PROMPT = `You are an expert clinical medical tutor for a Cairo University student. 
+Answer in English, and after any difficult English medical word, add a short Arabic clarification in parentheses. 
+Focus on clinical reasoning, exam-style points, and concise explanations.`;
 
-    loadLessonAndQuiz(year, specialty, lessonId);
-    setupAITutor();
-});
+function $(id){ return document.getElementById(id); }
 
+export function initAITutor({ getLessonContext }) {
+  const fab = $('ai-tutor-fab');
+  const overlay = $('chat-overlay');
+  const closeBtn = $('close-chat-btn');
+  const sendForm = $('chat-input-form');
+  const chatInput = $('chat-input');
+  const messages = $('chat-messages');
+  const setKeyBtn = $('set-key-btn');
+  const keyFlag = $('key-flag');
+  const exportBtn = $('export-chat-btn');
+  const quickPrompts = $('quick-prompts');
 
-// --- 1. Lesson and Quiz Loading ---
-async function loadLessonAndQuiz(year, specialty, lessonId) {
-    const titleEl = document.getElementById('page-title');
-    const contentEl = document.getElementById('lesson-content');
-    const loaderEl = document.getElementById('loader');
-    const quizContainer = document.getElementById('quiz-container');
+  let chatHistory = loadChatHistory() || [];
+  const ctx = getLessonContext?.() || {};
+  $('lesson-context-summary').textContent = ctx.summary || ctx.title || '';
 
-    // Fetch both lesson and quiz data at the same time
-    const [markdownContent, quizData] = await Promise.all([
-        getLessonContent(year, specialty, lessonId),
-        getQuizData(year, specialty, lessonId)
-    ]);
-    
-    if (loaderEl) loaderEl.style.display = 'none';
+  keyFlag.textContent = localStorage.getItem(STORAGE.API_KEY) ? 'Set' : 'Not set';
 
-    // Display Lesson Content
-    if (markdownContent) {
-        contentEl.innerHTML = marked.parse(markdownContent);
-        const firstHeader = contentEl.querySelector('h1');
-        if (firstHeader) {
-            titleEl.textContent = firstHeader.textContent;
-            firstHeader.remove();
-        } else {
-            titleEl.textContent = lessonId.replace(/-/g, ' ');
-        }
+  fab.addEventListener('click', () => {
+    overlay.classList.add('visible');
+    overlay.style.display = 'flex';
+    renderChat();
+  });
+
+  closeBtn.addEventListener('click', closeOverlay);
+  overlay.addEventListener('click', e => { if (e.target===overlay) closeOverlay(); });
+  function closeOverlay(){ overlay.classList.remove('visible'); setTimeout(()=>overlay.style.display='none',180); }
+
+  setKeyBtn.addEventListener('click', () => {
+    const key = prompt("Enter your Gemini API Key", localStorage.getItem(STORAGE.API_KEY)||'');
+    if (key && key.trim()) {
+      localStorage.setItem(STORAGE.API_KEY, key.trim());
+      keyFlag.textContent = 'Set';
     } else {
-        titleEl.textContent = 'Error';
-        contentEl.innerHTML = '<p style="color: red;">Could not load lesson content.</p>';
+      localStorage.removeItem(STORAGE.API_KEY);
+      keyFlag.textContent = 'Not set';
     }
+  });
 
-    // Display Quiz if it exists
-    if (quizData && quizData.items && quizData.items.length > 0) {
-        quizContainer.style.display = 'block';
-        renderQuiz(quizData.items);
-    }
+  exportBtn.addEventListener('click', () => {
+    const text = chatHistory.map(m=>`${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
+    const blob = new Blob([text], {type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=`${ctx.slug||'lesson'}-chat.txt`; a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  quickPrompts?.addEventListener('click', e=>{
+    const btn=e.target.closest('button[data-prompt]');
+    if(!btn) return;
+    chatInput.value=btn.dataset.prompt;
+    sendForm.requestSubmit();
+  });
+
+  sendForm.addEventListener('submit', async ev=>{
+    ev.preventDefault();
+    const text=chatInput.value.trim();
+    if(!text) return;
+    let key=localStorage.getItem(STORAGE.API_KEY);
+    if(!key){ key=prompt("Enter your Gemini API Key"); if(!key) return; localStorage.setItem(STORAGE.API_KEY,key.trim()); keyFlag.textContent='Set'; }
+
+    pushMessage('user', text);
+    chatInput.value='';
+    const lessonCtx=`Lesson: ${ctx.title}\nSummary: ${ctx.summary}\nSlug: ${ctx.slug}`;
+
+    // Gemini needs plain text prompt
+    const inputText = `${DEFAULT_SYSTEM_PROMPT}\n\nContext:\n${lessonCtx}\n\nChat History:\n${chatHistory.map(m=>m.role+': '+m.content).join('\n')}\n\nStudent: ${text}`;
+
+    const typingEl=pushMessage('tutor','Thinking...');
+    typingEl.classList.add('typing');
+    try {
+      const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          contents: [
+            { parts: [{ text: inputText }] }
+          ]
+        })
+      });
+      const data=await response.json();
+      const aiText=data.candidates?.[0]?.content?.parts?.[0]?.text || "Error: empty reply.";
+      typingEl.textContent=aiText; typingEl.classList.remove('typing');
+      chatHistory.push({role:'assistant',content:aiText}); saveChatHistory(chatHistory);
+      scrollBottom();
+    } catch(err){ typingEl.textContent="Error contacting Gemini."; console.error(err); }
+  });
+
+  function pushMessage(role,text){
+    const div=document.createElement('div');
+    div.className=`chat-message ${role}`;
+    div.textContent=text;
+    messages.appendChild(div);
+    chatHistory.push({role,content:text}); saveChatHistory(chatHistory);
+    scrollBottom();
+    return div;
+  }
+  function renderChat(){ messages.innerHTML=''; chatHistory.forEach(m=>{ const d=document.createElement('div'); d.className=`chat-message ${m.role}`; d.textContent=m.content; messages.appendChild(d); }); scrollBottom(); }
+  function scrollBottom(){ messages.scrollTop=messages.scrollHeight; }
 }
 
-function renderQuiz(questions) {
-    const quizContentEl = document.getElementById('quiz-content');
-    quizContentEl.innerHTML = ''; // Clear previous questions
-    questions.forEach((q, index) => {
-        const questionEl = document.createElement('div');
-        questionEl.className = 'quiz-question';
-        let optionsHtml = q.options.map(opt => `
-            <label>
-                <input type="radio" name="question${index}" value="${opt.id}">
-                ${opt.text}
-            </label>
-        `).join('');
-
-        questionEl.innerHTML = `
-            <p>${index + 1}. ${q.stem}</p>
-            <div class="quiz-options">${optionsHtml}</div>
-        `;
-        quizContentEl.appendChild(questionEl);
-    });
-}
-
-
-// --- 2. AI Tutor Functionality ---
-function setupAITutor() {
-    const tutorFab = document.getElementById('ai-tutor-fab');
-    const chatOverlay = document.getElementById('chat-overlay');
-    const closeChatBtn = document.getElementById('close-chat-btn');
-    const chatForm = document.getElementById('chat-input-form');
-    const chatInput = document.getElementById('chat-input');
-    const chatMessages = document.getElementById('chat-messages');
-    const API_KEY_STORAGE = 'user_openai_api_key';
-
-    // Open/Close Chat Window
-    tutorFab.addEventListener('click', () => { chatOverlay.style.display = 'flex'; });
-    closeChatBtn.addEventListener('click', () => { chatOverlay.style.display = 'none'; });
-
-    // Handle sending a message
-    chatForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const userMessage = chatInput.value.trim();
-        if (!userMessage) return;
-        
-        // 1. Check for API Key
-        let apiKey = localStorage.getItem(API_KEY_STORAGE);
-        if (!apiKey) {
-            apiKey = prompt("Please enter your OpenAI API Key. It will be saved in your browser for future use.");
-            if (apiKey) {
-                localStorage.setItem(API_KEY_STORAGE, apiKey);
-            } else {
-                alert("API Key is required to use the AI Tutor.");
-                return;
-            }
-        }
-
-        // 2. Display user message and clear input
-        addChatMessage(userMessage, 'user');
-        chatInput.value = '';
-
-        // 3. (Placeholder) Call the real AI API here
-        // For now, it just shows a placeholder response.
-        callAI(userMessage, apiKey);
-    });
-
-    function addChatMessage(message, sender) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `chat-message ${sender}`;
-        msgDiv.textContent = message;
-        chatMessages.appendChild(msgDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-    
-    async function callAI(message, key) {
-        // This is a placeholder. You would replace this with a real fetch call to an AI service.
-        addChatMessage("Thinking...", 'tutor');
-        setTimeout(() => {
-            const thinkingMsg = chatMessages.lastChild;
-            thinkingMsg.textContent = "AI response functionality is not yet connected. This is where the AI's answer would appear.";
-        }, 1000);
-    }
-}
+function loadChatHistory(){ try{return JSON.parse(localStorage.getItem(STORAGE.CHAT_HISTORY))||[];}catch(e){return[];} }
+function saveChatHistory(h){ localStorage.setItem(STORAGE.CHAT_HISTORY,JSON.stringify(h)); }
