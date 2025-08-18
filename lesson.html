@@ -1,54 +1,42 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson - MED Portal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/styles.css">
-    <!-- The Markdown-to-HTML converter library -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</head>
-<body>
-    <header class="main-header">
-        <a id="back-link-lesson" href="#" class="btn btn-secondary">&larr; Back</a>
-        <div class="header-content">
-            <h1 id="page-title">Loading Lesson...</h1>
-        </div>
-    </header>
-    <main class="container">
-        <article id="lesson-content">
-            <!-- Lesson content is loaded here -->
-        </article>
-        <section id="quiz-container" style="display: none;">
-            <h2>Test Yourself</h2>
-            <div id="quiz-content">
-                <!-- Quiz questions are loaded here -->
-            </div>
-        </section>
-    </main>
-    <footer class="main-footer">
-        <p>Powered by Abdallah Hamza</p>
-    </footer>
+<!-- AI Tutor Floating Button -->
+<button id="ai-tutor-fab" aria-label="Open AI Tutor" title="AI Medical Tutor">
+  <!-- chat icon -->
+  <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+    <path fill="white" d="M2 12a10 10 0 1010-10A10 10 0 002 12zm11-1h-6v2h6v-2zm2-3h-8v2h8V8zm0 6h-8v2h8v-2z"></path>
+  </svg>
+</button>
 
-    <!-- AI Tutor Floating Action Button and Chat Window -->
-    <button id="ai-tutor-fab" aria-label="Open AI Tutor"></button>
-    <div id="chat-overlay">
-        <div id="chat-window">
-            <div class="chat-header">
-                <h3>AI Medical Tutor</h3>
-                <button id="close-chat-btn">&times;</button>
-            </div>
-            <div id="chat-messages"></div>
-            <form id="chat-input-form" class="chat-input-form">
-                <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off">
-                <button id="chat-send-btn" type="submit" aria-label="Send Message"></button>
-            </form>
-        </div>
+<!-- Chat overlay / window -->
+<div id="chat-overlay" aria-hidden="true">
+  <div id="chat-window" role="dialog" aria-modal="true" aria-label="AI Medical Tutor Window">
+    <div class="chat-header">
+      <div class="chat-title">
+        <img src="assets/ai-avatar.png" alt="" class="chat-avatar" style="display:none;">
+        <h3>AI Medical Tutor</h3>
+        <small id="lesson-context-summary" style="display:block;font-size:0.8rem;opacity:0.85;"></small>
+      </div>
+      <div class="chat-controls">
+        <button id="export-chat-btn" title="Export chat">Export</button>
+        <button id="close-chat-btn" aria-label="Close chat">&times;</button>
+      </div>
     </div>
 
-    <script type="module" src="js/lesson.js?v=3"></script>
-</body>
-</html>
+    <div id="chat-messages" role="log" aria-live="polite"></div>
+
+    <div class="quick-prompts" id="quick-prompts">
+      <button data-prompt="Summarize the lesson in 4 bullets.">Summarize</button>
+      <button data-prompt="Explain like I'm a 3rd year medical student.">Explain (3rd year)</button>
+      <button data-prompt="Give 5 short exam-style MCQs about this lesson.">Make Quiz</button>
+    </div>
+
+    <form id="chat-input-form" class="chat-input-form" autocomplete="off">
+      <input type="text" id="chat-input" placeholder="Ask a question about this lesson..." aria-label="Ask question">
+      <button id="chat-send-btn" type="submit" aria-label="Send">Send</button>
+    </form>
+
+    <div id="ai-status" style="font-size:0.75rem;padding:6px 12px;color:#555;display:flex;gap:8px;align-items:center;">
+      <span id="key-status">Key: <strong id="key-flag">Not set</strong></span>
+      <button id="set-key-btn" style="margin-left:auto;">Set API Key</button>
+    </div>
+  </div>
+</div>
