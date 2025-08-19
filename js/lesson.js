@@ -67,27 +67,9 @@ async function loadLessonAndQuiz(currentLessonId) {
 
 // --- NEW INTERACTIVE QUIZ SYSTEM ---
 
-function initQuiz(items) {
-    quizItems = items;
-    const resetButton = document.getElementById('quiz-reset-btn');
-    loadProgress();
-    renderQuiz();
-    resetButton.addEventListener('click', resetQuiz);
-}
 
-function renderQuiz() {
-    const quizContentEl = document.getElementById('quiz-content');
-    quizContentEl.innerHTML = ''; // Clear previous render
 
-    quizItems.forEach((question, index) => {
-        const isAnswered = userAnswers.hasOwnProperty(index);
-        const userAnswerId = userAnswers[index];
 
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'quiz-question';
-        if (isAnswered) {
-            questionDiv.classList.add('answered');
-        }
 
         const optionsHtml = question.options.map(option => {
             let labelClass = '';
@@ -120,27 +102,8 @@ function renderQuiz() {
     updateUI();
 }
 
-function handleOptionSelect(event) {
-    const input = event.target;
-    const questionIndex = parseInt(input.name.split('-')[1]);
-    const selectedOptionId = input.value;
-    userAnswers[questionIndex] = selectedOptionId;
-    saveProgress();
-    renderQuiz();
-}
 
-function updateUI() {
-    const scoreEl = document.getElementById('quiz-score');
-    const progressValueEl = document.getElementById('quiz-progress-value');
-    const resetButton = document.getElementById('quiz-reset-btn');
 
-    let score = 0;
-    Object.keys(userAnswers).forEach(index => {
-        const question = quizItems[index];
-        if (question.correct === userAnswers[index]) {
-            score++;
-        }
-    });
 
     const answeredCount = Object.keys(userAnswers).length;
     const totalQuestions = quizItems.length;
@@ -163,13 +126,7 @@ function loadProgress() {
     userAnswers = savedData ? JSON.parse(savedData) : {};
 }
 
-function resetQuiz() {
-    if (confirm('Are you sure you want to reset your progress?')) {
-        localStorage.removeItem(getStorageKey());
-        userAnswers = {};
-        renderQuiz();
-    }
-}
+
 
 /**
  * Sets up all functionality for the AI Tutor chat window.
