@@ -37,8 +37,9 @@ async function loadLessonAndQuiz(lessonId) {
     
     // Render Lesson
     if (markdownContent) {
-        contentEl.innerHTML = marked.parse(markdownContent);
-        const firstHeader = contentEl.querySelector('h1');
+// THIS IS THE FIX: Remove the metadata block before parsing
+        const cleanMarkdown = markdownContent.replace(/^---\s*[\s\S]*?---\s*/, '').trim();
+        contentEl.innerHTML = marked.parse(cleanMarkdown); // Use the cleaned content        const firstHeader = contentEl.querySelector('h1');
         if (firstHeader) {
             titleEl.textContent = firstHeader.textContent;
             firstHeader.remove();
