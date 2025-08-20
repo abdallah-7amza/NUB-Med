@@ -421,3 +421,17 @@ body {
 .btn-ghost { background: transparent; border: 2px solid var(--border-color); color: var(--secondary-color); }
 .btn-ghost:hover { background: var(--border-color); }
 
+
+/* Quiz Mode Modal (بسيط ومتوافق مع الثيم الحالي) */
+#quiz-mode-modal {
+  position: fixed; inset: 0; z-index: 2002;
+  background: rgba(0,0,0,0.4);
+  display: none; align-items: center; justify-content: center;
+}
+#quiz-mode-modal[aria-hidden="false"] { display: flex; }
+#quiz-mode-modal .modal-card {
+  background: #fff; border-radius: 12px; padding: 1.25rem;
+  max-width: 420px; width: 92%; box-shadow: var(--card-shadow);
+}
+
+
