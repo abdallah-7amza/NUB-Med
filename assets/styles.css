@@ -1,5 +1,5 @@
 /* =========================================================
-   MED Portal NUB - Main Stylesheet (Final Version)
+   MED Portal NUB - Main Stylesheet (Final Corrected Version)
    ========================================================= */
 
 /* --- 1) Global Variables & Reset --- */
@@ -23,104 +23,113 @@
 /* --- 2) Core Layout --- */
 html, body { height: 100%; }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  font-family: var(--font-body);
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  line-height: 1.7;
+body { 
+  display: flex; 
+  flex-direction: column; 
+  min-height: 100vh; 
+  font-family: var(--font-body); 
+  background-color: var(--bg-color); 
+  color: var(--text-color); 
+  line-height: 1.7; 
 }
 
-.container {
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-  flex-grow: 1;
+.container { 
+  width: 100%; 
+  max-width: 960px; 
+  margin: 0 auto; 
+  padding: 2rem 1.5rem; 
+  flex-grow: 1; 
 }
 
 /* --- 3) Header & Footer --- */
-.main-header {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 4%;
-  background-color: var(--secondary-color);
-  color: var(--light-text-color);
+.main-header { 
+  flex-shrink: 0; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 1.5rem 4%; 
+  background-color: var(--secondary-color); 
+  color: var(--light-text-color); 
 }
-
 .main-header h1 { font-size: 1.5rem; font-weight: 700; }
 .header-content { flex-grow: 1; text-align: center; }
-
-.main-footer {
-  margin-top: auto;
-  padding: 1rem 4%;
-  text-align: center;
-  color: #6c757d;
+.main-footer { 
+  margin-top: auto; 
+  padding: 1rem 4%; 
+  text-align: center; 
+  color: #6c757d; 
 }
 
 /* --- 4) Buttons --- */
-.btn {
-  display: inline-block;
-  font-weight: 600;
-  text-decoration: none;
-  padding: .75rem 1.5rem;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: all .2s ease-in-out;
-  border: 2px solid transparent;
-  text-align: center;
+.btn { 
+  display: inline-block; 
+  font-weight: 600; 
+  text-decoration: none; 
+  padding: .75rem 1.5rem; 
+  border-radius: var(--border-radius); 
+  cursor: pointer; 
+  transition: all .2s ease-in-out; 
+  border: 2px solid transparent; 
+  text-align: center; 
 }
-.btn-primary { background-color: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+.btn-primary { 
+  background-color: var(--primary-color); 
+  color: #fff; 
+  border-color: var(--primary-color); 
+}
 .btn-primary:hover { filter: brightness(1.1); }
-.btn-secondary { background-color: var(--card-bg); color: var(--secondary-color); border-color: var(--border-color); }
+.btn-secondary { 
+  background-color: var(--card-bg); 
+  color: var(--secondary-color); 
+  border-color: var(--border-color); 
+}
 .btn-secondary:hover { background-color: var(--border-color); }
-.btn-ghost { background: transparent; border: 2px solid var(--border-color); color: var(--secondary-color); }
+.btn-ghost { 
+  background: transparent; 
+  border: 2px solid var(--border-color); 
+  color: var(--secondary-color); 
+}
 .btn-ghost:hover { background: var(--border-color); }
 
-
 /* --- 5) Grid & Cards --- */
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  padding: 2rem 0;
+.grid-container { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+  gap: 1rem; 
+  padding: 2rem 0; 
 }
-.card {
-  display: block;
-  background: var(--card-bg);
-  border-radius: var(--border-radius);
-  padding: 2rem 1.25rem;
-  text-align: center;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--card-shadow);
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-  color: inherit;
+.card { 
+  display: block; 
+  background: var(--card-bg); 
+  border-radius: var(--border-radius); 
+  padding: 2rem 1.25rem; 
+  text-align: center; 
+  border: 1px solid var(--border-color); 
+  box-shadow: var(--card-shadow); 
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; 
+  color: inherit; 
 }
 .card h3 { font-size: 1.3rem; margin: 0; }
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--card-shadow-hover);
-  border-color: var(--accent-color);
-  cursor: pointer;
+.card:hover { 
+  transform: translateY(-5px); 
+  box-shadow: var(--card-shadow-hover); 
+  border-color: var(--accent-color); 
+  cursor: pointer; 
 }
 
 /* --- 6) Lesson Page Content --- */
-#lesson-content {
-  background: var(--card-bg);
-  padding: 2.5rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--card-shadow);
-  border: 1px solid var(--border-color);
+#lesson-content { 
+  background: var(--card-bg); 
+  padding: 2.5rem; 
+  border-radius: var(--border-radius); 
+  box-shadow: var(--card-shadow); 
+  border: 1px solid var(--border-color); 
 }
-#lesson-content h1, #lesson-content h2, #lesson-content h3 {
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: .5rem;
+#lesson-content h1, #lesson-content h2, #lesson-content h3 { 
+  margin-top: 2rem; 
+  margin-bottom: 1rem; 
+  border-bottom: 1px solid var(--border-color); 
+  padding-bottom: .5rem; 
 }
 
 /* --- 8) AI Tutor --- */
@@ -146,8 +155,8 @@ body {
 #key-modal { display: none; position: fixed; inset: 0; z-index: 2001; background: rgba(0,0,0,.6); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
 #key-modal[aria-hidden="false"] { display: flex; }
 #key-modal .key-card { background: #fff; padding: 1.5rem; border-radius: 12px; max-width: 420px; width: 92%; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-#key-modal .key-card h3 { margin-bottom: 0.5rem; }
-#key-modal .key-card p { margin-bottom: 1rem; color: #6c757d; }
+#key-modal h3 { margin-bottom: 0.5rem; }
+#key-modal p { margin-bottom: 1rem; color: #6c757d; }
 #key-modal input { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; margin-bottom: 1rem; }
 #key-modal .key-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
 
@@ -161,37 +170,72 @@ body {
   #lesson-content { padding: 1.5rem; }
 }
 
-/* =========================================================
-   NEW INTEGRATED STYLES
-   ========================================================= */
-
 /* --- 10) Lesson Actions & Modals --- */
-.lesson-actions {
-  text-align: center;
-  margin: 2.5rem 0;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+.lesson-actions { 
+  text-align: center; 
+  margin: 2.5rem 0; 
+  display: flex; 
+  justify-content: center; 
+  gap: 1rem; 
+  flex-wrap: wrap; 
 }
 .hidden { display: none !important; }
-.close-btn { background: none; border: none; font-size: 2rem; color: #6c757d; cursor: pointer; position: absolute; top: 5px; right: 15px; }
+.close-btn { 
+  background: none; 
+  border: none; 
+  font-size: 2rem; 
+  color: #6c757d; 
+  cursor: pointer; 
+  position: absolute; 
+  top: 5px; 
+  right: 15px; 
+}
 
 /* --- 11) Flashcard System --- */
-#flashcard-container {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  padding: 1.5rem;
-  margin-top: 2rem;
-  position: relative;
+#flashcard-container { 
+  background: var(--card-bg); 
+  border: 1px solid var(--border-color); 
+  border-radius: var(--border-radius); 
+  padding: 1.5rem; 
+  margin-top: 2rem; 
+  position: relative; 
 }
-.flashcard-header { display: flex; justify-content: center; align-items: center; margin-bottom: 1rem; position: relative; }
+.flashcard-header { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  margin-bottom: 1rem; 
+  position: relative; 
+}
 #flashcard-progress { font-weight: 600; color: #6c757d; }
-.flashcard { background-color: transparent; height: 250px; perspective: 1000px; cursor: pointer; }
-.flashcard-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
-.flashcard.is-flipped .flashcard-inner, .flashcard-inner.is-flipped { transform: rotateY(180deg); }
-.flashcard-front, .flashcard-back { display: flex; align-items: center; justify-content: center; text-align: center; padding: 1rem; position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border: 2px solid var(--border-color); border-radius: var(--border-radius); font-size: 1.2rem; }
+.flashcard { 
+  background-color: transparent; 
+  height: 250px; 
+  perspective: 1000px; 
+  cursor: pointer; 
+}
+.flashcard-inner { 
+  position: relative; 
+  width: 100%; 
+  height: 100%; 
+  transition: transform 0.6s; 
+  transform-style: preserve-3d; 
+}
+.flashcard-inner.is-flipped { transform: rotateY(180deg); }
+.flashcard-front, .flashcard-back { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center; 
+  padding: 1rem; 
+  position: absolute; 
+  width: 100%; 
+  height: 100%; 
+  backface-visibility: hidden; 
+  border: 2px solid var(--border-color); 
+  border-radius: var(--border-radius); 
+  font-size: 1.2rem; 
+}
 .flashcard-front { background-color: #fff; }
 .flashcard-back { background-color: #F8F9FA; transform: rotateY(180deg); }
 .flashcard-nav { display: flex; justify-content: space-between; margin-top: 1rem; }
