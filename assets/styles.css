@@ -1,3 +1,7 @@
+/* =========================================================
+   MED Portal NUB - Main Stylesheet  (Restored + Polished)
+   ========================================================= */
+
 /* --- 1) Global Variables & Reset --- */
 :root {
   --primary-color: #9B2226;        /* Maroon */
@@ -418,4 +422,3 @@ body {
 .btn-primary:hover { filter: brightness(0.95); }
 .btn-ghost { background: transparent; border: 2px solid var(--border-color); color: var(--secondary-color); }
 .btn-ghost:hover { background: var(--border-color); }
-
