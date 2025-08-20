@@ -20,4 +20,4 @@ This is common menstrual cramping that is recurrent and is not due to other dise
 This is pain that is caused by a disorder in the woman's reproductive organs, such as uterine fibroids, adenomyosis, or most commonly, endometriosis.
 
 ### 3. Endometriosis-Related Pain
-A key feature of dysmenorrhea caused by endometriosis is a characteristic **crescendo-decrescendo** pattern.
+A key feature of dysmenorrhea caused by endometriosis is a characteristic **crescendo-decrescendo** pattern.  
