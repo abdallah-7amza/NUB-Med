@@ -1,5 +1,5 @@
 // =================================================================
-//   NUB MED Portal - Lesson Page Logic (Reshaped & Robust)
+//   NUB MED Portal - Lesson Page Logic (Final & Robust Version)
 // =================================================================
 import { getLessonContent, getQuizData } from './github.js';
 import { initQuiz } from './quiz.js';
@@ -8,7 +8,6 @@ import { initAITutor } from './ai-tutor.js';
 window.currentLesson = {}; // Global object for AI context
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Wrap the entire initialization in a try...catch block to prevent silent failures.
     try {
         const params = new URLSearchParams(window.location.search);
         const lessonId = params.get('lesson');
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error("Lesson ID is missing from the URL.");
         }
 
-        // Setup the back button
         const year = params.get('year');
         const specialty = params.get('specialty');
         const backLink = document.getElementById('back-link-lesson');
@@ -25,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
             backLink.href = `lessons-list.html?year=${year}&specialty=${specialty}`;
         }
 
-        // Load content and initialize modules
         loadLessonAndQuiz(lessonId);
         initAITutor({ getLessonContext });
 
@@ -58,8 +55,6 @@ async function loadLessonAndQuiz(lessonId) {
         titleEl.textContent = lessonTitle;
         contentEl.innerHTML = marked.parse(cleanMarkdown);
     } else {
-        titleEl.textContent = 'Error';
-        contentEl.innerHTML = '<p style="color: red;">Could not load lesson content.</p>';
         throw new Error(`Failed to load lesson content for slug: ${lessonId}`);
     }
 
