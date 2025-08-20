@@ -1,374 +1,421 @@
-/* --------------------------
-   CSS Variables
---------------------------- */
+/* --- 1) Global Variables & Reset --- */
 :root {
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
-  --success-color: #28a745;
-  --danger-color: #dc3545;
-  --bg-color: #f8f9fa;
-  --text-color: #212529;
-  --card-bg: #ffffff;
-  --border-color: #dee2e6;
-  --hover-bg: #f1f3f5;
-  --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  --primary-color: #9B2226;        /* Maroon */
+  --secondary-color: #2B4162;      /* Slate Blue */
+  --accent-color: #FFD700;         /* Gold */
+  --bg-color: #F8F9FA;             /* Off-white */
+  --card-bg: #FFFFFF;              /* White */
+  --border-color: #E9ECEF;         /* Light Gray Border */
+  --text-color: #212529;           /* Dark text */
+  --light-text-color: #FFFFFF;     /* Text on dark bg */
+  --font-body: 'Inter', sans-serif;
+  --border-radius: 12px;
+  --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  --card-shadow-hover: 0 7px 14px rgba(0,0,0,0.08);
 }
 
-/* Optional Dark Mode */
-.dark {
-  --bg-color: #121212;
-  --text-color: #e9ecef;
-  --card-bg: #1e1e1e;
-  --border-color: #2a2a2a;
-  --hover-bg: #2d2d2d;
-  --shadow: 0 4px 12px rgba(0,0,0,0.4);
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* --- 2) Core Layout --- */
+html, body {
+  height: 100%;
 }
 
-/* --------------------------
-   Global Styles
---------------------------- */
 body {
-  font-family: "Segoe UI", Roboto, sans-serif;
-  background: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  background-color: var(--bg-color);
   color: var(--text-color);
-  margin: 0;
-  padding: 0;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
-/* Container */
 .container {
-  max-width: 900px;
+  width: 100%;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 2rem 1.5rem;
+  flex-grow: 1;
 }
 
-/* --------------------------
-   Header
---------------------------- */
-.header {
+/* --- 3) Header & Footer --- */
+.main-header {
+  flex-shrink: 0;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: var(--shadow);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  padding: 1.5rem 4%;
+  background-color: var(--secondary-color);
+  color: var(--light-text-color);
 }
 
-.header h1 {
-  flex: 1;
-  font-size: 1.25rem;
-  margin: 0;
+.main-header h1 { font-size: 1.5rem; font-weight: 700; }
+
+.header-content {
+  flex-grow: 1;
+  text-align: center;
 }
 
-/* Back button */
-.back-btn {
-  background: transparent;
-  border: none;
-  color: var(--primary-color);
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  transition: color 0.2s ease;
-}
-.back-btn:hover {
-  color: var(--secondary-color);
+.main-footer {
+  margin-top: auto;
+  padding: 1rem 4%;
+  text-align: center;
+  color: #6c757d;
 }
 
-/* --------------------------
-   Buttons
---------------------------- */
-.btn, .btn-secondary, .btn-ghost {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-}
-
+/* --- 4) Buttons --- */
 .btn {
-  background: var(--primary-color);
-  color: #fff;
-  border-color: var(--primary-color);
-}
-.btn:hover {
-  filter: brightness(0.95);
+  display: inline-block;
+  font-weight: 600;
+  text-decoration: none;
+  padding: .75rem 1.5rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+  border: 2px solid transparent;
+  text-align: center;
 }
 
 .btn-secondary {
-  background: var(--secondary-color);
-  color: #fff;
-  border-color: var(--secondary-color);
-}
-.btn-secondary:hover {
-  filter: brightness(0.9);
-}
-
-.btn-ghost {
-  background: transparent;
+  background-color: var(--card-bg);
   color: var(--secondary-color);
-  border: 2px solid var(--border-color);
-}
-.btn-ghost:hover {
-  background: var(--hover-bg);
+  border-color: var(--border-color);
 }
 
-/* Disabled state */
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.btn-secondary:hover {
+  background-color: var(--border-color);
 }
 
-/* --------------------------
-   Lesson Content
---------------------------- */
+/* --- 5) Grid & Cards (Years, Specialties, Lessons) --- */
+/* grid-container is the responsive grid (شبكة مرنة) used for card layouts */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 2rem 0;
+}
+
+/* Generic card used across years/specialties/lessons */
+.card {
+  display: block;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 2rem 1.25rem;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  color: inherit;
+}
+
+.card h3 { font-size: 1.3rem; margin: 0; }
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--accent-color);
+  cursor: pointer;
+}
+
+/* --- 6) Lesson Page Content --- */
 #lesson-content {
   background: var(--card-bg);
-  border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: var(--shadow);
-  margin-bottom: 2rem;
-}
-#lesson-content h2 {
-  margin-top: 1.25rem;
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  margin-bottom: 3rem;
 }
 
-/* --------------------------
-   Quiz Section
---------------------------- */
-.quiz-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+#lesson-content h1,
+#lesson-content h2,
+#lesson-content h3 {
+  margin-top: 2rem;
   margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: .5rem;
 }
 
-.quiz-score {
-  font-weight: bold;
-}
-
-#quiz-progress-bar {
-  flex: 1;
-  height: 8px;
-  background: var(--border-color);
-  border-radius: 4px;
-  overflow: hidden;
-}
-#quiz-progress-value {
-  height: 100%;
-  width: 0%;
-  background: var(--primary-color);
-  transition: width 0.3s ease;
+/* --- 7) Quiz Styles --- */
+#quiz-container {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
 }
 
 .quiz-question {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.quiz-question:last-child { border-bottom: none; }
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-top: 1rem;
 }
 
 .quiz-options label {
   display: flex;
   align-items: center;
-  padding: 0.5rem;
-  border: 2px solid var(--border-color);
-  border-radius: 6px;
-  margin: 0.25rem 0;
+  padding: .75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-.quiz-options label:hover {
-  background: var(--hover-bg);
-}
-.quiz-options input {
-  margin-right: 0.5rem;
+  transition: background-color .2s;
 }
 
-.quiz-options .correct {
-  background: #d4edda;
-  border-color: var(--success-color);
-}
-.quiz-options .incorrect {
-  background: #f8d7da;
-  border-color: var(--danger-color);
-}
+.quiz-options label:hover { background-color: #f1f3f5; }
+.quiz-options input { margin-right: 10px; }
 
-.quiz-results {
-  margin-top: 1rem;
-  font-weight: bold;
-}
-
-/* --------------------------
-   Quiz Mode Modal
---------------------------- */
-#quiz-mode-modal {
+/* --- 8) AI Tutor (Floating Button + Chat Window) --- */
+/* FAB (زر دائري عائم) */
+#ai-tutor-fab {
   position: fixed;
-  inset: 0;
-  z-index: 2002;
-  background: rgba(0,0,0,0.4);
-  display: none;
+  bottom: 25px;
+  right: 25px; /* keep right as in original design */
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+  color: #fff;
+  border-radius: 50%;
+  border: none;
+  display: flex;
   align-items: center;
   justify-content: center;
-}
-#quiz-mode-modal[aria-hidden="false"] {
-  display: flex;
-}
-#quiz-mode-modal .modal-card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 1.25rem;
-  max-width: 420px;
-  width: 92%;
-  box-shadow: var(--shadow);
-  text-align: center;
-}
-
-/* --------------------------
-   AI Tutor FAB + Modal
---------------------------- */
-.fab {
-  position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: #fff;
-  border: none;
-  font-size: 1.25rem;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-  z-index: 1500;
-}
-.fab:hover {
-  background: #0056b3;
-  transform: scale(1.05);
+  z-index: 1000;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
-/* Modal container */
-.modal {
+#ai-tutor-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* Overlay (طبقة تغطية مع تمويه بسيط) */
+#chat-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(30,40,50,0.5);
+  display: none;                /* toggled with .visible in JS */
   align-items: center;
   justify-content: center;
   z-index: 2000;
+  backdrop-filter: blur(5px);
 }
-.modal[aria-hidden="false"] {
+
+#chat-overlay.visible { display: flex; }
+
+/* Chat Window (نافذة الدردشة) */
+#chat-window {
+  width: 90%; max-width: 500px;
+  height: 75vh; max-height: 600px;
+  background-color: var(--bg-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   display: flex;
-}
-.modal-content {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 1.5rem;
-  max-width: 600px;
-  width: 95%;
-  max-height: 85%;
-  overflow-y: auto;
-  box-shadow: var(--shadow);
-  position: relative;
-}
-.close-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.75rem;
-  font-size: 1.5rem;
-  line-height: 1;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(.95);
+  opacity: 0;
+  transition: transform .2s ease-out, opacity .2s ease-out;
 }
 
-/* Chat box */
-.chat-box {
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 0.75rem;
-  height: 250px;
-  overflow-y: auto;
-  margin-bottom: 1rem;
-  background: var(--bg-color);
+#chat-overlay.visible #chat-window {
+  transform: scale(1);
+  opacity: 1;
 }
 
-/* Chat messages */
-.chat-message {
-  margin-bottom: 0.75rem;
-}
-.chat-message.user {
-  text-align: right;
-}
-.chat-message.assistant {
-  text-align: left;
-}
-.chat-message p {
-  display: inline-block;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  max-width: 75%;
-}
-.chat-message.user p {
-  background: var(--primary-color);
-  color: #fff;
-}
-.chat-message.assistant p {
-  background: var(--hover-bg);
-}
-
-/* Input form */
-#chat-input-form {
+/* Chat Header */
+.chat-header {
   display: flex;
-  gap: 0.5rem;
-}
-#chat-input {
-  flex: 1;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: var(--secondary-color);
+  color: var(--light-text-color);
+  flex-shrink: 0;
 }
 
-/* Quick prompts */
-.quick-prompts {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  flex-wrap: wrap;
-}
-.quick-prompts button {
-  font-size: 0.85rem;
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  background: var(--hover-bg);
+.chat-header h3 { font-size: 1.1rem; }
+
+#close-chat-btn {
+  background: none;
   border: none;
+  color: var(--light-text-color);
+  font-size: 1.8rem;
   cursor: pointer;
-}
-.quick-prompts button:hover {
-  background: var(--primary-color);
-  color: #fff;
+  opacity: .85;
+  transition: opacity .2s;
 }
 
-/* --------------------------
-   Responsive
---------------------------- */
-@media (max-width: 600px) {
-  .quiz-question {
-    padding: 0.75rem;
-  }
-  .header h1 {
-    font-size: 1rem;
-  }
-  .modal-content {
-    padding: 1rem;
-  }
+#close-chat-btn:hover { opacity: 1; }
+
+/* Chat Messages */
+#chat-messages {
+  flex-grow: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
+
+.chat-message {
+  padding: .75rem 1.25rem;
+  border-radius: 18px;
+  max-width: 80%;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.chat-message.user {
+  background-color: var(--primary-color);
+  color: var(--light-text-color);
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message.tutor {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+/* Chat Input Row */
+.chat-input-form {
+  display: flex;
+  padding: .5rem;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+}
+
+#chat-input {
+  flex-grow: 1;
+  border: none;
+  padding: .75rem 1rem;
+  font-size: 1rem;
+  background: transparent;
+}
+
+#chat-input:focus { outline: none; }
+
+#chat-send-btn {
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--light-text-color);
+  transition: background-color .2s;
+}
+
+#chat-send-btn:hover { background-color: #7c1b1e; }
+
+#chat-send-btn svg { width: 20px; height: 20px; }
+
+/* --- 9) Mobile Responsiveness --- */
+@media (max-width: 600px) {
+  .main-header {
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .main-header h1 { font-size: 1.2rem; }
+
+  .container { padding: 1.5rem 1rem; }
+
+  .grid-container { gap: 1rem; }
+
+  #lesson-content { padding: 1.5rem; }
+}
+
+#key-modal { display: none; position: fixed; inset: 0; z-index: 2001;
+  background: rgba(0,0,0,.5); align-items: center; justify-content: center; }
+#key-modal[aria-hidden="false"] { display: flex; }
+#key-modal .key-card { background: #fff; padding: 1.25rem; border-radius: 12px; max-width: 420px; width: 92%; }
+
+```css
+/* --- 10) Enhanced Quiz Styles --- */
+
+/* Header for Score and Progress */
+.quiz-header {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.quiz-score {
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Progress Bar */
+#quiz-progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#quiz-progress-value {
+    width: 0%; /* Will be updated by JS */
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease-in-out;
+}
+
+/* Hover effect for options */
+.quiz-options label:hover {
+    background-color: #e9ecef;
+}
+
+/* Correct Answer Style */
+.quiz-options label.correct {
+    background-color: #28a745; /* Green */
+    border-color: #218838;
+    color: white;
+}
+
+/* Incorrect Answer Style */
+.quiz-options label.incorrect {
+    background-color: #dc3545; /* Red */
+    border-color: #c82333;
+    color: white;
+}
+
+/* Style for answered questions to prevent re-clicking */
+.quiz-question.answered .quiz-options label {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.quiz-question.answered .quiz-options label:not(.correct):not(.incorrect) {
+    opacity: 0.6;
+}
+
+
+
+.btn-primary { background-color: var(--primary-color); color: #fff; border: 2px solid var(--primary-color); }
+.btn-primary:hover { filter: brightness(0.95); }
+.btn-ghost { background: transparent; border: 2px solid var(--border-color); color: var(--secondary-color); }
+.btn-ghost:hover { background: var(--border-color); }
+
