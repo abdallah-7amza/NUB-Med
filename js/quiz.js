@@ -1,15 +1,15 @@
-// js/quiz.js
+// js/quiz.js (Corrected Final Version)
 // =====================================================
 //      NUB MED Portal - Interactive Quiz System
 // =====================================================
 import { askAI } from './ai-tutor.js';
 
 // --- State Management ---
-let quizItems = []; // All questions for the current lesson
-let userAnswers = {}; // { "questionIndex": "selectedOptionId" }
-let currentIndex = 0; // The current question index being viewed
-let quizMode = null; // Can be 'exam' or 'browse'
-let lessonSlug = ''; // To create a unique key for localStorage
+let quizItems = [];
+let userAnswers = {};
+let currentIndex = 0;
+let quizMode = null;
+let lessonSlug = '';
 
 // --- DOM Element References ---
 let quizContainer, modal, quizMain, resultsContainer, progressBar, progressText, questionEl, optionsEl, navButtons, resultsDetails;
@@ -26,25 +26,32 @@ export function initQuiz(items, slug) {
     quizMain = document.getElementById('quiz-main');
     resultsContainer = document.getElementById('quiz-results');
 
-    // Make the "Test Yourself" button visible and attach event
+    // Make the "Test Yourself" button visible and attach its event listener
     const startBtn = document.getElementById('start-quiz-btn');
-    startBtn.style.display = 'inline-block';
-    startBtn.addEventListener('click', () => {
-        modal.style.display = 'flex';
-    });
+    if(startBtn) {
+        startBtn.style.display = 'inline-block';
+        // *** THIS IS THE CRITICAL FIX ***
+        startBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent page from jumping
+            if(modal) modal.style.display = 'flex';
+        });
+    }
 
-    // Attach events to modal buttons
-    document.getElementById('start-exam-btn').addEventListener('click', () => start('exam'));
-    document.getElementById('browse-questions-btn').addEventListener('click', () => start('browse'));
-    document.getElementById('quiz-reset-btn').addEventListener('click', resetQuiz);
+    // Attach events to modal and reset buttons
+    const startExamBtn = document.getElementById('start-exam-btn');
+    const browseQuestionsBtn = document.getElementById('browse-questions-btn');
+    const resetBtn = document.getElementById('quiz-reset-btn');
 
-    loadProgress(); // Check for saved progress
+    if(startExamBtn) startExamBtn.addEventListener('click', () => start('exam'));
+    if(browseQuestionsBtn) browseQuestionsBtn.addEventListener('click', () => start('browse'));
+    if(resetBtn) resetBtn.addEventListener('click', resetQuiz);
+
+    loadProgress();
     if (Object.keys(userAnswers).length > 0) {
-         // If there's saved progress, ask the user if they want to resume
         if (confirm('You have progress saved for this quiz. Do you want to resume?')) {
-            start('exam'); // Directly start the exam
+            start('exam');
         } else {
-            resetQuiz(); // Clear progress if they choose not to resume
+            resetQuiz();
         }
     }
 }
@@ -52,10 +59,9 @@ export function initQuiz(items, slug) {
 // --- Core Logic ---
 function start(mode) {
     quizMode = mode;
-    modal.style.display = 'none';
-    quizContainer.classList.remove('hidden');
+    if(modal) modal.style.display = 'none';
+    if(quizContainer) quizContainer.classList.remove('hidden');
     
-    // Get references to elements inside the main quiz area
     progressBar = document.getElementById('quiz-progress-bar-value');
     progressText = document.getElementById('quiz-progress-text');
     questionEl = document.getElementById('quiz-question-stem');
@@ -71,14 +77,14 @@ function start(mode) {
 }
 
 function renderQuestion() {
-    quizMain.style.display = 'block';
-    resultsContainer.style.display = 'none';
+    if(quizMain) quizMain.style.display = 'block';
+    if(resultsContainer) resultsContainer.style.display = 'none';
 
     const question = quizItems[currentIndex];
     const isAnswered = userAnswers.hasOwnProperty(currentIndex);
 
-    questionEl.innerHTML = `(${currentIndex + 1}/${quizItems.length}) ${question.stem}`;
-    optionsEl.innerHTML = ''; // Clear previous options
+    if(questionEl) questionEl.innerHTML = `(${currentIndex + 1}/${quizItems.length}) ${question.stem}`;
+    if(optionsEl) optionsEl.innerHTML = '';
 
     question.options.forEach(option => {
         const optionEl = document.createElement('button');
@@ -87,7 +93,7 @@ function renderQuestion() {
         optionEl.innerHTML = option.text;
 
         if (isAnswered) {
-            optionEl.disabled = true; // Disable all options if answered
+            optionEl.disabled = true;
             if (option.id === question.correct) {
                 optionEl.classList.add('correct');
             } else if (option.id === userAnswers[currentIndex]) {
@@ -96,7 +102,7 @@ function renderQuestion() {
         } else {
             optionEl.addEventListener('click', handleAnswerSelect);
         }
-        optionsEl.appendChild(optionEl);
+        if(optionsEl) optionsEl.appendChild(optionEl);
     });
 
     updateProgress();
@@ -104,26 +110,33 @@ function renderQuestion() {
 }
 
 function renderBrowseView() {
-    quizMain.style.display = 'none'; // Hide the single-question view
-    resultsContainer.style.display = 'block'; // Show the results/browse view
-    document.getElementById('quiz-results-header').textContent = 'Browse All Questions';
-    document.getElementById('quiz-final-score').style.display = 'none';
-    document.getElementById('quiz-nav').style.display = 'none';
+    if(quizMain) quizMain.style.display = 'none';
+    if(resultsContainer) resultsContainer.style.display = 'block';
     
-    resultsDetails.innerHTML = quizItems.map((q, index) => {
-        const optionsHtml = q.options.map(opt => `
-            <div class="result-option ${opt.id === q.correct ? 'correct' : ''}">
-                ${opt.text}
-            </div>
-        `).join('');
+    const resultsHeader = document.getElementById('quiz-results-header');
+    const finalScore = document.getElementById('quiz-final-score');
+    const quizNav = document.getElementById('quiz-nav');
 
-        return `
-            <div class="result-question-review">
-                <p><strong>${index + 1}. ${q.stem}</strong></p>
-                <div class="result-options-container">${optionsHtml}</div>
-            </div>
-        `;
-    }).join('');
+    if(resultsHeader) resultsHeader.textContent = 'Browse All Questions';
+    if(finalScore) finalScore.style.display = 'none';
+    if(quizNav) quizNav.style.display = 'none';
+    
+    if(resultsDetails) {
+        resultsDetails.innerHTML = quizItems.map((q, index) => {
+            const optionsHtml = q.options.map(opt => `
+                <div class="result-option ${opt.id === q.correct ? 'correct' : ''}">
+                    ${opt.text}
+                </div>
+            `).join('');
+
+            return `
+                <div class="result-question-review">
+                    <p><strong>${index + 1}. ${q.stem}</strong></p>
+                    <div class="result-options-container">${optionsHtml}</div>
+                </div>
+            `;
+        }).join('');
+    }
 }
 
 
@@ -135,31 +148,32 @@ function handleAnswerSelect(event) {
     userAnswers[currentIndex] = selectedId;
     saveProgress();
 
-    // Visually disable all buttons for this question to prevent re-answering
-    optionsEl.querySelectorAll('.quiz-option').forEach(btn => {
-        btn.removeEventListener('click', handleAnswerSelect);
-        btn.disabled = true;
-    });
+    if(optionsEl) {
+        optionsEl.querySelectorAll('.quiz-option').forEach(btn => {
+            btn.removeEventListener('click', handleAnswerSelect);
+            btn.disabled = true;
+        });
+    }
 
-    // Apply styles for correct/incorrect
     if (selectedId === correctId) {
         selectedOption.classList.add('correct');
     } else {
         selectedOption.classList.add('incorrect');
-        // Also show the correct one
-        const correctOptionEl = optionsEl.querySelector(`[data-option-id="${correctId}"]`);
-        if (correctOptionEl) {
-            correctOptionEl.classList.add('correct');
+        if(optionsEl){
+            const correctOptionEl = optionsEl.querySelector(`[data-option-id="${correctId}"]`);
+            if (correctOptionEl) {
+                correctOptionEl.classList.add('correct');
+            }
         }
     }
 
     updateProgress();
-    updateNavButtons(); // Re-check nav button state
+    updateNavButtons();
 }
 
 function showResults() {
-    quizMain.style.display = 'none';
-    resultsContainer.style.display = 'block';
+    if(quizMain) quizMain.style.display = 'none';
+    if(resultsContainer) resultsContainer.style.display = 'block';
 
     let score = 0;
     for (let i = 0; i < quizItems.length; i++) {
@@ -168,46 +182,50 @@ function showResults() {
         }
     }
     
-    document.getElementById('quiz-results-header').textContent = 'Quiz Complete!';
+    const resultsHeader = document.getElementById('quiz-results-header');
     const finalScoreEl = document.getElementById('quiz-final-score');
-    finalScoreEl.style.display = 'block';
-    finalScoreEl.textContent = `Your Final Score: ${score} / ${quizItems.length}`;
-    
-    resultsDetails.innerHTML = quizItems.map((q, index) => {
-        const userAnswerId = userAnswers[index];
-        const correctId = q.correct;
 
-        const optionsHtml = q.options.map(opt => {
-            let className = 'result-option';
-            if (opt.id === correctId) {
-                className += ' correct';
-            } else if (opt.id === userAnswerId) {
-                className += ' incorrect';
-            }
-            return `<div class="${className}">${opt.text}</div>`;
+    if(resultsHeader) resultsHeader.textContent = 'Quiz Complete!';
+    if(finalScoreEl) {
+        finalScoreEl.style.display = 'block';
+        finalScoreEl.textContent = `Your Final Score: ${score} / ${quizItems.length}`;
+    }
+    
+    if(resultsDetails) {
+        resultsDetails.innerHTML = quizItems.map((q, index) => {
+            const userAnswerId = userAnswers[index];
+            const correctId = q.correct;
+
+            const optionsHtml = q.options.map(opt => {
+                let className = 'result-option';
+                if (opt.id === correctId) {
+                    className += ' correct';
+                } else if (opt.id === userAnswerId) {
+                    className += ' incorrect';
+                }
+                return `<div class="${className}">${opt.text}</div>`;
+            }).join('');
+
+            const aiButtonHtml = userAnswerId !== correctId ? `
+                <button class="btn-ask-ai" data-question-index="${index}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 12a10 10 0 1010-10A10 10 0 002 12zm11-1h-6v2h6v-2zm2-3h-8v2h8V8zm0 6h-8v2h8v-2z"></path></svg>
+                    Ask AI to Explain
+                </button>
+            ` : '';
+
+            return `
+                <div class="result-question-review">
+                    <p><strong>${index + 1}. ${q.stem}</strong></p>
+                    <div class="result-options-container">${optionsHtml}</div>
+                    ${aiButtonHtml}
+                </div>
+            `;
         }).join('');
 
-        // AI Tutor integration button
-        const aiButtonHtml = userAnswerId !== correctId ? `
-            <button class="btn-ask-ai" data-question-index="${index}">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 12a10 10 0 1010-10A10 10 0 002 12zm11-1h-6v2h6v-2zm2-3h-8v2h8V8zm0 6h-8v2h8v-2z"></path></svg>
-                Ask AI to Explain
-            </button>
-        ` : '';
-
-        return `
-            <div class="result-question-review">
-                <p><strong>${index + 1}. ${q.stem}</strong></p>
-                <div class="result-options-container">${optionsHtml}</div>
-                ${aiButtonHtml}
-            </div>
-        `;
-    }).join('');
-
-    // Add event listeners to all "Ask AI" buttons
-    resultsDetails.querySelectorAll('.btn-ask-ai').forEach(button => {
-        button.addEventListener('click', handleAskAI);
-    });
+        resultsDetails.querySelectorAll('.btn-ask-ai').forEach(button => {
+            button.addEventListener('click', handleAskAI);
+        });
+    }
 }
 
 function handleAskAI(event) {
@@ -220,19 +238,17 @@ function handleAskAI(event) {
 
     const prompt = `Regarding the question "${question.stem}", please explain why "${correctAnswerText}" is the correct answer and why my answer, "${userAnswerText}", was incorrect. Keep the explanation concise and clear for a medical student.`;
 
-    // Call the exported function from ai-tutor.js
     askAI(prompt);
 }
 
 
-// --- UI Updates & Navigation ---
 function updateProgress() {
     const answeredCount = Object.keys(userAnswers).length;
     const total = quizItems.length;
     const percent = total > 0 ? (answeredCount / total) * 100 : 0;
     
-    progressBar.style.width = `${percent}%`;
-    progressText.textContent = `Progress: ${answeredCount} / ${total}`;
+    if(progressBar) progressBar.style.width = `${percent}%`;
+    if(progressText) progressText.textContent = `Progress: ${answeredCount} / ${total}`;
 }
 
 function updateNavButtons() {
@@ -240,9 +256,10 @@ function updateNavButtons() {
     const nextBtn = document.getElementById('quiz-next-btn');
     const prevBtn = document.getElementById('quiz-prev-btn');
 
-    // Navigation logic
+    if(!nextBtn || !prevBtn) return;
+
     prevBtn.disabled = currentIndex === 0;
-    nextBtn.disabled = !isAnswered && quizMode === 'exam'; // Can't go next until answered
+    nextBtn.disabled = !isAnswered && quizMode === 'exam';
     
     prevBtn.onclick = () => { if (currentIndex > 0) { currentIndex--; renderQuestion(); } };
     nextBtn.onclick = () => {
@@ -250,12 +267,10 @@ function updateNavButtons() {
             currentIndex++;
             renderQuestion();
         } else {
-            // Reached the end
             showResults();
         }
     };
     
-    // Check if we are at the end of the quiz
     if (currentIndex === quizItems.length - 1 && isAnswered) {
         nextBtn.textContent = 'Finish & See Results';
     } else {
@@ -263,7 +278,6 @@ function updateNavButtons() {
     }
 }
 
-// --- Local Storage & Reset ---
 function getStorageKey() {
     return `quiz_progress_${lessonSlug}`;
 }
@@ -283,9 +297,8 @@ function resetQuiz() {
         currentIndex = 0;
         localStorage.removeItem(getStorageKey());
         
-        // Hide quiz and show the modal again
-        quizContainer.classList.add('hidden');
-        modal.style.display = 'flex';
+        if(quizContainer) quizContainer.classList.add('hidden');
+        if(modal) modal.style.display = 'flex';
         console.log('Quiz has been reset.');
     }
 }
