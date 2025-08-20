@@ -415,3 +415,9 @@ body {
 .quiz-question.answered .quiz-options label:not(.correct):not(.incorrect) {
     opacity: 0.6;
 }
+
+.btn-primary { background-color: var(--primary-color); color: #fff; border: 2px solid var(--primary-color); }
+.btn-primary:hover { filter: brightness(0.95); }
+.btn-ghost { background: transparent; border: 2px solid var(--border-color); color: var(--secondary-color); }
+.btn-ghost:hover { background: var(--border-color); }
+
