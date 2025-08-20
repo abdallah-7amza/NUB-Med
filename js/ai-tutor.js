@@ -323,3 +323,28 @@ ${title}${slug}${summary}`
   loadApiKey();
   if (keyModal) hideElement(keyModal);
 }
+
+/**
+ * A new function that allows other scripts (like quiz.js)
+ * to send a prompt to the AI.
+ * @param {string} promptText - The question to ask the AI.
+ */
+export function askAI(promptText) {
+    const chatOverlay = document.getElementById("chat-overlay");
+    if (!chatOverlay || !chatOverlay.classList.contains("visible")) {
+        // Open the chat window if it's closed
+        document.getElementById("ai-tutor-fab")?.click();
+    }
+
+    // A small delay to ensure the chat is open before sending
+    setTimeout(() => {
+        const chatInput = document.getElementById("chat-input");
+        const sendBtn = document.getElementById("chat-send-btn");
+        if(chatInput) {
+            chatInput.value = promptText;
+        }
+        if(sendBtn) {
+            sendBtn.click();
+        }
+    }, 300); // 300ms delay
+}
