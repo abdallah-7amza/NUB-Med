@@ -1,94 +1,363 @@
-/* --- 11) Flashcards System Styles --- */
+/* =========================================================
+   MED Portal NUB - Main Stylesheet (Restored + Polished)
+   ========================================================= */
 
-#flashcard-modal {
+/* --- 1) Global Variables & Reset --- */
+:root {
+  --primary-color: #9B2226;      /* Maroon */
+  --secondary-color: #2B4162;      /* Slate Blue */
+  --accent-color: #FFD700;         /* Gold */
+  --bg-color: #F8F9FA;             /* Off-white */
+  --card-bg: #FFFFFF;              /* White */
+  --border-color: #E9ECEF;         /* Light Gray Border */
+  --text-color: #212529;           /* Dark text */
+  --light-text-color: #FFFFFF;     /* Text on dark bg */
+  --font-body: 'Inter', sans-serif;
+  --border-radius: 12px;
+  --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  --card-shadow-hover: 0 7px 14px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* --- 2) Core Layout --- */
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.7;
+}
+
+.container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  flex-grow: 1;
+}
+
+/* --- 3) Header & Footer --- */
+.main-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 4%;
+  background-color: var(--secondary-color);
+  color: var(--light-text-color);
+}
+
+.main-header h1 { font-size: 1.5rem; font-weight: 700; }
+
+.header-content {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.main-footer {
+  margin-top: auto;
+  padding: 1rem 4%;
+  text-align: center;
+  color: #6c757d;
+}
+
+/* --- 4) Buttons --- */
+.btn {
+  display: inline-block;
+  font-weight: 600;
+  text-decoration: none;
+  padding: .75rem 1.5rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+  border: 2px solid transparent;
+  text-align: center;
+}
+
+.btn-secondary {
+  background-color: var(--card-bg);
+  color: var(--secondary-color);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--border-color);
+}
+
+/* --- 5) Grid & Cards (Years, Specialties, Lessons) --- */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 2rem 0;
+}
+
+.card {
+  display: block;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 2rem 1.25rem;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  color: inherit;
+}
+
+.card h3 { font-size: 1.3rem; margin: 0; }
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--accent-color);
+  cursor: pointer;
+}
+
+/* --- 6) Lesson Page Content --- */
+#lesson-content {
+  background: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  margin-bottom: 3rem;
+}
+
+#lesson-content h1,
+#lesson-content h2,
+#lesson-content h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: .5rem;
+}
+
+/* --- 8) AI Tutor (Floating Button + Chat Window) --- */
+#ai-tutor-fab {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+  color: #fff;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+#ai-tutor-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+#chat-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(30,40,50,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+}
+
+#chat-overlay.visible { display: flex; }
+
+#chat-window {
+  width: 90%; max-width: 500px;
+  height: 75vh; max-height: 600px;
+  background-color: var(--bg-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(.95);
+  opacity: 0;
+  transition: transform .2s ease-out, opacity .2s ease-out;
+}
+
+#chat-overlay.visible #chat-window {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: var(--secondary-color);
+  color: var(--light-text-color);
+  flex-shrink: 0;
+}
+
+.chat-header h3 { font-size: 1.1rem; }
+
+#close-chat-btn {
+  background: none;
+  border: none;
+  color: var(--light-text-color);
+  font-size: 1.8rem;
+  cursor: pointer;
+  opacity: .85;
+  transition: opacity .2s;
+}
+
+#close-chat-btn:hover { opacity: 1; }
+
+#chat-messages {
+  flex-grow: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chat-message {
+  padding: .75rem 1.25rem;
+  border-radius: 18px;
+  max-width: 80%;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.chat-message.user {
+  background-color: var(--primary-color);
+  color: var(--light-text-color);
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message.tutor {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-input-form {
+  display: flex;
+  padding: .5rem;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+}
+
+#chat-input {
+  flex-grow: 1;
+  border: none;
+  padding: .75rem 1rem;
+  font-size: 1rem;
+  background: transparent;
+}
+
+#chat-input:focus { outline: none; }
+
+#chat-send-btn {
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--light-text-color);
+  transition: background-color .2s;
+}
+
+#chat-send-btn:hover { background-color: #7c1b1e; }
+
+/* --- 9) Mobile Responsiveness --- */
+@media (max-width: 600px) {
+  .main-header {
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .main-header h1 { font-size: 1.2rem; }
+  .container { padding: 1.5rem 1rem; }
+  .grid-container { gap: 1rem; }
+  #lesson-content { padding: 1.5rem; }
+}
+
+/* --- 10) Advanced Quiz System Styles --- */
+.hidden { display: none !important; }
+
+#quiz-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(30, 40, 50, 0.85);
-    display: none; /* Shown by JS */
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
     align-items: center;
     justify-content: center;
-    z-index: 4000;
-    backdrop-filter: blur(8px);
-    padding: 1rem;
+    z-index: 3000;
+    backdrop-filter: blur(5px);
 }
-
-.flashcard-content {
-    position: relative;
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-#close-flashcards-btn {
-    position: absolute;
-    top: -40px;
-    right: 0;
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 2.5rem;
-    cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-}
-#close-flashcards-btn:hover {
-    opacity: 1;
-}
-
-.flashcard-container {
-    width: 100%;
-    height: 300px;
-    perspective: 1000px; /* For the 3D effect */
-}
-
-.flashcard {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.6s;
-    cursor: pointer;
-}
-
-.flashcard.is-flipped {
-    transform: rotateY(180deg);
-}
-
-.flashcard-face {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden; /* Hides the back of the element */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
+.quiz-modal-content {
+    background: var(--card-bg);
+    padding: 2.5rem;
     border-radius: var(--border-radius);
-    background-color: var(--card-bg);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    font-size: 1.4rem;
     text-align: center;
-    line-height: 1.6;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
+.quiz-modal-content h3 { margin-bottom: 1rem; font-size: 1.5rem; }
+.quiz-modal-content p { margin-bottom: 2rem; color: #6c757d; }
+.quiz-modal-actions { display: flex; gap: 1rem; justify-content: center; }
+.quiz-header { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+#quiz-progress-text { text-align: center; font-weight: 600; color: #495057; }
+#quiz-progress-bar { width: 100%; height: 10px; background-color: var(--border-color); border-radius: 5px; overflow: hidden; }
+#quiz-progress-bar-value { width: 0%; height: 100%; background-color: var(--primary-color); transition: width 0.3s ease; }
+#quiz-question-card { background: var(--card-bg); padding: 2rem; border-radius: var(--border-radius); border: 1px solid var(--border-color); margin-bottom: 1.5rem; }
+#quiz-question-stem { font-size: 1.2rem; font-weight: 600; line-height: 1.6; margin-bottom: 1.5rem; }
+#quiz-options { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+.quiz-option { display: block; width: 100%; padding: 1rem; font-size: 1rem; font-family: inherit; text-align: left; background-color: #fff; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+.quiz-option:not(:disabled):hover { border-color: var(--primary-color); background-color: #fcf2f2; }
+.quiz-option.correct { background-color: #d4edda; border-color: #28a745; color: #155724; font-weight: 600; }
+.quiz-option.incorrect { background-color: #f8d7da; border-color: #dc3545; color: #721c24; font-weight: 600; }
+.quiz-option:disabled { cursor: not-allowed; opacity: 0.9; }
+#quiz-nav { display: flex; justify-content: space-between; margin-top: 1rem; }
+#quiz-results h2 { text-align: center; margin-bottom: 1rem; }
+#quiz-final-score { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 2.5rem; color: var(--primary-color); }
+.result-question-review { background-color: var(--card-bg); padding: 1.5rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); margin-bottom: 1.5rem; }
+.result-options-container { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+.result-option { padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid transparent; }
+.result-option.correct { background-color: #d4edda; border-color: #c3e6cb; font-weight: 600; }
+.result-option.incorrect { background-color: #f8d7da; border-color: #f5c6cb; opacity: 0.8; }
+.btn-ask-ai { background: none; border: 1px solid var(--border-color); color: var(--secondary-color); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; transition: background-color 0.2s; }
+.btn-ask-ai:hover { background-color: var(--border-color); }
 
-.flashcard-face.back {
-    transform: rotateY(180deg);
-    background-color: #e9ecef;
-    font-size: 1.2rem;
-}
-
-#flashcard-progress {
-    color: #fff;
-    font-weight: 600;
-}
-
-#flashcard-nav {
-    display: flex;
-    gap: 1rem;
-}
+/* --- 11) Flashcards System Styles --- */
+#flashcard-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(30, 40, 50, 0.85); display: none; align-items: center; justify-content: center; z-index: 4000; backdrop-filter: blur(8px); padding: 1rem; }
+.flashcard-content { position: relative; width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+#close-flashcards-btn { position: absolute; top: -40px; right: 0; background: none; border: none; color: #fff; font-size: 2.5rem; cursor: pointer; opacity: 0.8; transition: opacity 0.2s; }
+#close-flashcards-btn:hover { opacity: 1; }
+.flashcard-container { width: 100%; height: 300px; perspective: 1000px; }
+.flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; cursor: pointer; }
+.flashcard.is-flipped { transform: rotateY(180deg); }
+.flashcard-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 2rem; border-radius: var(--border-radius); background-color: var(--card-bg); box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-size: 1.4rem; text-align: center; line-height: 1.6; }
+.flashcard-face.back { transform: rotateY(180deg); background-color: #e9ecef; font-size: 1.2rem; }
+#flashcard-progress { color: #fff; font-weight: 600; }
+#flashcard-nav { display: flex; gap: 1rem; }
