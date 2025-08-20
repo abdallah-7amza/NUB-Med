@@ -1,75 +1,71 @@
-// =====================================================
-//      NUB MED Portal - Flashcards System
-// =====================================================
+let flashcardItems = [];
+let currentCardIndex = 0;
 
-let allCards = [], currentIndex = 0;
-let dom = {};
+let container, card, cardInner, cardFront, cardBack, progressEl, nextBtn, prevBtn, closeBtn;
 
-export function initFlashcards(cards) {
-    if (!cards || cards.length === 0) return;
-    allCards = cards;
-    currentIndex = 0;
-
-    // Find all DOM elements
-    dom.btn = document.getElementById('flashcard-btn');
-    dom.modal = document.getElementById('flashcard-modal');
-    dom.card = document.querySelector('.flashcard');
-    dom.front = document.querySelector('.flashcard-face.front');
-    dom.back = document.querySelector('.flashcard-face.back');
-    dom.prevBtn = document.getElementById('flashcard-prev-btn');
-    dom.nextBtn = document.getElementById('flashcard-next-btn');
-    dom.progress = document.getElementById('flashcard-progress');
-    dom.closeBtn = document.getElementById('close-flashcards-btn');
-
-    // Make the button visible and attach listeners
-    if (dom.btn) {
-        dom.btn.style.display = 'inline-block';
-        attachEventListeners();
-        showCard(currentIndex);
+export function initFlashcards(items) {
+    if (!items || items.length === 0) return;
+    flashcardItems = items.map(item => ({
+        question: item.stem,
+        answer: item.options.find(opt => opt.id === item.correct)?.text || 'N/A'
+    }));
+    
+    const startBtn = document.getElementById('start-flashcards-btn');
+    if(startBtn) {
+        startBtn.style.display = 'inline-block';
+        startBtn.addEventListener('click', showFlashcards);
     }
 }
 
-function attachEventListeners() {
-    dom.btn.addEventListener('click', () => {
-        dom.modal.style.display = 'flex';
-    });
-    
-    dom.closeBtn.addEventListener('click', () => {
-        dom.modal.style.display = 'none';
-        dom.card.classList.remove('is-flipped'); // Reset flip state on close
-    });
+function showFlashcards() {
+    container = document.getElementById('flashcard-container');
+    card = document.getElementById('flashcard-card');
+    cardInner = card.querySelector('.flashcard-inner');
+    cardFront = card.querySelector('.flashcard-front');
+    cardBack = card.querySelector('.flashcard-back');
+    progressEl = document.getElementById('flashcard-progress');
+    nextBtn = document.getElementById('flashcard-next-btn');
+    prevBtn = document.getElementById('flashcard-prev-btn');
+    closeBtn = document.getElementById('close-flashcards-btn');
 
-    dom.card.addEventListener('click', () => {
-        dom.card.classList.toggle('is-flipped');
-    });
+    if (!container) return;
 
-    dom.nextBtn.addEventListener('click', () => {
-        if (currentIndex < allCards.length - 1) {
-            currentIndex++;
-            showCard(currentIndex);
-        }
-    });
+    container.classList.remove('hidden');
+    currentCardIndex = 0;
+    renderCard();
 
-    dom.prevBtn.addEventListener('click', () => {
-        if (currentIndex > 0) {
-            currentIndex--;
-            showCard(currentIndex);
-        }
-    });
+    card.addEventListener('click', () => cardInner.classList.toggle('is-flipped'));
+    nextBtn.addEventListener('click', nextCard);
+    prevBtn.addEventListener('click', prevCard);
+    closeBtn.addEventListener('click', hideFlashcards);
 }
 
-function showCard(index) {
-    dom.card.classList.remove('is-flipped'); // Always show the front first
-    const cardData = allCards[index];
+function hideFlashcards() {
+    if (container) container.classList.add('hidden');
+    if (cardInner) cardInner.classList.remove('is-flipped');
+}
+
+function renderCard() {
+    const item = flashcardItems[currentCardIndex];
+    cardFront.textContent = item.question;
+    cardBack.textContent = item.answer;
+    progressEl.textContent = `${currentCardIndex + 1} / ${flashcardItems.length}`;
+    cardInner.classList.remove('is-flipped');
     
-    // Update content after a short delay to allow the card to flip back
-    setTimeout(() => {
-        dom.front.textContent = cardData.front;
-        dom.back.textContent = cardData.back;
-        dom.progress.textContent = `Card ${index + 1} of ${allCards.length}`;
-        
-        // Update button states
-        dom.prevBtn.disabled = index === 0;
-        dom.nextBtn.disabled = index === allCards.length - 1;
-    }, 150);
+    prevBtn.disabled = currentCardIndex === 0;
+    nextBtn.disabled = currentCardIndex === flashcardItems.length - 1;
+}
+
+function nextCard() {
+    if (currentCardIndex < flashcardItems.length - 1) {
+        currentCardIndex++;
+        renderCard();
+    }
+}
+
+function prevCard() {
+    if (currentCardIndex > 0) {
+        currentCardIndex--;
+        renderCard();
+    }
 }
