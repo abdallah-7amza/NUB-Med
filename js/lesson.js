@@ -1,6 +1,7 @@
 // =================================================================
 //   NUB MED Portal - Lesson Page Logic (Final & Robust Version)
 // =================================================================
+import { initFlashcards } from './flashcards.js';
 import { getLessonContent, getQuizData } from './github.js';
 import { initQuiz } from './quiz.js';
 import { initAITutor } from './ai-tutor.js';
