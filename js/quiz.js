@@ -1,43 +1,28 @@
-// js/quiz.js (Corrected Final Version)
-// =====================================================
-//      NUB MED Portal - Interactive Quiz System
-// =====================================================
+// js/quiz.js (النسخة النهائية المؤكدة)
 import { askAI } from './ai-tutor.js';
 
-// --- State Management ---
-let quizItems = [];
-let userAnswers = {};
-let currentIndex = 0;
-let quizMode = null;
-let lessonSlug = '';
-
-// --- DOM Element References ---
+let quizItems = [], userAnswers = {}, currentIndex = 0, quizMode = null, lessonSlug = '';
 let quizContainer, modal, quizMain, resultsContainer, progressBar, progressText, questionEl, optionsEl, navButtons, resultsDetails;
 
-// --- Public Initialization Function ---
 export function initQuiz(items, slug) {
     if (!items || items.length === 0) return;
-
-    // Store data and get DOM elements
     quizItems = items;
     lessonSlug = slug;
+    
     quizContainer = document.getElementById('quiz-container');
     modal = document.getElementById('quiz-modal');
     quizMain = document.getElementById('quiz-main');
     resultsContainer = document.getElementById('quiz-results');
 
-    // Make the "Test Yourself" button visible and attach its event listener
     const startBtn = document.getElementById('start-quiz-btn');
-    if(startBtn) {
+    if (startBtn) {
         startBtn.style.display = 'inline-block';
-        // *** THIS IS THE CRITICAL FIX ***
         startBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent page from jumping
-            if(modal) modal.style.display = 'flex';
+            e.preventDefault();
+            if (modal) modal.style.display = 'flex';
         });
     }
 
-    // Attach events to modal and reset buttons
     const startExamBtn = document.getElementById('start-exam-btn');
     const browseQuestionsBtn = document.getElementById('browse-questions-btn');
     const resetBtn = document.getElementById('quiz-reset-btn');
@@ -48,7 +33,7 @@ export function initQuiz(items, slug) {
 
     loadProgress();
     if (Object.keys(userAnswers).length > 0) {
-        if (confirm('You have progress saved for this quiz. Do you want to resume?')) {
+        if (confirm('You have progress saved. Resume?')) {
             start('exam');
         } else {
             resetQuiz();
@@ -56,7 +41,6 @@ export function initQuiz(items, slug) {
     }
 }
 
-// --- Core Logic ---
 function start(mode) {
     quizMode = mode;
     if(modal) modal.style.display = 'none';
@@ -69,11 +53,8 @@ function start(mode) {
     navButtons = document.getElementById('quiz-nav');
     resultsDetails = document.getElementById('quiz-results-details');
 
-    if (quizMode === 'exam') {
-        renderQuestion();
-    } else if (quizMode === 'browse') {
-        renderBrowseView();
-    }
+    if (quizMode === 'exam') renderQuestion();
+    else if (quizMode === 'browse') renderBrowseView();
 }
 
 function renderQuestion() {
@@ -94,11 +75,8 @@ function renderQuestion() {
 
         if (isAnswered) {
             optionEl.disabled = true;
-            if (option.id === question.correct) {
-                optionEl.classList.add('correct');
-            } else if (option.id === userAnswers[currentIndex]) {
-                optionEl.classList.add('incorrect');
-            }
+            if (option.id === question.correct) optionEl.classList.add('correct');
+            else if (option.id === userAnswers[currentIndex]) optionEl.classList.add('incorrect');
         } else {
             optionEl.addEventListener('click', handleAnswerSelect);
         }
@@ -123,22 +101,11 @@ function renderBrowseView() {
     
     if(resultsDetails) {
         resultsDetails.innerHTML = quizItems.map((q, index) => {
-            const optionsHtml = q.options.map(opt => `
-                <div class="result-option ${opt.id === q.correct ? 'correct' : ''}">
-                    ${opt.text}
-                </div>
-            `).join('');
-
-            return `
-                <div class="result-question-review">
-                    <p><strong>${index + 1}. ${q.stem}</strong></p>
-                    <div class="result-options-container">${optionsHtml}</div>
-                </div>
-            `;
+            const optionsHtml = q.options.map(opt => `<div class="result-option ${opt.id === q.correct ? 'correct' : ''}">${opt.text}</div>`).join('');
+            return `<div class="result-question-review"><p><strong>${index + 1}. ${q.stem}</strong></p><div class="result-options-container">${optionsHtml}</div></div>`;
         }).join('');
     }
 }
-
 
 function handleAnswerSelect(event) {
     const selectedOption = event.target;
@@ -161,12 +128,9 @@ function handleAnswerSelect(event) {
         selectedOption.classList.add('incorrect');
         if(optionsEl){
             const correctOptionEl = optionsEl.querySelector(`[data-option-id="${correctId}"]`);
-            if (correctOptionEl) {
-                correctOptionEl.classList.add('correct');
-            }
+            if (correctOptionEl) correctOptionEl.classList.add('correct');
         }
     }
-
     updateProgress();
     updateNavButtons();
 }
@@ -177,9 +141,7 @@ function showResults() {
 
     let score = 0;
     for (let i = 0; i < quizItems.length; i++) {
-        if (userAnswers[i] === quizItems[i].correct) {
-            score++;
-        }
+        if (userAnswers[i] === quizItems[i].correct) score++;
     }
     
     const resultsHeader = document.getElementById('quiz-results-header');
@@ -195,36 +157,16 @@ function showResults() {
         resultsDetails.innerHTML = quizItems.map((q, index) => {
             const userAnswerId = userAnswers[index];
             const correctId = q.correct;
-
             const optionsHtml = q.options.map(opt => {
                 let className = 'result-option';
-                if (opt.id === correctId) {
-                    className += ' correct';
-                } else if (opt.id === userAnswerId) {
-                    className += ' incorrect';
-                }
+                if (opt.id === correctId) className += ' correct';
+                else if (opt.id === userAnswerId) className += ' incorrect';
                 return `<div class="${className}">${opt.text}</div>`;
             }).join('');
-
-            const aiButtonHtml = userAnswerId !== correctId ? `
-                <button class="btn-ask-ai" data-question-index="${index}">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 12a10 10 0 1010-10A10 10 0 002 12zm11-1h-6v2h6v-2zm2-3h-8v2h8V8zm0 6h-8v2h8v-2z"></path></svg>
-                    Ask AI to Explain
-                </button>
-            ` : '';
-
-            return `
-                <div class="result-question-review">
-                    <p><strong>${index + 1}. ${q.stem}</strong></p>
-                    <div class="result-options-container">${optionsHtml}</div>
-                    ${aiButtonHtml}
-                </div>
-            `;
+            const aiButtonHtml = userAnswerId !== correctId ? `<button class="btn-ask-ai" data-question-index="${index}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 12a10 10 0 1010-10A10 10 0 002 12zm11-1h-6v2h6v-2zm2-3h-8v2h8V8zm0 6h-8v2h8v-2z"></path></svg> Ask AI to Explain</button>` : '';
+            return `<div class="result-question-review"><p><strong>${index + 1}. ${q.stem}</strong></p><div class="result-options-container">${optionsHtml}</div>${aiButtonHtml}</div>`;
         }).join('');
-
-        resultsDetails.querySelectorAll('.btn-ask-ai').forEach(button => {
-            button.addEventListener('click', handleAskAI);
-        });
+        resultsDetails.querySelectorAll('.btn-ask-ai').forEach(button => button.addEventListener('click', handleAskAI));
     }
 }
 
@@ -235,18 +177,14 @@ function handleAskAI(event) {
     const userAnswerId = userAnswers[questionIndex];
     const userAnswerText = question.options.find(o => o.id === userAnswerId)?.text;
     const correctAnswerText = question.options.find(o => o.id === question.correct)?.text;
-
     const prompt = `Regarding the question "${question.stem}", please explain why "${correctAnswerText}" is the correct answer and why my answer, "${userAnswerText}", was incorrect. Keep the explanation concise and clear for a medical student.`;
-
     askAI(prompt);
 }
-
 
 function updateProgress() {
     const answeredCount = Object.keys(userAnswers).length;
     const total = quizItems.length;
     const percent = total > 0 ? (answeredCount / total) * 100 : 0;
-    
     if(progressBar) progressBar.style.width = `${percent}%`;
     if(progressText) progressText.textContent = `Progress: ${answeredCount} / ${total}`;
 }
@@ -255,50 +193,24 @@ function updateNavButtons() {
     const isAnswered = userAnswers.hasOwnProperty(currentIndex);
     const nextBtn = document.getElementById('quiz-next-btn');
     const prevBtn = document.getElementById('quiz-prev-btn');
-
     if(!nextBtn || !prevBtn) return;
-
     prevBtn.disabled = currentIndex === 0;
     nextBtn.disabled = !isAnswered && quizMode === 'exam';
-    
     prevBtn.onclick = () => { if (currentIndex > 0) { currentIndex--; renderQuestion(); } };
-    nextBtn.onclick = () => {
-        if (currentIndex < quizItems.length - 1) {
-            currentIndex++;
-            renderQuestion();
-        } else {
-            showResults();
-        }
-    };
-    
-    if (currentIndex === quizItems.length - 1 && isAnswered) {
-        nextBtn.textContent = 'Finish & See Results';
-    } else {
-        nextBtn.textContent = 'Next →';
-    }
+    nextBtn.onclick = () => { if (currentIndex < quizItems.length - 1) { currentIndex++; renderQuestion(); } else { showResults(); } };
+    nextBtn.textContent = (currentIndex === quizItems.length - 1 && isAnswered) ? 'Finish & See Results' : 'Next →';
 }
 
-function getStorageKey() {
-    return `quiz_progress_${lessonSlug}`;
-}
-
-function saveProgress() {
-    localStorage.setItem(getStorageKey(), JSON.stringify(userAnswers));
-}
-
-function loadProgress() {
-    const saved = localStorage.getItem(getStorageKey());
-    userAnswers = saved ? JSON.parse(saved) : {};
-}
+function getStorageKey() { return `quiz_progress_${lessonSlug}`; }
+function saveProgress() { localStorage.setItem(getStorageKey(), JSON.stringify(userAnswers)); }
+function loadProgress() { const saved = localStorage.getItem(getStorageKey()); userAnswers = saved ? JSON.parse(saved) : {}; }
 
 function resetQuiz() {
-    if (confirm('Are you sure you want to reset your quiz progress? This cannot be undone.')) {
+    if (confirm('Are you sure you want to reset your quiz progress?')) {
         userAnswers = {};
         currentIndex = 0;
         localStorage.removeItem(getStorageKey());
-        
         if(quizContainer) quizContainer.classList.add('hidden');
         if(modal) modal.style.display = 'flex';
-        console.log('Quiz has been reset.');
     }
 }
