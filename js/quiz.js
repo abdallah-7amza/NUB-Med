@@ -1,5 +1,5 @@
 // =====================================================
-//      NUB MED Portal - Interactive Quiz System (Reshaped & Robust)
+//      NUB MED Portal - Interactive Quiz System (Final & Robust Version)
 // =====================================================
 
 let quizItems = [], userAnswers = {}, currentIndex = 0, quizMode = null, lessonSlug = '';
@@ -16,7 +16,7 @@ export function initQuiz(items, slug) {
 
     // Find all necessary HTML elements at the start. If any are missing, stop and report an error.
     if (!findAllDOMElements()) {
-        console.error("Quiz Initialization Failed: One or more required HTML elements are missing. Check IDs in lesson.html.");
+        console.error("Quiz Initialization Failed: One or more required HTML elements are missing. Check IDs in the final lesson.html.");
         return;
     }
 
@@ -69,7 +69,7 @@ function findAllDOMElements() {
  */
 function attachEventListeners() {
     dom.startBtn.addEventListener('click', (e) => {
-        e.preventDefault();
+        e.preventDefault(); // This is important for <a> tags to prevent page reload
         dom.modal.style.display = 'flex';
     });
 
@@ -90,19 +90,15 @@ function start(mode) {
 function renderQuestion() {
     dom.quizMain.style.display = 'block';
     dom.resultsContainer.style.display = 'none';
-
     const question = quizItems[currentIndex];
     const isAnswered = userAnswers.hasOwnProperty(currentIndex);
-
     dom.questionEl.innerHTML = `(${currentIndex + 1}/${quizItems.length}) ${question.stem}`;
     dom.optionsEl.innerHTML = '';
-
     question.options.forEach(option => {
         const optionEl = document.createElement('button');
         optionEl.className = 'quiz-option';
         optionEl.dataset.optionId = option.id;
         optionEl.innerHTML = option.text;
-
         if (isAnswered) {
             optionEl.disabled = true;
             if (option.id === question.correct) optionEl.classList.add('correct');
@@ -112,7 +108,6 @@ function renderQuestion() {
         }
         dom.optionsEl.appendChild(optionEl);
     });
-
     updateProgress();
     updateNavButtons();
 }
@@ -120,11 +115,9 @@ function renderQuestion() {
 function renderBrowseView() {
     dom.quizMain.style.display = 'none';
     dom.resultsContainer.style.display = 'block';
-    
     dom.resultsHeader.textContent = 'Browse All Questions';
     dom.finalScore.style.display = 'none';
     dom.nav.style.display = 'none';
-    
     dom.resultsDetails.innerHTML = quizItems.map((q, index) => {
         const optionsHtml = q.options.map(opt => `<div class="result-option ${opt.id === q.correct ? 'correct' : ''}">${opt.text}</div>`).join('');
         return `<div class="result-question-review"><p><strong>${index + 1}. ${q.stem}</strong></p><div class="result-options-container">${optionsHtml}</div></div>`;
@@ -135,15 +128,12 @@ function handleAnswerSelect(event) {
     const selectedOption = event.target;
     const selectedId = selectedOption.dataset.optionId;
     const correctId = quizItems[currentIndex].correct;
-
     userAnswers[currentIndex] = selectedId;
     saveProgress();
-
     dom.optionsEl.querySelectorAll('.quiz-option').forEach(btn => {
         btn.removeEventListener('click', handleAnswerSelect);
         btn.disabled = true;
     });
-
     if (selectedId === correctId) {
         selectedOption.classList.add('correct');
     } else {
@@ -158,16 +148,13 @@ function handleAnswerSelect(event) {
 function showResults() {
     dom.quizMain.style.display = 'none';
     dom.resultsContainer.style.display = 'block';
-
     let score = 0;
     for (let i = 0; i < quizItems.length; i++) {
         if (userAnswers[i] === quizItems[i].correct) score++;
     }
-    
     dom.resultsHeader.textContent = 'Quiz Complete!';
     dom.finalScore.style.display = 'block';
     dom.finalScore.textContent = `Your Final Score: ${score} / ${quizItems.length}`;
-    
     dom.resultsDetails.innerHTML = quizItems.map((q, index) => {
         const userAnswerId = userAnswers[index];
         const correctId = q.correct;
@@ -190,9 +177,7 @@ async function handleAskAI(event) {
     const userAnswerId = userAnswers[questionIndex];
     const userAnswerText = question.options.find(o => o.id === userAnswerId)?.text;
     const correctAnswerText = question.options.find(o => o.id === question.correct)?.text;
-
     const prompt = `Regarding the question "${question.stem}", please explain why "${correctAnswerText}" is the correct answer and why my answer, "${userAnswerText}", was incorrect. Keep the explanation concise and clear for a medical student.`;
-    
     const { askAI } = await import('./ai-tutor.js');
     askAI(prompt);
 }
