@@ -1,231 +1,94 @@
-// The final, corrected, and integrated version of js/lesson.js
+// =================================================================
+//   NUB MED Portal - Final Lesson Page Logic (lesson.js)
+// =================================================================
 import { getLessonContent, getQuizData } from './github.js';
+import { initQuiz } from './quiz.js';
+import { initAITutor } from './ai-tutor.js';
 
-// --- Global variables for the new quiz system ---
-let quizItems = [];
-let userAnswers = {};
-let lessonId = '';
+// This global object will hold the lesson's data so the AI Tutor can access it.
+window.currentLesson = {};
 
+/**
+ * This is the main function that runs after the page has finished loading.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    // Use a different variable name to avoid conflict with the global lessonId
-    const currentLessonId = params.get('lesson'); 
+    const lessonId = params.get('lesson');
     const year = params.get('year');
     const specialty = params.get('specialty');
     const contentEl = document.getElementById('lesson-content');
 
-    if (!currentLessonId) {
+    // Make sure there is a lesson ID in the URL.
+    if (!lessonId) {
         contentEl.innerHTML = '<p style="color: red; text-align: center;">Error: Lesson ID is missing in the URL.</p>';
         return;
     }
 
+    // Set up the "Back" button link correctly.
     const backLink = document.getElementById('back-link-lesson');
     if (backLink && year && specialty) {
         backLink.href = `lessons-list.html?year=${year}&specialty=${specialty}`;
     }
 
-    // Call the main functions
-    loadLessonAndQuiz(currentLessonId);
-    setupAITutor();
+    // Load the lesson content and the quiz.
+    loadLessonAndQuiz(lessonId);
+    
+    // Initialize and set up the AI Tutor.
+    initAITutor({ getLessonContext });
 });
 
-async function loadLessonAndQuiz(currentLessonId) {
-    // Set the global lessonId for the quiz system to use
-    lessonId = currentLessonId;
-
+/**
+ * This function fetches the lesson and quiz files from the server.
+ * @param {string} lessonId - The unique ID of the lesson (the slug).
+ */
+async function loadLessonAndQuiz(lessonId) {
     const titleEl = document.getElementById('page-title');
     const contentEl = document.getElementById('lesson-content');
-    const quizContainer = document.getElementById('quiz-container');
-
+    
+    // Request both files at the same time to make loading faster.
     const [markdownContent, quizData] = await Promise.all([
         getLessonContent(lessonId),
         getQuizData(lessonId)
     ]);
 
-    // 1. Render Lesson Content (with metadata fix)
+    // 1. Display the lesson content on the page.
     if (markdownContent) {
-        const cleanMarkdown = markdownContent.replace(/^---\s*[\s\S]*?---\s*/, '').trim();
-        contentEl.innerHTML = marked.parse(cleanMarkdown);
-        const firstHeader = contentEl.querySelector('h1');
-        if (firstHeader) {
-            titleEl.textContent = firstHeader.textContent;
-            firstHeader.remove();
-        } else {
-            titleEl.textContent = lessonId.replace(/-/g, ' ');
-        }
+        // Use the 'matter' library to separate the metadata (like the title) from the actual lesson content.
+        const { data, content } = matter(markdownContent);
+        
+        // Store all important lesson info in the global variable for the AI to read.
+        window.currentLesson.title = data.title || lessonId.replace(/-/g, ' ');
+        window.currentLesson.summary = data.summary || 'No summary available.';
+        window.currentLesson.content = content; // Store the full lesson content.
+        
+        // Display the title and the lesson content on the page.
+        titleEl.textContent = window.currentLesson.title;
+        contentEl.innerHTML = marked.parse(content);
     } else {
         titleEl.textContent = 'Error';
         contentEl.innerHTML = '<p style="color: red;">Could not load lesson content.</p>';
     }
 
-    // 2. Initialize the Interactive Quiz if it exists
+    // 2. Set up the new, advanced quiz system.
     if (quizData && quizData.items && quizData.items.length > 0) {
-        quizContainer.style.display = 'block';
-        initQuiz(quizData.items);
-    }
-}
-
-// --- NEW INTERACTIVE QUIZ SYSTEM ---
-
-function initQuiz(items) {
-    quizItems = items;
-    const resetButton = document.getElementById('quiz-reset-btn');
-    loadProgress();
-    renderQuiz();
-    resetButton.addEventListener('click', resetQuiz);
-}
-
-function renderQuiz() {
-    const quizContentEl = document.getElementById('quiz-content');
-    quizContentEl.innerHTML = ''; // Clear previous render
-
-    quizItems.forEach((question, index) => {
-        const isAnswered = userAnswers.hasOwnProperty(index);
-        const userAnswerId = userAnswers[index];
-
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'quiz-question';
-        if (isAnswered) {
-            questionDiv.classList.add('answered');
-        }
-
-        const optionsHtml = question.options.map(option => {
-            let labelClass = '';
-            if (isAnswered) {
-                if (option.id === question.correct) {
-                    labelClass = 'correct';
-                } else if (option.id === userAnswerId) {
-                    labelClass = 'incorrect';
-                }
-            }
-            return `
-                <label class="${labelClass}">
-                    <input type="radio" name="question-${index}" value="${option.id}" ${isAnswered ? 'disabled' : ''} ${userAnswerId === option.id ? 'checked' : ''}>
-                    <span>${option.text}</span>
-                </label>
-            `;
-        }).join('');
-
-        questionDiv.innerHTML = `
-            <p><strong>${index + 1}. ${question.stem}</strong></p>
-            <div class="quiz-options">${optionsHtml}</div>
-        `;
-        quizContentEl.appendChild(questionDiv);
-    });
-
-    document.querySelectorAll('.quiz-options input[type="radio"]:not(:disabled)').forEach(input => {
-        input.addEventListener('change', handleOptionSelect);
-    });
-
-    updateUI();
-}
-
-function handleOptionSelect(event) {
-    const input = event.target;
-    const questionIndex = parseInt(input.name.split('-')[1]);
-    const selectedOptionId = input.value;
-    userAnswers[questionIndex] = selectedOptionId;
-    saveProgress();
-    renderQuiz();
-}
-
-function updateUI() {
-    const scoreEl = document.getElementById('quiz-score');
-    const progressValueEl = document.getElementById('quiz-progress-value');
-    const resetButton = document.getElementById('quiz-reset-btn');
-
-    let score = 0;
-    Object.keys(userAnswers).forEach(index => {
-        const question = quizItems[index];
-        if (question.correct === userAnswers[index]) {
-            score++;
-        }
-    });
-
-    const answeredCount = Object.keys(userAnswers).length;
-    const totalQuestions = quizItems.length;
-    scoreEl.textContent = `Score: ${score} / ${totalQuestions}`;
-    const progressPercent = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
-    progressValueEl.style.width = `${progressPercent}%`;
-    resetButton.style.display = answeredCount > 0 ? 'inline-block' : 'none';
-}
-
-function getStorageKey() {
-    return `quiz_progress_${lessonId}`;
-}
-
-function saveProgress() {
-    localStorage.setItem(getStorageKey(), JSON.stringify(userAnswers));
-}
-
-function loadProgress() {
-    const savedData = localStorage.getItem(getStorageKey());
-    userAnswers = savedData ? JSON.parse(savedData) : {};
-}
-
-function resetQuiz() {
-    if (confirm('Are you sure you want to reset your progress?')) {
-        localStorage.removeItem(getStorageKey());
-        userAnswers = {};
-        renderQuiz();
+        // Also store the quiz questions for the AI to read.
+        window.currentLesson.quiz = quizData.items;
+        
+        // Start the quiz system using the questions we loaded.
+        initQuiz(quizData.items, lessonId);
     }
 }
 
 /**
- * Sets up all functionality for the AI Tutor chat window.
- * This function is untouched and will work as before.
+ * This helper function gives all the current lesson's information to the AI Tutor.
+ * @returns {object} An object containing the full context of the lesson.
  */
-function setupAITutor() {
-    const tutorFab = document.getElementById('ai-tutor-fab');
-    const chatOverlay = document.getElementById('chat-overlay');
-    const closeChatBtn = document.getElementById('close-chat-btn');
-    const chatForm = document.getElementById('chat-input-form');
-    const chatInput = document.getElementById('chat-input');
-    const chatMessages = document.getElementById('chat-messages');
-    const API_KEY_STORAGE_ID = 'ai_tutor_api_key';
-
-    tutorFab.addEventListener('click', () => {
-        chatOverlay.style.display = 'flex';
-        setTimeout(() => chatOverlay.classList.add('visible'), 10);
-    });
-    closeChatBtn.addEventListener('click', () => {
-        chatOverlay.classList.remove('visible');
-        setTimeout(() => chatOverlay.style.display = 'none', 200);
-    });
-
-    chatForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const userMessage = chatInput.value.trim();
-        if (!userMessage) return;
-
-        let apiKey = localStorage.getItem(API_KEY_STORAGE_ID);
-        if (!apiKey) {
-            apiKey = prompt("To use the AI Tutor, please enter your API Key. It will be saved securely in this browser for future use.");
-            if (apiKey && apiKey.trim() !== '') {
-                localStorage.setItem(API_KEY_STORAGE_ID, apiKey);
-            } else {
-                alert("An API Key is required to use this feature. Please try again.");
-                return;
-            }
-        }
-
-        addChatMessage(userMessage, 'user');
-        chatInput.value = '';
-
-        setTimeout(() => {
-            const thinkingMsg = addChatMessage("Thinking...", 'tutor');
-            setTimeout(() => {
-                thinkingMsg.textContent = "AI response functionality is not yet connected.";
-            }, 1500);
-        }, 500);
-    });
-
-    function addChatMessage(message, sender) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `chat-message ${sender}`;
-        msgDiv.textContent = message;
-        chatMessages.appendChild(msgDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        return msgDiv;
-    }
+function getLessonContext() {
+    return {
+        title: window.currentLesson.title || '',
+        summary: window.currentLesson.summary || '',
+        slug: new URLSearchParams(location.search).get('lesson') || '',
+        content: window.currentLesson.content || '', // Provide the full lesson content.
+        quiz: window.currentLesson.quiz || []       // Provide all quiz questions.
+    };
 }
