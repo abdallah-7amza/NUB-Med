@@ -43,6 +43,7 @@ try {
                     slug: data.slug,
                     path: `lessons/${yearDir}/${specialtyDir}/${lessonFile}`,
                     quizPath: `questions/${yearDir}/${specialtyDir}/${lessonFile.replace('.md', '.json')}`,
+                    flashcardPath: `flashcards/${yearDir}/${specialtyDir}/${lessonFile.replace('.md', '.json')}`,
                     year: parseInt(yearNumber), // Store year as a number
                     specialty: data.specialty,
                     subspecialty: data.subspecialty,
