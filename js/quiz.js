@@ -1,77 +1,49 @@
-// =====================================================
-//   NUB MED Portal - Interactive Quiz System (Final Corrected Version)
-// =====================================================
 import { askAI } from './ai-tutor.js';
 
 let quizItems = [], userAnswers = {}, currentIndex = 0, quizMode = null, lessonSlug = '';
-let quizContainer, quizMain, resultsContainer, progressBar, progressText, questionEl, optionsEl, navButtons, resultsDetails;
 
 export function initQuiz(items, slug) {
     if (!items || items.length === 0) return;
     quizItems = items;
     lessonSlug = slug;
-
     const startBtn = document.getElementById('start-quiz-btn');
     const modal = document.getElementById('quiz-modal');
-
     if (startBtn && modal) {
         startBtn.style.display = 'inline-block';
         startBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            // This is the direct connection fix
-            const quizModal = document.getElementById('quiz-modal');
-            if (quizModal) {
-                quizModal.style.display = 'flex';
-            }
+            modal.style.display = 'flex';
         });
     }
-
-    const startExamBtn = document.getElementById('start-exam-btn');
-    const browseQuestionsBtn = document.getElementById('browse-questions-btn');
-    const resetBtn = document.getElementById('quiz-reset-btn');
-
-    if(startExamBtn) startExamBtn.addEventListener('click', () => start('exam'));
-    if(browseQuestionsBtn) browseQuestionsBtn.addEventListener('click', () => start('browse'));
-    if(resetBtn) resetBtn.addEventListener('click', resetQuiz);
-
+    document.getElementById('start-exam-btn')?.addEventListener('click', () => start('exam'));
+    document.getElementById('browse-questions-btn')?.addEventListener('click', () => start('browse'));
+    document.getElementById('quiz-reset-btn')?.addEventListener('click', resetQuiz);
     loadProgress();
     if (Object.keys(userAnswers).length > 0) {
-        if (confirm('You have saved progress. Do you want to resume?')) {
-            start('exam');
-        } else {
-            resetQuiz(false);
-        }
+        if (confirm('You have saved progress. Resume?')) { start('exam'); } 
+        else { resetQuiz(false); }
     }
 }
 
 function start(mode) {
     quizMode = mode;
-    const modal = document.getElementById('quiz-modal');
-    quizContainer = document.getElementById('quiz-container');
-
-    if(modal) modal.style.display = 'none';
-    if(quizContainer) quizContainer.classList.remove('hidden');
-    
-    quizMain = document.getElementById('quiz-main');
-    resultsContainer = document.getElementById('quiz-results');
-    progressBar = document.getElementById('quiz-progress-bar-value');
-    progressText = document.getElementById('quiz-progress-text');
-    questionEl = document.getElementById('quiz-question-stem');
-    optionsEl = document.getElementById('quiz-options');
-    navButtons = document.getElementById('quiz-nav');
-    resultsDetails = document.getElementById('quiz-results-details');
-
-    if (quizMode === 'exam') renderQuestion();
-    else if (quizMode === 'browse') renderBrowseView();
+    document.getElementById('quiz-modal').style.display = 'none';
+    document.getElementById('quiz-container').classList.remove('hidden');
+    renderQuestion();
 }
 
 function renderQuestion() {
-    if(quizMain) quizMain.style.display = 'block';
-    if(resultsContainer) resultsContainer.style.display = 'none';
+    const quizMain = document.getElementById('quiz-main');
+    const resultsContainer = document.getElementById('quiz-results');
+    if(quizMode === 'browse') return renderBrowseView();
+    if (quizMain) quizMain.style.display = 'block';
+    if (resultsContainer) resultsContainer.style.display = 'none';
     const question = quizItems[currentIndex];
     const isAnswered = userAnswers.hasOwnProperty(currentIndex);
-    if(questionEl) questionEl.innerHTML = `(${currentIndex + 1}/${quizItems.length}) ${question.stem}`;
-    if(optionsEl) optionsEl.innerHTML = '';
+    const questionEl = document.getElementById('quiz-question-stem');
+    const optionsEl = document.getElementById('quiz-options');
+    if (questionEl) questionEl.innerHTML = `(${currentIndex + 1}/${quizItems.length}) ${question.stem}`;
+    if (optionsEl) optionsEl.innerHTML = '';
     question.options.forEach(option => {
         const optionEl = document.createElement('button');
         optionEl.className = 'quiz-option';
@@ -84,23 +56,25 @@ function renderQuestion() {
         } else {
             optionEl.addEventListener('click', handleAnswerSelect);
         }
-        if(optionsEl) optionsEl.appendChild(optionEl);
+        if (optionsEl) optionsEl.appendChild(optionEl);
     });
     updateProgress();
     updateNavButtons();
 }
 
 function renderBrowseView() {
-    if(quizMain) quizMain.style.display = 'none';
-    if(resultsContainer) resultsContainer.style.display = 'block';
+    const quizMain = document.getElementById('quiz-main');
+    const resultsContainer = document.getElementById('quiz-results');
+    if (quizMain) quizMain.style.display = 'none';
+    if (resultsContainer) resultsContainer.style.display = 'block';
     const resultsHeader = document.getElementById('quiz-results-header');
     const finalScore = document.getElementById('quiz-final-score');
     const quizNav = document.getElementById('quiz-nav');
-    if(resultsHeader) resultsHeader.textContent = 'Browse All Questions';
-    if(finalScore) finalScore.style.display = 'none';
-    if(quizNav) quizNav.style.display = 'none';
-    resultsDetails = document.getElementById('quiz-results-details');
-    if(resultsDetails) {
+    if (resultsHeader) resultsHeader.textContent = 'Browse All Questions';
+    if (finalScore) finalScore.style.display = 'none';
+    if (quizNav) quizNav.style.display = 'none';
+    const resultsDetails = document.getElementById('quiz-results-details');
+    if (resultsDetails) {
         resultsDetails.innerHTML = quizItems.map((q, index) => {
             const optionsHtml = q.options.map(opt => `<div class="result-option ${opt.id === q.correct ? 'correct' : ''}">${opt.text}</div>`).join('');
             return `<div class="result-question-review"><p><strong>${index + 1}. ${q.stem}</strong></p><div class="result-options-container">${optionsHtml}</div></div>`;
@@ -110,104 +84,74 @@ function renderBrowseView() {
 
 function handleAnswerSelect(event) {
     const selectedOption = event.target;
-    const selectedId = selectedOption.dataset.optionId;
-    const correctId = quizItems[currentIndex].correct;
-    userAnswers[currentIndex] = selectedId;
+    userAnswers[currentIndex] = selectedOption.dataset.optionId;
     saveProgress();
-    if(optionsEl) {
-        optionsEl.querySelectorAll('.quiz-option').forEach(btn => {
-            btn.removeEventListener('click', handleAnswerSelect);
-            btn.disabled = true;
-        });
-    }
-    if (selectedId === correctId) {
-        selectedOption.classList.add('correct');
-    } else {
-        selectedOption.classList.add('incorrect');
-        if(optionsEl){
-            const correctOptionEl = optionsEl.querySelector(`[data-option-id="${correctId}"]`);
-            if (correctOptionEl) correctOptionEl.classList.add('correct');
-        }
-    }
-    updateProgress();
-    updateNavButtons();
+    renderQuestion();
 }
 
 function showResults() {
-    if(quizMain) quizMain.style.display = 'none';
-    if(resultsContainer) resultsContainer.style.display = 'block';
+    document.getElementById('quiz-main').style.display = 'none';
+    const resultsContainer = document.getElementById('quiz-results');
+    resultsContainer.style.display = 'block';
     let score = 0;
-    for (let i = 0; i < quizItems.length; i++) { if (userAnswers[i] === quizItems[i].correct) score++; }
-    const resultsHeader = document.getElementById('quiz-results-header');
+    Object.keys(userAnswers).forEach(index => {
+        if (userAnswers[index] === quizItems[index].correct) score++;
+    });
+    document.getElementById('quiz-results-header').textContent = 'Quiz Complete!';
     const finalScoreEl = document.getElementById('quiz-final-score');
-    if(resultsHeader) resultsHeader.textContent = 'Quiz Complete!';
-    if(finalScoreEl) {
-        finalScoreEl.style.display = 'block';
-        finalScoreEl.textContent = `Your Final Score: ${score} / ${quizItems.length}`;
-    }
-    resultsDetails = document.getElementById('quiz-results-details');
-    if(resultsDetails) {
-        resultsDetails.innerHTML = quizItems.map((q, index) => {
-            const userAnswerId = userAnswers[index];
-            const correctId = q.correct;
-            const optionsHtml = q.options.map(opt => `<div class="result-option ${opt.id === correctId ? 'correct' : (opt.id === userAnswerId ? 'incorrect' : '')}">${opt.text}</div>`).join('');
-            const aiButtonHtml = userAnswerId !== correctId ? `<button class="btn-ask-ai" data-question-index="${index}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 12a10 10 0 1010-10A10 10 0 002 12zm11-1h-6v2h6v-2zm2-3h-8v2h8V8zm0 6h-8v2h8v-2z"></path></svg> Ask AI to Explain</button>` : '';
-            return `<div class="result-question-review"><p><strong>${index + 1}. ${q.stem}</strong></p><div class="result-options-container">${optionsHtml}</div>${aiButtonHtml}</div>`;
-        }).join('');
-        resultsDetails.querySelectorAll('.btn-ask-ai').forEach(button => button.addEventListener('click', handleAskAI));
-    }
+    finalScoreEl.style.display = 'block';
+    finalScoreEl.textContent = `Your Final Score: ${score} / ${quizItems.length}`;
+    const resultsDetails = document.getElementById('quiz-results-details');
+    resultsDetails.innerHTML = quizItems.map((q, index) => {
+        const userAnswerId = userAnswers[index];
+        const correctId = q.correct;
+        const optionsHtml = q.options.map(opt => `<div class="result-option ${opt.id === correctId ? 'correct' : (opt.id === userAnswerId ? 'incorrect' : '')}">${opt.text}</div>`).join('');
+        const aiButtonHtml = userAnswerId !== correctId ? `<button class="btn-ask-ai" data-question-index="${index}">Ask AI to Explain</button>` : '';
+        return `<div class="result-question-review"><p><strong>${index + 1}. ${q.stem}</strong></p><div class="result-options-container">${optionsHtml}</div>${aiButtonHtml}</div>`;
+    }).join('');
+    resultsDetails.querySelectorAll('.btn-ask-ai').forEach(button => button.addEventListener('click', handleAskAI));
 }
 
 function handleAskAI(event) {
-    const button = event.currentTarget;
-    const questionIndex = parseInt(button.dataset.questionIndex, 10);
+    const questionIndex = parseInt(event.currentTarget.dataset.questionIndex, 10);
     const question = quizItems[questionIndex];
-    const userAnswerId = userAnswers[questionIndex];
-    const userAnswerText = question.options.find(o => o.id === userAnswerId)?.text;
+    const userAnswerText = question.options.find(o => o.id === userAnswers[questionIndex])?.text;
     const correctAnswerText = question.options.find(o => o.id === question.correct)?.text;
-    const prompt = `Regarding the question "${question.stem}", please explain why "${correctAnswerText}" is the correct answer and why my answer, "${userAnswerText}", was incorrect. Keep the explanation concise.`;
+    const prompt = `Explain why "${correctAnswerText}" is the correct answer to "${question.stem}", and why my answer, "${userAnswerText}", was incorrect.`;
     askAI(prompt);
 }
 
 function updateProgress() {
-    progressText = document.getElementById('quiz-progress-text');
-    progressBar = document.getElementById('quiz-progress-bar-value');
+    const progressText = document.getElementById('quiz-progress-text');
+    const progressBar = document.getElementById('quiz-progress-bar-value');
     const answeredCount = Object.keys(userAnswers).length;
     const total = quizItems.length;
-    const percent = total > 0 ? (answeredCount / total) * 100 : 0;
-    if(progressBar) progressBar.style.width = `${percent}%`;
     if(progressText) progressText.textContent = `Progress: ${answeredCount} / ${total}`;
+    if(progressBar) progressBar.style.width = `${total > 0 ? (answeredCount / total) * 100 : 0}%`;
 }
 
 function updateNavButtons() {
     const nextBtn = document.getElementById('quiz-next-btn');
     const prevBtn = document.getElementById('quiz-prev-btn');
-    if(!nextBtn || !prevBtn) return;
-    const isAnswered = userAnswers.hasOwnProperty(currentIndex);
+    if (!nextBtn || !prevBtn) return;
     prevBtn.disabled = currentIndex === 0;
-    nextBtn.disabled = !isAnswered && quizMode === 'exam';
+    nextBtn.disabled = !userAnswers.hasOwnProperty(currentIndex) && quizMode === 'exam';
     prevBtn.onclick = () => { if (currentIndex > 0) { currentIndex--; renderQuestion(); } };
     nextBtn.onclick = () => { if (currentIndex < quizItems.length - 1) { currentIndex++; renderQuestion(); } else { showResults(); } };
-    nextBtn.textContent = (currentIndex === quizItems.length - 1 && isAnswered) ? 'Finish & See Results' : 'Next →';
+    nextBtn.textContent = (currentIndex === quizItems.length - 1 && userAnswers.hasOwnProperty(currentIndex)) ? 'Finish & See Results' : 'Next →';
 }
 
 function getStorageKey() { return `quiz_progress_${lessonSlug}`; }
 function saveProgress() { localStorage.setItem(getStorageKey(), JSON.stringify(userAnswers)); }
-function loadProgress() { const saved = localStorage.getItem(getStorageKey()); userAnswers = saved ? JSON.parse(saved) : {}; }
+function loadProgress() { userAnswers = JSON.parse(localStorage.getItem(getStorageKey()) || '{}'); }
 
 function resetQuiz(confirmReset = true) {
-    const doReset = confirmReset ? confirm('Are you sure you want to reset your quiz progress?') : true;
-    if (doReset) {
-        userAnswers = {};
-        currentIndex = 0;
-        localStorage.removeItem(getStorageKey());
-        quizMain = document.getElementById('quiz-main');
-        resultsContainer = document.getElementById('quiz-results');
-        quizContainer = document.getElementById('quiz-container');
-        const modal = document.getElementById('quiz-modal');
-        if(quizMain) quizMain.style.display = 'none';
-        if(resultsContainer) resultsContainer.style.display = 'none';
-        if(quizContainer) quizContainer.classList.add('hidden');
-        if (modal) modal.style.display = 'flex';
-    }
+    if (confirmReset && !confirm('Are you sure you want to reset your quiz progress?')) return;
+    userAnswers = {};
+    currentIndex = 0;
+    localStorage.removeItem(getStorageKey());
+    document.getElementById('quiz-main').style.display = 'none';
+    document.getElementById('quiz-results').style.display = 'none';
+    document.getElementById('quiz-container').classList.add('hidden');
+    document.getElementById('quiz-modal').style.display = 'flex';
 }
