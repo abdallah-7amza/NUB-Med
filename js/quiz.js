@@ -6,29 +6,24 @@ let quizItems = [], userAnswers = {}, currentIndex = 0, quizMode = null, lessonS
 let dom = {}; // Object to hold all DOM element references
 
 /**
- * Initializes the entire quiz system. Checks for necessary elements first.
+ * Initializes the entire quiz system.
  */
 export function initQuiz(items, slug) {
     if (!items || items.length === 0) return;
-
     quizItems = items;
     lessonSlug = slug;
 
-    // Find all necessary HTML elements at the start. If any are missing, stop and report an error.
     if (!findAllDOMElements()) {
-        console.error("Quiz Initialization Failed: One or more required HTML elements are missing. Check IDs in the final lesson.html.");
+        console.error("Quiz Initialization Failed: One or more required HTML elements are missing. Ensure your lesson.html is up to date.");
         return;
     }
 
-    // If everything is found, attach the event listeners.
     attachEventListeners();
-
-    // Show the main "Test Yourself" button
     dom.startBtn.style.display = 'inline-block';
 
     loadProgress();
     if (Object.keys(userAnswers).length > 0) {
-        if (confirm('You have saved progress for this quiz. Do you want to resume?')) {
+        if (confirm('You have saved progress. Resume?')) {
             start('exam');
         } else {
             resetQuiz();
@@ -58,10 +53,9 @@ function findAllDOMElements() {
     dom.resultsDetails = document.getElementById('quiz-results-details');
     dom.resultsHeader = document.getElementById('quiz-results-header');
     dom.finalScore = document.getElementById('quiz-final-score');
-
-    // Check if any crucial element is missing
-    const requiredElements = [dom.startBtn, dom.quizContainer, dom.modal, dom.quizMain, dom.resultsContainer];
-    return requiredElements.every(el => el !== null);
+    
+    const required = [dom.startBtn, dom.modal, dom.quizContainer, dom.quizMain, dom.resultsContainer];
+    return required.every(el => el !== null);
 }
 
 /**
@@ -69,20 +63,20 @@ function findAllDOMElements() {
  */
 function attachEventListeners() {
     dom.startBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // This is important for <a> tags to prevent page reload
+        e.preventDefault();
         dom.modal.style.display = 'flex';
     });
-
     dom.startExamBtn.addEventListener('click', () => start('exam'));
     dom.browseQuestionsBtn.addEventListener('click', () => start('browse'));
     dom.resetBtn.addEventListener('click', resetQuiz);
 }
 
+// --- Rest of the Quiz Logic (Functions: start, renderQuestion, etc.) ---
+
 function start(mode) {
     quizMode = mode;
     dom.modal.style.display = 'none';
     dom.quizContainer.classList.remove('hidden');
-
     if (quizMode === 'exam') renderQuestion();
     else if (quizMode === 'browse') renderBrowseView();
 }
@@ -177,7 +171,7 @@ async function handleAskAI(event) {
     const userAnswerId = userAnswers[questionIndex];
     const userAnswerText = question.options.find(o => o.id === userAnswerId)?.text;
     const correctAnswerText = question.options.find(o => o.id === question.correct)?.text;
-    const prompt = `Regarding the question "${question.stem}", please explain why "${correctAnswerText}" is the correct answer and why my answer, "${userAnswerText}", was incorrect. Keep the explanation concise and clear for a medical student.`;
+    const prompt = `Regarding the question "${question.stem}", please explain why "${correctAnswerText}" is the correct answer and why my answer, "${userAnswerText}", was incorrect. Keep it concise.`;
     const { askAI } = await import('./ai-tutor.js');
     askAI(prompt);
 }
