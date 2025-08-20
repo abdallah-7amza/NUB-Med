@@ -30,13 +30,25 @@ export function initQuiz(items, slug) {
     resultsContainer = document.getElementById('quiz-results');
 
     // Make the "Test Yourself" button visible and attach its primary event listener
-  const startBtn = document.getElementById('start-quiz-btn');
+const startBtn = document.getElementById('start-quiz-btn');
 if (startBtn) {
     startBtn.style.display = 'inline-block';
     startBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        if (modal) modal.style.display = 'flex';
+        console.log("Button was clicked!"); // رسالة تتبع رقم 1
+
+        const modal = document.getElementById('quiz-modal');
+        console.log("Searching for modal, found:", modal); // رسالة تتبع رقم 2
+
+        if (modal) {
+            modal.style.display = 'flex';
+            console.log("Successfully changed modal display to flex."); // رسالة تتبع رقم 3
+        } else {
+            console.error("CRITICAL ERROR: Could not find element with id='quiz-modal' in the HTML!");
+        }
     });
+} else {
+    console.error("CRITICAL ERROR: Could not find element with id='start-quiz-btn'!");
 }
 
     // Attach events to modal and reset buttons
