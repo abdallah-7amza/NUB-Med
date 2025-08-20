@@ -30,14 +30,14 @@ export function initQuiz(items, slug) {
     resultsContainer = document.getElementById('quiz-results');
 
     // Make the "Test Yourself" button visible and attach its primary event listener
-    const startBtn = document.getElementById('start-quiz-btn');
-    if (startBtn) {
-        startBtn.style.display = 'inline-block';
-        startBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevents the page from jumping
-            if (modal) modal.style.display = 'flex';
-        });
-    }
+  const startBtn = document.getElementById('start-quiz-btn');
+if (startBtn) {
+    startBtn.style.display = 'inline-block';
+    startBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (modal) modal.style.display = 'flex';
+    });
+}
 
     // Attach events to modal and reset buttons
     const startExamBtn = document.getElementById('start-exam-btn');
