@@ -64,6 +64,9 @@ async function loadLessonAndQuiz(lessonId) {
         window.currentLesson.quiz = quizData.items;
         initQuiz(quizData.items, lessonId);
     }
+// هذا الكود الجديد يضاف قبل نهاية الدالة
+if (flashcardData && flashcardData.cards && flashcardData.cards.length > 0) {
+    initFlashcards(flashcardData.cards);
 }
 
 function getLessonContext() {
