@@ -77,3 +77,5 @@ try {
     console.error('Error during index generation:', error);
     process.exit(1);
 }
+
+  
