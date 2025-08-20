@@ -25,6 +25,10 @@
       <a href="#" id="start-quiz-btn" class="btn" style="display: none;">Test Yourself</a>
     </div>
 
+    <div style="text-align: center; margin-bottom: 3rem;">
+  <button id="flashcard-btn" class="btn btn-secondary" style="display: none;">View Flashcards</button>
+</div>
+    
     <section id="quiz-container" class="hidden">
       <div id="quiz-modal">
         <div class="quiz-modal-content">
@@ -69,6 +73,22 @@
   <div id="chat-overlay" aria-hidden="true"><div id="chat-window" role="dialog" aria-modal="true" aria-label="AI Medical Tutor Window"><div class="chat-header"><div class="chat-title"><h3>AI Medical Tutor</h3><small id="lesson-context-summary"></small></div><div class="chat-controls"><button id="change-key-btn" title="Change API Key"></button><button id="export-chat-btn" title="Export chat"></button><button id="close-chat-btn" aria-label="Close chat">&times;</button></div></div><div id="chat-messages" role="log" aria-live="polite"></div><div class="quick-prompts" id="quick-prompts"><button type="button" data-prompt="Summarize the lesson.">Summarize</button><button type="button" data-prompt="Explain this concept simply.">Explain</button><button type="button" data-prompt="Create a quiz.">Make Quiz</button></div><form id="chat-input-form" class="chat-input-form"><input type="text" id="chat-input" placeholder="Ask a question..." /><button id="chat-send-btn" type="submit" aria-label="Send">Send</button></form></div></div>
   <div id="key-modal" aria-hidden="true"><div class="key-card"><h3>Set up Gemini API Key</h3><p>Paste your API key to enable the AI tutor</p><input id="api-key-input" type="password" placeholder="AIza..." /><div class="key-actions"><button id="save-key-btn" type="button">Save</button><button id="cancel-key-btn" type="button">Cancel</button></div></div></div>
 
+<div id="flashcard-modal">
+    <div class="flashcard-content">
+        <button id="close-flashcards-btn">&times;</button>
+        <div class="flashcard-container">
+            <div class="flashcard">
+                <div class="flashcard-face front"></div>
+                <div class="flashcard-face back"></div>
+            </div>
+        </div>
+        <div id="flashcard-progress">Card 1 of X</div>
+        <div id="flashcard-nav">
+            <button id="flashcard-prev-btn" class="btn-secondary">← Previous</button>
+            <button id="flashcard-next-btn" class="btn-secondary">Next →</button>
+        </div>
+    </div>
+</div>
   <script type="module" src="js/lesson.js"></script>
 </body>
 </html>
