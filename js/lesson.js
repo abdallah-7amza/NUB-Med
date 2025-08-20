@@ -40,10 +40,11 @@ async function loadLessonAndQuiz(lessonId) {
     const titleEl = document.getElementById('page-title');
     const contentEl = document.getElementById('lesson-content');
 
-    const [markdownContent, quizData] = await Promise.all([
-        getLessonContent(lessonId),
-        getQuizData(lessonId)
-    ]);
+    const [markdownContent, quizData, flashcardData] = await Promise.all([
+    getLessonContent(lessonId),
+    getQuizData(lessonId),
+    getFlashcardData(lessonId)
+]);
 
     if (markdownContent) {
         const cleanMarkdown = markdownContent.replace(/^---\s*[\s\S]*?---\s*/, '').trim();
