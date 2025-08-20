@@ -1,3 +1,19 @@
+// ADD THIS NEW FUNCTION AT THE TOP OF js/ai-tutor.js
+
+// This new function is exported so other modules, like quiz.js, can use it.
+export function askAI(prompt) {
+    const tutorModule = window.aiTutor; // Access the initialized tutor instance
+    if (tutorModule) {
+        tutorModule.openChat();
+        tutorModule.sendMessage(prompt);
+    } else {
+        console.error("AI Tutor is not initialized.");
+    }
+}
+
+
+
+
 // js/ai-tutor.js
 // =====================================================
 // AI Medical Tutor (Gemini) — drop-in for lesson.html
