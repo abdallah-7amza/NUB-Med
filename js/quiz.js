@@ -1,28 +1,45 @@
-// js/quiz.js (النسخة النهائية المؤكدة)
-import { askAI } from './ai-tutor.js';
+// =====================================================
+//      NUB MED Portal - Interactive Quiz System
+// =====================================================
 
-let quizItems = [], userAnswers = {}, currentIndex = 0, quizMode = null, lessonSlug = '';
+// --- State Management ---
+let quizItems = []; // All questions for the current lesson
+let userAnswers = {}; // { "questionIndex": "selectedOptionId" }
+let currentIndex = 0; // The current question index being viewed
+let quizMode = null; // Can be 'exam' or 'browse'
+let lessonSlug = ''; // To create a unique key for localStorage
+
+// --- DOM Element References ---
 let quizContainer, modal, quizMain, resultsContainer, progressBar, progressText, questionEl, optionsEl, navButtons, resultsDetails;
 
+/**
+ * The main function to initialize the quiz system for a lesson.
+ * @param {Array} items - The array of question objects.
+ * @param {string} slug - The unique slug of the lesson.
+ */
 export function initQuiz(items, slug) {
     if (!items || items.length === 0) return;
+
     quizItems = items;
     lessonSlug = slug;
     
+    // Get all necessary DOM elements once
     quizContainer = document.getElementById('quiz-container');
     modal = document.getElementById('quiz-modal');
     quizMain = document.getElementById('quiz-main');
     resultsContainer = document.getElementById('quiz-results');
 
+    // Make the "Test Yourself" button visible and attach its primary event listener
     const startBtn = document.getElementById('start-quiz-btn');
     if (startBtn) {
         startBtn.style.display = 'inline-block';
         startBtn.addEventListener('click', (e) => {
-            e.preventDefault();
+            e.preventDefault(); // Prevents the page from jumping
             if (modal) modal.style.display = 'flex';
         });
     }
 
+    // Attach events to modal and reset buttons
     const startExamBtn = document.getElementById('start-exam-btn');
     const browseQuestionsBtn = document.getElementById('browse-questions-btn');
     const resetBtn = document.getElementById('quiz-reset-btn');
@@ -32,20 +49,26 @@ export function initQuiz(items, slug) {
     if(resetBtn) resetBtn.addEventListener('click', resetQuiz);
 
     loadProgress();
+    // Check if there's saved progress and ask the user if they want to resume
     if (Object.keys(userAnswers).length > 0) {
-        if (confirm('You have progress saved. Resume?')) {
+        if (confirm('You have saved progress for this quiz. Do you want to resume?')) {
             start('exam');
         } else {
-            resetQuiz();
+            resetQuiz(); // Clear progress if they choose not to resume
         }
     }
 }
 
+/**
+ * Starts the quiz in the selected mode ('exam' or 'browse').
+ * @param {string} mode 
+ */
 function start(mode) {
     quizMode = mode;
     if(modal) modal.style.display = 'none';
     if(quizContainer) quizContainer.classList.remove('hidden');
     
+    // Get references to elements inside the quiz view
     progressBar = document.getElementById('quiz-progress-bar-value');
     progressText = document.getElementById('quiz-progress-text');
     questionEl = document.getElementById('quiz-question-stem');
@@ -57,6 +80,9 @@ function start(mode) {
     else if (quizMode === 'browse') renderBrowseView();
 }
 
+/**
+ * Renders the current question for the exam mode.
+ */
 function renderQuestion() {
     if(quizMain) quizMain.style.display = 'block';
     if(resultsContainer) resultsContainer.style.display = 'none';
@@ -87,6 +113,9 @@ function renderQuestion() {
     updateNavButtons();
 }
 
+/**
+ * Renders all questions and answers for the browse mode.
+ */
 function renderBrowseView() {
     if(quizMain) quizMain.style.display = 'none';
     if(resultsContainer) resultsContainer.style.display = 'block';
@@ -107,6 +136,10 @@ function renderBrowseView() {
     }
 }
 
+/**
+ * Handles the event when a user selects an answer.
+ * @param {Event} event 
+ */
 function handleAnswerSelect(event) {
     const selectedOption = event.target;
     const selectedId = selectedOption.dataset.optionId;
@@ -135,6 +168,9 @@ function handleAnswerSelect(event) {
     updateNavButtons();
 }
 
+/**
+ * Displays the final results page after the quiz is completed.
+ */
 function showResults() {
     if(quizMain) quizMain.style.display = 'none';
     if(resultsContainer) resultsContainer.style.display = 'block';
@@ -170,14 +206,26 @@ function showResults() {
     }
 }
 
-function handleAskAI(event) {
+// --- Helper Functions ---
+
+/**
+ * Prepares a prompt and asks the AI Tutor for an explanation.
+ * This function requires that 'ai-tutor.js' is working and integrated.
+ * @param {Event} event 
+ */
+async function handleAskAI(event) {
     const button = event.currentTarget;
     const questionIndex = parseInt(button.dataset.questionIndex);
     const question = quizItems[questionIndex];
     const userAnswerId = userAnswers[questionIndex];
     const userAnswerText = question.options.find(o => o.id === userAnswerId)?.text;
     const correctAnswerText = question.options.find(o => o.id === question.correct)?.text;
+
     const prompt = `Regarding the question "${question.stem}", please explain why "${correctAnswerText}" is the correct answer and why my answer, "${userAnswerText}", was incorrect. Keep the explanation concise and clear for a medical student.`;
+
+    // We assume an 'askAI' function is available from the tutor script
+    // This will require a small modification to ai-tutor.js
+    const { askAI } = await import('./ai-tutor.js');
     askAI(prompt);
 }
 
@@ -210,7 +258,9 @@ function resetQuiz() {
         userAnswers = {};
         currentIndex = 0;
         localStorage.removeItem(getStorageKey());
+        if(quizMain) quizMain.style.display = 'none';
+        if(resultsContainer) resultsContainer.style.display = 'none';
         if(quizContainer) quizContainer.classList.add('hidden');
-        if(modal) modal.style.display = 'flex';
+        if (modal) modal.style.display = 'flex'; // Show the initial choice modal again
     }
 }
