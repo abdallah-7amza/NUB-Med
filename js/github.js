@@ -62,3 +62,20 @@ export async function getQuizData(lessonId) {
         return null;
     }
 }
+
+
+// أضف هذه الدالة الجديدة في نهاية الملف
+export async function getFlashcardData(lessonId) {
+    const allLessons = await getIndexData();
+    const lesson = allLessons.find(l => l.slug === lessonId);
+    if (!lesson || !lesson.flashcardPath) return null;
+
+    try {
+        const response = await fetch(lesson.flashcardPath);
+        if (!response.ok) throw new Error('Flashcard file not found');
+        return await response.json();
+    } catch (error) {
+        console.error(`Failed to fetch flashcards for ${lesson.flashcardPath}`, error);
+        return null;
+    }
+}
