@@ -1,0 +1,16 @@
+{
+  "cards": [
+    {
+      "front": "What is the definition of Primary Dysmenorrhea?",
+      "back": "It is menstrual pain that is not due to other diseases. It's typically caused by an excess production of prostaglandins, which cause the uterine muscles to contract."
+    },
+    {
+      "front": "What is a key feature of the pain in Endometriosis-related dysmenorrhea?",
+      "back": "A 'crescendo-decrescendo' pattern, where the pain starts 2-3 days before the period, peaks during, and subsides after."
+    },
+    {
+      "front": "What is the first-line medical treatment for managing Primary Dysmenorrhea?",
+      "back": "Nonsteroidal anti-inflammatory drugs (NSAIDs), like ibuprofen, because they work by inhibiting prostaglandin production."
+    }
+  ]
+}
