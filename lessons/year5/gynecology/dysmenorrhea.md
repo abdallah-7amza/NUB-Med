@@ -1,23 +1,10 @@
----
-title: "Dysmenorrhea"
-year: 5
-specialty: "gynecology"
-slug: "dysmenorrhea"
-summary: "An overview of Dysmenorrhea, covering its types (primary and secondary), clinical presentation, investigation, and management."
----
-
-# Dysmenorrhea (Painful Menstruation)
-
-## Definition
-Dysmenorrhea is the medical term for painful menstrual periods which are caused by uterine contractions.
-
-## Types of Dysmenorrhea
-
-### 1. Primary (Spasmodic) Dysmenorrhea
-This is common menstrual cramping that is recurrent and is not due to other diseases.
-
-### 2. Secondary (Congestive) Dysmenorrhea
-This is pain that is caused by a disorder in the woman's reproductive organs, such as uterine fibroids, adenomyosis, or most commonly, endometriosis.
-
-### 3. Endometriosis-Related Pain
-A key feature of dysmenorrhea caused by endometriosis is a characteristic **crescendo-decrescendo** pattern.  
+| Section | Key Details |
+| :--- | :--- |
+| **Introduction** | A malignancy arising from the tissues of the ovary. It is the leading cause of death from gynecologic cancers. Often diagnosed at a late stage due to non-specific symptoms. 90% of cases are epithelial in origin. |
+| **Epidemiology** | - Seventh most common cancer in women worldwide.<br>- Highest mortality rate among all gynecologic cancers.<br>- Risk increases with age, especially after the age of 50. |
+| **Risk Factors** | - **Genetic:** Inherited mutations (BRCA1, BRCA2), Lynch syndrome.<br>- **Family/Personal History:** Previous breast cancer or a family history of ovarian/breast cancer.<br>- **Reproductive Factors:** Nulliparity (never having been pregnant), early menarche, and late menopause.<br>- **Protective Factors:** Oral contraceptives, pregnancy and breastfeeding, tubal ligation. |
+| **Pathophysiology** | - **Epithelial (90%):** The most common type. Many high-grade serous cancers are now believed to originate from the fallopian tube (STIC).<br>- **Other types:** Germ cell tumors and sex cord-stromal tumors.<br>- Key genetic mutations (e.g., p53) play a crucial role. |
+| **Clinical Presentation** | - **Early Stages:** Often asymptomatic.<br>- **Late Stages:** Abdominal bloating, pelvic or abdominal pain, feeling full quickly, urinary symptoms (urgency or frequency).<br>- **Key Feature:** The persistence and frequency of these symptoms are important indicators. |
+| **Diagnosis** | - **Initial Workup:** Pelvic exam, CA-125 blood test.<br>- **Imaging:** Transvaginal ultrasound is the first-choice imaging modality. A CT scan is used for staging.<br>- **Definitive Diagnosis:** A tissue biopsy, most often obtained during surgery. |
+| **Staging** | Staging is done surgically according to the FIGO system:<br>- **Stage I:** Cancer is confined to the ovary or ovaries.<br>- **Stage II:** Cancer has spread to other pelvic tissues.<br>- **Stage III:** Cancer has spread to the peritoneum or retro peritoneal lymph nodes.<br>- **Stage IV:** Distant metastases (e.g., to the liver or lungs). |
+| **Treatment** | - **Surgery:** The goal is both staging and cytoreductive surgery (debulking) to remove as much of the tumor as possible.<br>- **Chemotherapy:** Typically a combination of a platinum agent (Carboplatin) and a taxane (Paclitaxel).<br>- **Targeted Therapy:** PARP inhibitors (especially for BRCA mutations) and anti-angiogenesis agents (e.g., Bevacizumab).<br>- **Radiation Therapy:** Has a limited role. |
