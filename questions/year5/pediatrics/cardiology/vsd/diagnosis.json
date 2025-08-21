@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "stem": "What is the gold standard investigation for diagnosing VSD?",
+      "options": [
+        { "id": "a", "text": "Chest X-ray" },
+        { "id": "b", "text": "ECG" },
+        { "id": "c", "text": "Echocardiography" },
+        { "id": "d", "text": "Cardiac MRI" }
+      ],
+      "correct": "c"
+    }
+  ]
+}
