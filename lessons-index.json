@@ -18,6 +18,17 @@
     ]
   },
   {
+    "title": "Diagnosis of VSD",
+    "slug": "vsd-diagnosis",
+    "fullPath": "lessons/year5/pediatrics/cardiology/vsd/diagnosis.md",
+    "pathParts": [
+      "year5",
+      "pediatrics",
+      "cardiology",
+      "vsd"
+    ]
+  },
+  {
     "title": "Ventricular Septal Defect (VSD)",
     "slug": "vsd",
     "fullPath": "lessons/year5/pediatrics/vsd.md",
