@@ -7,21 +7,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     const containerEl = document.getElementById('content-container');
     const breadcrumbEl = document.getElementById('breadcrumb-nav');
 
-    // Fetch the main index
-    const response = await fetch('lessons-index.json');
+    const response = await fetch('lessons-index.json?v=' + new Date().getTime());
     const allLessons = await response.json();
 
-    // --- 1. Generate Breadcrumbs ---
+    // --- Generate Breadcrumbs (CORRECTED) ---
     let pathAccumulator = '';
-    const homeLink = '<a href="browser.html">Home</a>';
+    // This link now correctly points to the main index page
+    const homeLink = '<a href="index.html">Home</a>'; 
     const breadcrumbLinks = currentPathParts.map(part => {
         pathAccumulator += (pathAccumulator ? '/' : '') + part;
         const capitalizedPart = part.charAt(0).toUpperCase() + part.slice(1);
         return `<a href="browser.html?path=${pathAccumulator}">${capitalizedPart}</a>`;
     });
-    breadcrumbEl.innerHTML = [homeLink, ...breadcrumbLinks].join(' &raquo; ');
+    // Only show breadcrumbs if we are inside a path
+    if (currentPathStr) {
+        breadcrumbEl.innerHTML = [homeLink, ...breadcrumbLinks].join(' &raquo; ');
+    } else {
+         breadcrumbEl.innerHTML = 'Select an academic year below:'; // Or leave it empty
+    }
     
-    // --- 2. Filter content based on the current path ---
     const directLessons = allLessons.filter(lesson => 
         lesson.pathParts.length === currentPathParts.length && 
         lesson.pathParts.every((part, i) => part === currentPathParts[i])
@@ -36,11 +40,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             .map(lesson => lesson.pathParts[currentPathParts.length])
     )];
 
-    // --- 3. Render the content ---
-    containerEl.innerHTML = ''; // Clear previous content
+    containerEl.innerHTML = '';
 
     if (subfolders.length > 0) {
-        titleEl.textContent = currentPathParts.length > 0 ? `Sub-topics in ${currentPathParts[currentPathParts.length - 1]}` : 'Select a Topic';
+        const titleText = currentPathParts.length > 0 ? `Topics in ${currentPathParts[currentPathParts.length - 1]}` : 'Available Years';
+        titleEl.textContent = titleText;
         subfolders.forEach(folder => {
             const card = document.createElement('a');
             card.className = 'card';
@@ -54,12 +58,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         directLessons.forEach(lesson => {
             const card = document.createElement('a');
             card.className = 'card';
-            // IMPORTANT: Pass the current path to the lesson page
             card.href = `lesson.html?lesson=${lesson.slug}&path=${currentPathStr}`;
             card.innerHTML = `<h3>${lesson.title}</h3>`;
             containerEl.appendChild(card);
         });
     } else {
-        titleEl.textContent = 'No content found here.';
+        // If there are no subfolders AND no lessons, it means we are at the root
+        // So we show the years. This makes index.html optional.
+        const years = [...new Set(allLessons.map(lesson => lesson.pathParts[0]))];
+        titleEl.textContent = 'Select an Academic Year';
+        years.forEach(year => {
+             const card = document.createElement('a');
+            card.className = 'card';
+            card.href = `browser.html?path=${year}`;
+            card.innerHTML = `<h3>${year.charAt(0).toUpperCase() + year.slice(1)}</h3>`;
+            containerEl.appendChild(card);
+        });
     }
 });
