@@ -2,51 +2,28 @@
   {
     "title": "Introduction to Antibiotics",
     "slug": "introduction-to-antibiotics",
-    "path": "lessons/year2/pharmacology/introduction-to-antibiotics.md",
-    "quizPath": "questions/year2/pharmacology/introduction-to-antibiotics.json",
-    "flashcardPath": "flashcards/year2/pharmacology/introduction-to-antibiotics.json",
-    "year": 2,
-    "specialty": "pharmacology",
-    "summary": "This lesson covers the basic classification and mechanisms of action for major antibiotic classes.",
-    "tags": [],
-    "version": "1.0"
+    "fullPath": "lessons/year2/pharmacology/introduction-to-antibiotics.md",
+    "pathParts": [
+      "year2",
+      "pharmacology"
+    ]
   },
   {
     "title": "Anemia in Children",
     "slug": "anemia",
-    "path": "lessons/year5/pediatrics/anemia.md",
-    "quizPath": "questions/year5/pediatrics/anemia.json",
-    "flashcardPath": "flashcards/year5/pediatrics/anemia.json",
-    "year": 5,
-    "specialty": "pediatrics",
-    "subspecialty": "hematology",
-    "summary": "An overview of the diagnosis and management of common types of anemia in pediatric patients.",
-    "duration": "25 min",
-    "tags": [
-      "anemia",
-      "pediatrics",
-      "hematology",
-      "iron deficiency"
-    ],
-    "version": "1.1"
+    "fullPath": "lessons/year5/pediatrics/anemia.md",
+    "pathParts": [
+      "year5",
+      "pediatrics"
+    ]
   },
   {
     "title": "Ventricular Septal Defect (VSD)",
     "slug": "vsd",
-    "path": "lessons/year5/pediatrics/vsd.md",
-    "quizPath": "questions/year5/pediatrics/vsd.json",
-    "flashcardPath": "flashcards/year5/pediatrics/vsd.json",
-    "year": 5,
-    "specialty": "pediatrics",
-    "subspecialty": "cardiology",
-    "summary": "Understanding the pathophysiology, clinical features, and management of VSD, the most common congenital heart defect.",
-    "duration": "15 min",
-    "tags": [
-      "vsd",
-      "cardiology",
-      "pediatrics",
-      "congenital heart disease"
-    ],
-    "version": "1.0"
+    "fullPath": "lessons/year5/pediatrics/vsd.md",
+    "pathParts": [
+      "year5",
+      "pediatrics"
+    ]
   }
 ]
