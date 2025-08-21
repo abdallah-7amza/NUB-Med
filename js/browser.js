@@ -1,4 +1,4 @@
-// js/browser.js (UPGRADED with Dual-Section Display)
+// js/browser.js (Final Version with Original Style)
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const currentPathStr = params.get('path') || '';
@@ -28,15 +28,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // --- 2. Fetch Data and Filter ---
+    // --- 2. Fetch Data and Prepare Items ---
     const response = await fetch('lessons-index.json?v=' + new Date().getTime());
     const allLessons = await response.json();
 
-    // Filter for lessons directly in the current folder
-    const directLessons = allLessons.filter(lesson =>
-        lesson.pathParts.length === currentPathParts.length + 1 &&
-        currentPathParts.every((part, i) => part === lesson.pathParts[i])
-    );
+    const itemsToDisplay = [];
 
     // Find all unique subfolders at the next level
     const subfolders = [...new Set(
@@ -48,46 +44,50 @@ document.addEventListener('DOMContentLoaded', async () => {
             .map(lesson => lesson.pathParts[currentPathParts.length])
     )];
 
-    // --- 3. Render Content ---
+    subfolders.forEach(folder => {
+        itemsToDisplay.push({
+            type: 'folder',
+            name: folder,
+            path: [...currentPathParts, folder].join('/')
+        });
+    });
+
+    // Filter for lessons directly in the current folder
+    const directLessons = allLessons.filter(lesson =>
+        lesson.pathParts.length === currentPathParts.length + 1 &&
+        currentPathParts.every((part, i) => part === lesson.pathParts[i])
+    );
+
+    directLessons.forEach(lesson => {
+        itemsToDisplay.push({
+            type: 'lesson',
+            name: lesson.title,
+            slug: lesson.slug,
+            path: currentPathStr
+        });
+    });
+
+    // --- 3. Render Content in a Single Grid ---
     containerEl.innerHTML = ''; // Clear previous content
     titleEl.textContent = currentPathParts.length > 0 ? currentPathParts[currentPathParts.length - 1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Home';
     
-    let contentRendered = false;
-
-    // Render Subfolders section if they exist
-    if (subfolders.length > 0) {
-        containerEl.innerHTML += '<h2>Sub-Topics</h2>';
-        const subfolderGrid = document.createElement('div');
-        subfolderGrid.className = 'grid-container';
-        subfolders.forEach(folder => {
+    if (itemsToDisplay.length > 0) {
+        const grid = document.createElement('div');
+        grid.className = 'grid-container';
+        itemsToDisplay.forEach(item => {
             const card = document.createElement('a');
             card.className = 'card';
-            const newPath = [...currentPathParts, folder].join('/');
-            card.href = `browser.html?path=${newPath}`;
-            card.innerHTML = `<h3>📁 ${folder.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h3>`;
-            subfolderGrid.appendChild(card);
+            if (item.type === 'folder') {
+                card.href = `browser.html?path=${item.path}`;
+                card.innerHTML = `<h3>📁 ${item.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h3>`;
+            } else { // type is 'lesson'
+                card.href = `lesson.html?lesson=${item.slug}&path=${item.path}`;
+                card.innerHTML = `<h3>📄 ${item.name}</h3>`;
+            }
+            grid.appendChild(card);
         });
-        containerEl.appendChild(subfolderGrid);
-        contentRendered = true;
-    }
-
-    // Render Lessons section if they exist
-    if (directLessons.length > 0) {
-        containerEl.innerHTML += '<h2>Lessons</h2>';
-        const lessonGrid = document.createElement('div');
-        lessonGrid.className = 'grid-container';
-        directLessons.forEach(lesson => {
-            const card = document.createElement('a');
-            card.className = 'card';
-            card.href = `lesson.html?lesson=${lesson.slug}&path=${currentPathStr}`;
-            card.innerHTML = `<h3>📄 ${lesson.title}</h3>`;
-            lessonGrid.appendChild(card);
-        });
-        containerEl.appendChild(lessonGrid);
-        contentRendered = true;
-    }
-
-    if (!contentRendered) {
+        containerEl.appendChild(grid);
+    } else {
         containerEl.innerHTML = '<p style="text-align: center;">No content found in this section.</p>';
     }
 });
