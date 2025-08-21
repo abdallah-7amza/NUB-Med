@@ -1,50 +1,61 @@
+// tools/generateIndex.js (UPGRADED with Recursive Logic)
 const fs = require('fs');
 const path = require('path');
-const matter = require('gray-matter');
 
 const lessonsBaseDir = path.join(__dirname, '../lessons');
 const indexPath = path.join(__dirname, '../lessons-index.json');
 
-console.log('Starting deep hierarchical index generation...');
-const lessonsIndex = [];
+console.log('🚀 Starting deep index generation...');
 
-function scanDirectory(directory, currentPath = []) {
-    const files = fs.readdirSync(directory);
+// A recursive function to walk through all directories
+function walkDir(dir, allLessons = []) {
+    const files = fs.readdirSync(dir);
 
-    files.forEach(file => {
-        const fullPath = path.join(directory, file);
-        const stat = fs.statSync(fullPath);
+    for (const file of files) {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
 
         if (stat.isDirectory()) {
-            // If it's a directory, scan it recursively
-            scanDirectory(fullPath, [...currentPath, file]);
+            // If it's a directory, go deeper
+            walkDir(filePath, allLessons);
         } else if (file.endsWith('.md')) {
-            // If it's a lesson file, process it
-            const content = fs.readFileSync(fullPath, 'utf8');
-            const { data } = matter(content);
+            // If it's a markdown file, process it
+            const content = fs.readFileSync(filePath, 'utf8');
+            const slugMatch = content.match(/slug:\s*["']?(.+?)["']?\s/);
+            const titleMatch = content.match(/title:\s*["']?(.+?)["']?\s/);
 
-            if (!data.title || !data.slug) {
-                console.warn(`WARN: Missing required front matter in ${fullPath}`);
-                return;
+            if (!slugMatch || !titleMatch) {
+                console.warn(`--> ⚠️ Skipping ${filePath}: Missing slug or title.`);
+                continue;
             }
 
-            lessonsIndex.push({
-                title: data.title,
-                slug: data.slug,
-                // Store the full path for linking
-                fullPath: `lessons/${[...currentPath, file].join('/')}`,
-                // Store path parts for filtering and navigation
-                pathParts: currentPath 
+            const slug = slugMatch[1];
+            const title = titleMatch[1];
+            
+            // This creates a clean, relative path from the project root
+            const fullPath = path.relative(path.join(__dirname, '..'), filePath).replace(/\\/g, '/');
+            
+            // This creates the array of path parts for navigation
+            // e.g., "lessons/year5/pediatrics/cardiology/vsd/diagnosis.md"
+            // becomes ["year5", "pediatrics", "cardiology", "vsd", "diagnosis.md"]
+            const pathParts = fullPath.substring('lessons/'.length).split('/');
+
+            allLessons.push({
+                slug,
+                title,
+                fullPath,
+                pathParts
             });
         }
-    });
+    }
+    return allLessons;
 }
 
 try {
-    scanDirectory(lessonsBaseDir);
+    const lessonsIndex = walkDir(lessonsBaseDir);
     fs.writeFileSync(indexPath, JSON.stringify(lessonsIndex, null, 2));
-    console.log(`Successfully generated lessons-index.json with ${lessonsIndex.length} entries.`);
+    console.log(`✅ Index generation complete. Found ${lessonsIndex.length} lessons.`);
 } catch (error) {
-    console.error('Error during index generation:', error);
+    console.error('❌ Error during index generation:', error);
     process.exit(1);
 }
