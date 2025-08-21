@@ -7,24 +7,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     const containerEl = document.getElementById('content-container');
     const breadcrumbEl = document.getElementById('breadcrumb-nav');
 
-    const response = await fetch('lessons-index.json?v=' + new Date().getTime());
-    const allLessons = await response.json();
-
-    // --- Generate Breadcrumbs (CORRECTED) ---
-    let pathAccumulator = '';
-    // This link now correctly points to the main index page
-    const homeLink = '<a href="index.html">Home</a>'; 
-    const breadcrumbLinks = currentPathParts.map(part => {
-        pathAccumulator += (pathAccumulator ? '/' : '') + part;
-        const capitalizedPart = part.charAt(0).toUpperCase() + part.slice(1);
-        return `<a href="browser.html?path=${pathAccumulator}">${capitalizedPart}</a>`;
-    });
-    // Only show breadcrumbs if we are inside a path
+    // --- 1. Generate Breadcrumbs (Final Version) ---
+    // The "Home" link will ALWAYS point to index.html, your true main page.
+    const homeLink = '<a href="index.html">Home</a>';
     if (currentPathStr) {
+        let pathAccumulator = '';
+        const breadcrumbLinks = currentPathParts.map(part => {
+            pathAccumulator += (pathAccumulator ? '/' : '') + part;
+            const capitalizedPart = part.charAt(0).toUpperCase() + part.slice(1);
+            return `<a href="browser.html?path=${pathAccumulator}">${capitalizedPart}</a>`;
+        });
         breadcrumbEl.innerHTML = [homeLink, ...breadcrumbLinks].join(' &raquo; ');
     } else {
-         breadcrumbEl.innerHTML = 'Select an academic year below:'; // Or leave it empty
+        // If there is no path, we just show a simple instruction.
+        breadcrumbEl.innerHTML = homeLink; 
     }
+
+    // Stop execution if no path is provided.
+    if (!currentPathStr) {
+        titleEl.textContent = 'Please select a topic';
+        containerEl.innerHTML = '<p style="text-align: center;">Please return to the Home page to select an academic year.</p>';
+        return; // Exit the function here
+    }
+
+    // --- 2. Fetch and Render Content (Only runs if a path exists) ---
+    const response = await fetch('lessons-index.json?v=' + new Date().getTime());
+    const allLessons = await response.json();
     
     const directLessons = allLessons.filter(lesson => 
         lesson.pathParts.length === currentPathParts.length && 
@@ -39,12 +47,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             )
             .map(lesson => lesson.pathParts[currentPathParts.length])
     )];
-
+    
     containerEl.innerHTML = '';
 
     if (subfolders.length > 0) {
-        const titleText = currentPathParts.length > 0 ? `Topics in ${currentPathParts[currentPathParts.length - 1]}` : 'Available Years';
-        titleEl.textContent = titleText;
+        titleEl.textContent = `Topics in ${currentPathParts[currentPathParts.length - 1]}`;
         subfolders.forEach(folder => {
             const card = document.createElement('a');
             card.className = 'card';
@@ -63,16 +70,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             containerEl.appendChild(card);
         });
     } else {
-        // If there are no subfolders AND no lessons, it means we are at the root
-        // So we show the years. This makes index.html optional.
-        const years = [...new Set(allLessons.map(lesson => lesson.pathParts[0]))];
-        titleEl.textContent = 'Select an Academic Year';
-        years.forEach(year => {
-             const card = document.createElement('a');
-            card.className = 'card';
-            card.href = `browser.html?path=${year}`;
-            card.innerHTML = `<h3>${year.charAt(0).toUpperCase() + year.slice(1)}</h3>`;
-            containerEl.appendChild(card);
-        });
+        titleEl.textContent = 'No content found here.';
     }
 });
