@@ -12,18 +12,6 @@
     "version": "1.0"
   },
   {
-    "title": "Dysmenorrhea",
-    "slug": "dysmenorrhea",
-    "path": "lessons/year5/gynecology/dysmenorrhea.md",
-    "quizPath": "questions/year5/gynecology/dysmenorrhea.json",
-    "flashcardPath": "flashcards/year5/gynecology/dysmenorrhea.json",
-    "year": 5,
-    "specialty": "gynecology",
-    "summary": "An overview of Dysmenorrhea, covering its types (primary and secondary), clinical presentation, investigation, and management.",
-    "tags": [],
-    "version": "1.0"
-  },
-  {
     "title": "Anemia in Children",
     "slug": "anemia",
     "path": "lessons/year5/pediatrics/anemia.md",
