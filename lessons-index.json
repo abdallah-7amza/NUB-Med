@@ -1,40 +1,44 @@
 [
   {
-    "title": "Introduction to Antibiotics",
     "slug": "introduction-to-antibiotics",
+    "title": "Introduction",
     "fullPath": "lessons/year2/pharmacology/introduction-to-antibiotics.md",
     "pathParts": [
       "year2",
-      "pharmacology"
+      "pharmacology",
+      "introduction-to-antibiotics.md"
     ]
   },
   {
-    "title": "Anemia in Children",
     "slug": "anemia",
+    "title": "Anemia",
     "fullPath": "lessons/year5/pediatrics/anemia.md",
     "pathParts": [
       "year5",
-      "pediatrics"
+      "pediatrics",
+      "anemia.md"
     ]
   },
   {
-    "title": "Diagnosis of VSD",
     "slug": "vsd-diagnosis",
+    "title": "Diagnosis",
     "fullPath": "lessons/year5/pediatrics/cardiology/vsd/diagnosis.md",
     "pathParts": [
       "year5",
       "pediatrics",
       "cardiology",
-      "vsd"
+      "vsd",
+      "diagnosis.md"
     ]
   },
   {
-    "title": "Ventricular Septal Defect (VSD)",
     "slug": "vsd",
+    "title": "Ventricular",
     "fullPath": "lessons/year5/pediatrics/vsd.md",
     "pathParts": [
       "year5",
-      "pediatrics"
+      "pediatrics",
+      "vsd.md"
     ]
   }
 ]
