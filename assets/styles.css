@@ -270,3 +270,17 @@ body {
 .result-options-container .result-option.incorrect { background-color: #f8d7da; text-decoration: line-through; }
 .btn-ask-ai { background: none; border: 1px solid var(--border-color); color: var(--secondary-color); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; }
 .btn-ask-ai:hover { background-color: #f8f9fa; }
+
+/* --- 13) Breadcrumb Navigation --- */
+.breadcrumbs {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+.breadcrumbs a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
