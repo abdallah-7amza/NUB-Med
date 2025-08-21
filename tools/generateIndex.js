@@ -1,25 +1,37 @@
-// tools/generateIndex.js (UPGRADED with Recursive Logic)
+// tools/generateIndex.js (Final Stable Version)
 const fs = require('fs');
 const path = require('path');
 
 const lessonsBaseDir = path.join(__dirname, '../lessons');
 const indexPath = path.join(__dirname, '../lessons-index.json');
 
-console.log('🚀 Starting deep index generation...');
+console.log('🚀 Starting final index generation...');
 
-// A recursive function to walk through all directories
-function walkDir(dir, allLessons = []) {
-    const files = fs.readdirSync(dir);
+try {
+    const index = [];
+    const yearDirs = fs.readdirSync(lessonsBaseDir).filter(f => fs.statSync(path.join(lessonsBaseDir, f)).isDirectory());
 
-    for (const file of files) {
-        const filePath = path.join(dir, file);
-        const stat = fs.statSync(filePath);
+    for (const yearDir of yearDirs) {
+        const yearPath = path.join(lessonsBaseDir, yearDir);
+        // This is a simple recursive function to find all .md files in any subfolder
+        function findMdFiles(dir) {
+            const results = [];
+            const list = fs.readdirSync(dir);
+            list.forEach(file => {
+                const filePath = path.join(dir, file);
+                const stat = fs.statSync(filePath);
+                if (stat && stat.isDirectory()) {
+                    results.push(...findMdFiles(filePath));
+                } else if (file.endsWith('.md')) {
+                    results.push(filePath);
+                }
+            });
+            return results;
+        }
 
-        if (stat.isDirectory()) {
-            // If it's a directory, go deeper
-            walkDir(filePath, allLessons);
-        } else if (file.endsWith('.md')) {
-            // If it's a markdown file, process it
+        const allMdFilesInYear = findMdFiles(yearPath);
+        
+        for (const filePath of allMdFilesInYear) {
             const content = fs.readFileSync(filePath, 'utf8');
             const slugMatch = content.match(/slug:\s*["']?(.+?)["']?\s/);
             const titleMatch = content.match(/title:\s*["']?(.+?)["']?\s/);
@@ -31,16 +43,10 @@ function walkDir(dir, allLessons = []) {
 
             const slug = slugMatch[1];
             const title = titleMatch[1];
-            
-            // This creates a clean, relative path from the project root
             const fullPath = path.relative(path.join(__dirname, '..'), filePath).replace(/\\/g, '/');
-            
-            // This creates the array of path parts for navigation
-            // e.g., "lessons/year5/pediatrics/cardiology/vsd/diagnosis.md"
-            // becomes ["year5", "pediatrics", "cardiology", "vsd", "diagnosis.md"]
             const pathParts = fullPath.substring('lessons/'.length).split('/');
 
-            allLessons.push({
+            index.push({
                 slug,
                 title,
                 fullPath,
@@ -48,13 +54,10 @@ function walkDir(dir, allLessons = []) {
             });
         }
     }
-    return allLessons;
-}
 
-try {
-    const lessonsIndex = walkDir(lessonsBaseDir);
-    fs.writeFileSync(indexPath, JSON.stringify(lessonsIndex, null, 2));
-    console.log(`✅ Index generation complete. Found ${lessonsIndex.length} lessons.`);
+    fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
+    console.log(`✅ Index generation complete. Found ${index.length} total lessons.`);
+
 } catch (error) {
     console.error('❌ Error during index generation:', error);
     process.exit(1);
