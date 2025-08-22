@@ -1,76 +1,68 @@
-import { getLessonContent, getQuizData, getFlashcardData } from './github.js';
+// js/lesson.js
+import { getLessonContent, getQuizData } from './github.js';
 import { initQuiz } from './quiz.js';
-import { initFlashcards } from './flashcards.js';
 import { initAITutor } from './ai-tutor.js';
 
 window.currentLesson = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const lessonId = params.get('lesson');
-    // NEW: Get the path from the URL to enable the smart "Back" button
-    const returnPath = params.get('path'); 
+  const params = new URLSearchParams(window.location.search);
+  const lessonId = params.get('lesson');
+  const year = params.get('year');
+  const specialty = params.get('specialty');
 
-    if (!lessonId) {
-        document.body.innerHTML = '<p style="text-align:center; padding-top: 2rem; font-size: 1.2rem;">Error: Lesson ID is missing.</p>';
-        return;
-    }
+  if (!lessonId) {
+    document.getElementById('lesson-content').innerHTML = "<p style='color:red;'>Error: Lesson ID missing.</p>";
+    return;
+  }
 
-    // NEW: Make the "Back" button smart
-    const backLink = document.getElementById('back-link-lesson');
-    if (backLink && returnPath) {
-        // Link back to the correct place in the browser hierarchy
-        backLink.href = `browser.html?path=${returnPath}`;
-    } else if (backLink) {
-        // Fallback to the root browser page if no path is provided for some reason
-        backLink.href = 'browser.html';
-    }
+  const backLink = document.getElementById('back-link-lesson');
+  if (backLink && year && specialty) {
+    backLink.href = `lessons-list.html?year=${year}&specialty=${specialty}`;
+  }
 
-    loadAllData(lessonId);
-    initAITutor({ getLessonContext });
+  loadLessonAndQuiz(lessonId);
+  initAITutor({ getLessonContext });
 });
 
-async function loadAllData(lessonId) {
-    const titleEl = document.getElementById('page-title');
-    const contentEl = document.getElementById('lesson-content');
-    
-    // This part remains the same, it fetches all data in parallel.
-    const [markdownContent, quizData, flashcardData] = await Promise.all([
-        getLessonContent(lessonId), 
-        getQuizData(lessonId), 
-        getFlashcardData(lessonId)
-    ]);
+async function loadLessonAndQuiz(lessonId) {
+  const titleEl = document.getElementById('page-title');
+  const contentEl = document.getElementById('lesson-content');
+  const [markdownContent, quizData] = await Promise.all([
+    getLessonContent(lessonId),
+    getQuizData(lessonId)
+  ]);
 
-    if (markdownContent) {
-        const cleanMarkdown = markdownContent.replace(/^---\s*[\s\S]*?---\s*/, '').trim();
-        const titleMatch = cleanMarkdown.match(/^#\s+(.*)/);
-        const lessonTitle = titleMatch ? titleMatch[1] : lessonId.replace(/-/g, ' ');
-        window.currentLesson.title = lessonTitle;
-        window.currentLesson.content = cleanMarkdown;
-        if(titleEl) titleEl.textContent = lessonTitle;
-        if(contentEl) contentEl.innerHTML = marked.parse(cleanMarkdown);
-    } else {
-        if(titleEl) titleEl.textContent = 'Error';
-        if(contentEl) contentEl.innerHTML = '<p>Could not load lesson content.</p>';
-    }
+  if (markdownContent) {
+    const cleanMarkdown = markdownContent.replace(/^---\s*[\s\S]*?---\s*/, '').trim();
+    const titleMatch = cleanMarkdown.match(/^#\s+(.*)/);
+    const lessonTitle = titleMatch ? titleMatch[1] : lessonId.replace(/-/g, ' ');
 
-    // Conditionally initialize the quiz if its data exists
-    if (quizData && quizData.items && quizData.items.length > 0) {
-        window.currentLesson.quiz = quizData.items;
-        initQuiz(quizData.items, lessonId);
-    }
-    
-    // Conditionally initialize flashcards if their data exists
-    if (flashcardData && flashcardData.items && flashcardData.items.length > 0) {
-        initFlashcards(flashcardData.items);
-    }
+    window.currentLesson = {
+      title: lessonTitle,
+      summary: '',
+      content: cleanMarkdown
+    };
+
+    titleEl.textContent = lessonTitle;
+    contentEl.innerHTML = marked.parse(cleanMarkdown);
+  }
+
+  if (quizData && quizData.items?.length > 0) {
+    window.currentLesson.quiz = quizData.items;
+    document.getElementById('start-quiz-btn').onclick = () => {
+      document.getElementById('quiz-container').style.display = 'block';
+      initQuiz(quizData.items, lessonId);
+    };
+  }
 }
 
 function getLessonContext() {
-    return {
-        title: window.currentLesson.title || '',
-        slug: new URLSearchParams(location.search).get('lesson') || '',
-        content: window.currentLesson.content || '',
-        quiz: window.currentLesson.quiz || []
-    };
+  return {
+    title: window.currentLesson.title || '',
+    summary: window.currentLesson.summary || '',
+    slug: new URLSearchParams(location.search).get('lesson') || '',
+    content: window.currentLesson.content || '',
+    quiz: window.currentLesson.quiz || []
+  };
 }
