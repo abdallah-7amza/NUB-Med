@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lesson - MED Portal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="assets/styles.css" />
-  <script src="js/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
   <header class="main-header">
@@ -19,62 +17,24 @@
   </header>
 
   <main class="container">
+    <!-- Lesson Content -->
     <article id="lesson-content"></article>
 
-    <div class="lesson-actions">
-      <button id="start-flashcards-btn" class="btn btn-secondary" style="display: none;">Flashcards</button>
-      <button id="start-quiz-btn" class="btn btn-primary" style="display: none;">Test Yourself</button>
+    <!-- Start Quiz Button -->
+    <div id="start-quiz-wrapper" style="text-align: center; margin: 2rem 0;">
+      <button id="start-quiz-btn" class="btn btn-primary">Test Yourself</button>
     </div>
 
-    <section id="flashcard-container" class="hidden">
-        <div class="flashcard-header">
-            <div id="flashcard-progress">1 / X</div>
-            <button id="close-flashcards-btn" class="close-btn">&times;</button>
+    <!-- Quiz Container -->
+    <section id="quiz-container" style="display:none;">
+      <div class="quiz-header">
+        <div id="quiz-score">Score: 0 / 0</div>
+        <div id="quiz-progress-bar">
+          <div id="quiz-progress-value"></div>
         </div>
-        <div id="flashcard-card" class="flashcard">
-            <div class="flashcard-inner">
-                <div class="flashcard-front"></div>
-                <div class="flashcard-back"></div>
-            </div>
-        </div>
-        <div class="flashcard-nav">
-            <button id="flashcard-prev-btn" class="btn-secondary">← Previous</button>
-            <button id="flashcard-next-btn" class="btn btn-primary">Next →</button>
-        </div>
-    </section>
-
-    <section id="quiz-container" class="hidden">
-      <div id="quiz-modal">
-        <div class="quiz-modal-content">
-          <h3>Choose Your Quiz Mode</h3>
-          <div class="quiz-modal-actions">
-            <button id="start-exam-btn" class="btn btn-primary">Start Exam</button>
-            <button id="browse-questions-btn" class="btn-secondary">Browse Questions</button>
-          </div>
-        </div>
+        <button id="quiz-reset-btn" class="btn-secondary" style="display:none;">Reset Progress</button>
       </div>
-      <div id="quiz-main" style="display: none;">
-        <div class="quiz-header">
-          <div id="quiz-progress-text">Progress: 0 / 0</div>
-          <div id="quiz-progress-bar"><div id="quiz-progress-bar-value"></div></div>
-        </div>
-        <div id="quiz-question-card">
-          <p id="quiz-question-stem"></p>
-          <div id="quiz-options"></div>
-        </div>
-        <div id="quiz-nav">
-          <button id="quiz-prev-btn" class="btn-secondary">← Previous</button>
-          <button id="quiz-next-btn" class="btn btn-primary">Next →</button>
-        </div>
-      </div>
-      <div id="quiz-results" style="display: none;">
-        <h2 id="quiz-results-header"></h2>
-        <p id="quiz-final-score"></p>
-        <div id="quiz-results-details"></div>
-      </div>
-      <div style="text-align: center; margin-top: 2rem;">
-         <button id="quiz-reset-btn" class="btn-secondary">Reset Quiz</button>
-      </div>
+      <div id="quiz-content"></div>
     </section>
   </main>
 
@@ -82,10 +42,33 @@
     <p>Powered by Abdallah Hamza</p>
   </footer>
 
-  <button id="ai-tutor-fab" aria-label="Open AI Tutor" title="AI Medical Tutor"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="white" d="M2 12a10 10 0 1010-10A10 10 0 002 12zm11-1h-6v2h6v-2zm2-3h-8v2h8V8zm0 6h-8v2h8v-2z"></path></svg></button>
-  <div id="chat-overlay" aria-hidden="true"><div id="chat-window" role="dialog"><div class="chat-header"><div class="chat-title"><h3>AI Medical Tutor</h3><small id="lesson-context-summary"></small></div><div class="chat-controls"><button id="change-key-btn" title="Change API Key"></button><button id="export-chat-btn" title="Export chat"></button><button id="close-chat-btn" aria-label="Close chat">&times;</button></div></div><div id="chat-messages" role="log"></div><div class="quick-prompts" id="quick-prompts"><button type="button" data-prompt="Summarize the lesson.">Summarize</button><button type="button" data-prompt="Explain this concept simply.">Explain</button><button type="button" data-prompt="Give 5 short exam-style MCQs.">Make Quiz</button></div><form id="chat-input-form" class="chat-input-form"><input type="text" id="chat-input" placeholder="Ask a question..." /><button id="chat-send-btn" type="submit" aria-label="Send">Send</button></form></div></div>
-  <div id="key-modal" aria-hidden="true"><div class="key-card"><h3>Set up Gemini API Key</h3><p>Paste your API key to enable the AI tutor</p><input id="api-key-input" type="password" placeholder="AIza..." /><div class="key-actions"><button id="save-key-btn" class="btn-primary">Save</button><button id="cancel-key-btn" class="btn-ghost">Cancel</button></div></div></div>
-  
+  <!-- Floating AI Tutor Button -->
+  <button id="ai-tutor-fab" aria-label="Open AI Tutor">AI</button>
+
+  <!-- AI Tutor Overlay -->
+  <div id="chat-overlay" aria-hidden="true">
+    <div id="chat-window">
+      <div class="chat-header">
+        <h3>AI Medical Tutor</h3>
+        <small id="lesson-context-summary"></small>
+        <button id="close-chat-btn">&times;</button>
+      </div>
+      <div id="chat-messages"></div>
+      <div class="quick-prompts" id="quick-prompts">
+        <button data-prompt="Summarize this lesson.">Summarize</button>
+        <button data-prompt="Explain like I'm a 3rd year medical student.">Explain</button>
+        <button data-prompt="Give 5 exam-style MCQs.">Make Quiz</button>
+      </div>
+      <form id="chat-input-form" autocomplete="off">
+        <input type="text" id="chat-input" placeholder="Ask about this lesson..." />
+        <button id="chat-send-btn" type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script type="module" src="js/lesson.js"></script>
+  <script type="module" src="js/quiz.js"></script>
+  <script type="module" src="js/ai-tutor.js"></script>
 </body>
 </html>
