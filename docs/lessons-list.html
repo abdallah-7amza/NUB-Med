@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lessons List</title>
+
+  <link rel="stylesheet" href="assets/styles.css"/>
+</head>
+<body>
+  <header class="main-header">
+    <a href="index.html" class="btn btn-secondary">&larr; Back</a>
+    <h1 id="page-title">Loading…</h1> <!-- Loading state (حالة تحميل) -->
+    <p id="page-subtitle"></p>
+  </header>
+
+  <main class="container">
+    <!-- Filters (عوامل تصفية) -->
+    <div class="toolbar">
+      <div class="toolbar-row">
+        <label>
+          Specialty:
+          <select id="specialty-filter">
+            <option value="">All specialties</option> <!-- كل التخصصات -->
+          </select>
+        </label>
+
+        <label>
+          Search:
+          <input type="search" id="search-input" placeholder="Search lessons…"/>
+        </label>
+      </div>
+      <small id="debug-line" class="muted"></small> <!-- Debug info (معلومة تصحيح) -->
+    </div>
+
+    <!-- Specialties overview (ملخص التخصصات) -->
+    <section>
+      <h2>Specialties</h2>
+      <div id="specialties-grid" class="grid"></div>
+    </section>
+
+    <!-- Lessons list (قائمة الدروس) -->
+    <section>
+      <h2>Lessons</h2>
+      <div id="lessons-grid" class="grid"></div>
+      <p id="empty-state" class="muted" style="display:none;">No lessons found for current filter. (لا توجد دروس مطابقة لِلترشيح الحالي)</p>
+    </section>
+  </main>
+
+  <footer class="main-footer">
+    <p>Powered by Abdallah Hamza</p>
+  </footer>
+
+  <script type="module" src="js/lessons-list.js"></script>
+</body>
+</html>
