@@ -1,29 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MED Portal - NUB</title>
-    <link rel="stylesheet" href="assets/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medical Lessons Portal</title>
+
+  <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-content">
-            <h1 id="page-title">NUB MED Portal</h1>
-        </div>
-    </header>
-    <main class="container">
-        <h2>Select Your Academic Year</h2>
-        <div id="years-container" class="grid-container">
-            <a href="browser.html?path=year1" class="card"><h3>First Year</h3></a>
-            <a href="browser.html?path=year2" class="card"><h3>Second Year</h3></a>
-            <a href="browser.html?path=year3" class="card"><h3>Third Year</h3></a>
-            <a href="browser.html?path=year4" class="card"><h3>Fourth Year</h3></a>
-            <a href="browser.html?path=year5" class="card"><h3>Fifth Year</h3></a>
-        </div>
-    </main>
-    <footer class="main-footer">
-        <p>Powered by Abdallah Hamza</p>
-    </footer>
+  <header class="main-header">
+    <h1>Medical Lessons Portal</h1>
+    <p>Select your study year</p>
+  </header>
+
+  <main class="container">
+    <section id="years-list" class="grid"></section>
+  </main>
+
+  <footer class="main-footer">
+    <p>Powered by Abdallah Hamza</p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
