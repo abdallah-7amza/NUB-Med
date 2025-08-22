@@ -1,7 +1,7 @@
 [
   {
     "slug": "introduction-to-antibiotics",
-    "title": "Introduction",
+    "title": "Introduction to Antibiotics",
     "fullPath": "lessons/year2/pharmacology/introduction-to-antibiotics.md",
     "pathParts": [
       "year2",
@@ -11,7 +11,7 @@
   },
   {
     "slug": "anemia",
-    "title": "Anemia",
+    "title": "Anemia in Children",
     "fullPath": "lessons/year5/pediatrics/anemia.md",
     "pathParts": [
       "year5",
@@ -21,7 +21,7 @@
   },
   {
     "slug": "vsd",
-    "title": "Ventricular",
+    "title": "Ventricular Septal Defect (VSD)",
     "fullPath": "lessons/year5/pediatrics/vsd.md",
     "pathParts": [
       "year5",
