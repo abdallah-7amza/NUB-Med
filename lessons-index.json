@@ -20,18 +20,6 @@
     ]
   },
   {
-    "slug": "vsd-diagnosis",
-    "title": "Diagnosis",
-    "fullPath": "lessons/year5/pediatrics/cardiology/vsd/diagnosis.md",
-    "pathParts": [
-      "year5",
-      "pediatrics",
-      "cardiology",
-      "vsd",
-      "diagnosis.md"
-    ]
-  },
-  {
     "slug": "vsd",
     "title": "Ventricular",
     "fullPath": "lessons/year5/pediatrics/vsd.md",
